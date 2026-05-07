@@ -1,0 +1,129 @@
+<c-modal
+  [visible]="visible"
+  backdrop="static"
+  (visibleChange)="visibleChange.emit($event)"
+>
+  <c-modal-header style="justify-content: space-between !important">
+    <h5 cModalTitle>Modal title</h5>
+
+    <button
+      (click)="close()"
+      variant="ghost"
+      shape="rounded-pill"
+      cButton
+      color="danger"
+    >
+      <svg [cIcon]="icons.cilXCircle"></svg>
+    </button>
+  </c-modal-header>
+  <c-modal-body>
+
+    <form [gutter]="3" cForm cRow>
+
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="idTessera">
+          Id Tessera
+        </label>
+        <input
+          cFormControl
+          id="idTessera"
+          placeholder="Id Tessera"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="codiceInterno">
+          Codice Interno
+        </label>
+        <input
+          cFormControl
+          id="codiceInterno"
+          placeholder="Codice Interno"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="nome">
+          Nome
+        </label>
+        <input
+          cFormControl
+          id="nome"
+          placeholder="Nome"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="cognome">
+          Cognome
+        </label>
+        <input
+          cFormControl
+          id="cognome"
+          placeholder="Cognome"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="sede">
+          Sede
+        </label>
+        <input
+          cFormControl
+          id="sede"
+          placeholder="Sede"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="tipoTessera">
+          Tipo Tessera
+        </label>
+        <input
+          cFormControl
+          id="tipoTessera"
+          placeholder="Tipo Tessera"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="12">
+        <label cLabel class="visually-hidden" for="dataInizioAssegnazione">
+          Data Inizio Assegnazione
+        </label>
+        <input
+          cFormControl
+          id="dataInizioAssegnazione"
+          placeholder="Data Inizio Assegnazione"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="12">
+        <label cLabel class="visually-hidden" for="dataFineAssegnazione">
+          Data Fine Assegnazione
+        </label>
+        <input
+          cFormControl
+          id="dataFineAssegnazione"
+          placeholder="Data Fine Assegnazione"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="12">
+        <label cLabel class="visually-hidden" for="dataInvalidità">
+          Data Invalidità
+        </label>
+        <input
+          cFormControl
+          id="dataInvalidità"
+          placeholder="Data Invalidità"
+          type="text"
+        />
+      </c-col>
+
+    </form>
+
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="success" (click)="confirm()">Save</button>
+  </c-modal-footer>
+</c-modal>
