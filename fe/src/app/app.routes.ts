@@ -19,7 +19,7 @@ export const routes: Routes = [
       },
       {
         path: 'lista-sedi',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
       },
       {
         path: 'theme',

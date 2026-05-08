@@ -2,6 +2,13 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'lista-sedi',
+    loadComponent: () => import('./lista-sedi/lista-sedi.component').then(m => m.ListaSediComponent),
+    data: {
+      title: 'Lista Sedi'
+    }
+  },
+  {
     path: '404',
     loadComponent: () => import('./page404/page404.component').then(m => m.Page404Component),
     data: {

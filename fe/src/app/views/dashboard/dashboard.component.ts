@@ -7,10 +7,13 @@ import {
   CardFooterComponent,
   CardHeaderComponent,
   ColComponent,
+  FormControlDirective,
+  FormDirective,
+  FormLabelDirective,
+  FormSelectDirective,
   GutterDirective,
-  ModalComponent,
-  ModalToggleDirective,
   RowComponent,
+  RowDirective,
   TableDirective,
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
@@ -46,8 +49,12 @@ import { TesseraModalCmpComponent } from './../../../components/modals/tessera-m
     GutterDirective,
     CardHeaderComponent,
     TableDirective,
-    ModalToggleDirective,
     TesseraModalCmpComponent,
+    FormControlDirective,
+    FormDirective,
+    FormLabelDirective,
+    RowDirective,
+    FormSelectDirective
   ]
 })
 export class DashboardComponent implements OnInit {
@@ -68,7 +75,7 @@ export class DashboardComponent implements OnInit {
       codiceInterno: "0005121205",
       dataOraInizioAssegnazione: "19/06/2024 06:00:00",
       dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso:false
+      disuso: false
     },
     {
       idTessera: "0000090802",
@@ -81,7 +88,7 @@ export class DashboardComponent implements OnInit {
       codiceInterno: "ABCD",
       dataOraInizioAssegnazione: "10/11/1994",
       dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso:false
+      disuso: false
     },
     {
       idTessera: "0000090803",
@@ -94,7 +101,7 @@ export class DashboardComponent implements OnInit {
       codiceInterno: "ABCD",
       dataOraInizioAssegnazione: "10/11/1994",
       dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso:true
+      disuso: true
     },
     {
       idTessera: "0000090804",
@@ -107,7 +114,7 @@ export class DashboardComponent implements OnInit {
       codiceInterno: "ABCD",
       dataOraInizioAssegnazione: "",
       dataOraFineAssegnazione: "",
-      disuso:false
+      disuso: false
     },
   ];
 

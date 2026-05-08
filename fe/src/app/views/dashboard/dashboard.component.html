@@ -1,48 +1,68 @@
 <c-card class="my-4">
   <c-card-header>
-    <c-row [gutter]="{ gy: 3 }">
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="ID TESSERA" />
+    <form [gutter]="3" cForm cRow>
+      <c-col xs="2">
+        <input
+          cFormControl
+          id="idTessera"
+          placeholder="Id Tessera"
+          type="text"
+        />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="NOME" />
+      <c-col xs="2">
+        <input cFormControl id="nome" placeholder="Nome" type="text" />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="COGNOME" />
+      <c-col xs="2">
+        <input cFormControl id="cognome" placeholder="Cognome" type="text" />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="SEDE" />
+      <c-col xs="2">
+        <input cFormControl id="sede" placeholder="Sede" type="text" />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="CODICE INTERNO" />
+      <c-col xs="2">
+        <input
+          cFormControl
+          id="codiceInterno"
+          placeholder="Codice Interno"
+          type="text"
+        />
       </c-col>
-      <c-col lg="2">
+      <c-col xs="2">
         <select cSelect>
           <option>Tipo Tessera</option>
           <option value="D">Dipendente</option>
           <option value="S">Sostitutiva</option>
         </select>
       </c-col>
-
-      <c-col lg="2">
+      <c-col xs="2">
         <input
           cFormControl
+          id="dataInizioAssegnazione"
+          placeholder="Data Inizio Assegnazione"
           type="text"
-          placeholder="DATA INIZIO ASSEGNAZIONE"
         />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="DATA FINE ASSEGNAZIONE" />
+      <c-col xs="2">
+        <input
+          cFormControl
+          id="dataFineAssegnazione"
+          placeholder="Data Fine Assegnazione"
+          type="text"
+        />
       </c-col>
-      <c-col lg="2">
-        <input cFormControl type="text" placeholder="DATA INVALIDITA'" />
+      <c-col xs="2">
+        <input
+          cFormControl
+          id="dataInvalidita"
+          placeholder="Data Invalidità"
+          type="text"
+        />
       </c-col>
-      <c-col lg="2">
+      <c-col xs="2">
         <button cButton color="primary" variant="ghost" shape="rounded-pill">
           <svg [cIcon]="icons.cilSearch" title="Ricerca"></svg>
         </button>
       </c-col>
-    </c-row>
+    </form>
   </c-card-header>
 
   <c-card-body>
