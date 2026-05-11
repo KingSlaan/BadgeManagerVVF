@@ -42,8 +42,44 @@ export class TesseraModalCmpComponent {
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
+  @Input() mode = "create";
 
   icons = { cilXCircle };
+
+  getTitle(mode: string) {
+    switch (mode) {
+      case "assign":
+        return "Assegna Tessera"
+        break;
+      case "edit":
+        return "Modifica Tessera"
+        break;
+      case "remove":
+        return "Revoca Tessera"
+        break;
+
+      default:
+        return "Modifica Tessera"
+        break;
+    }
+  }
+
+  checkDisabled(key: string, mode: string): boolean {
+    const checkFields: Record<string, Record<string, boolean>> = {
+      idTessera: {
+        edit: true,
+        add: false,
+        remove: false
+      },
+      nome: {
+        edit: true,
+        add: true,
+        remove: false
+      }
+    };
+
+    return checkFields[key]?.[mode] ?? false;
+  }
 
   close() {
     this.visibleChange.emit(false);

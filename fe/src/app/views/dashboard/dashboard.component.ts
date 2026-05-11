@@ -9,7 +9,6 @@ import {
   ColComponent,
   FormControlDirective,
   FormDirective,
-  FormLabelDirective,
   FormSelectDirective,
   GutterDirective,
   RowComponent,
@@ -17,8 +16,9 @@ import {
   TableDirective,
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo } from '@coreui/icons';
 import { TesseraModalCmpComponent } from './../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
+import { TesseraAggiungiComponent } from './../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
+import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo } from '@coreui/icons';
 
 // interface IUser {
 //   name: string;
@@ -50,9 +50,9 @@ import { TesseraModalCmpComponent } from './../../../components/modals/tessera-m
     CardHeaderComponent,
     TableDirective,
     TesseraModalCmpComponent,
+    TesseraAggiungiComponent,
     FormControlDirective,
     FormDirective,
-    FormLabelDirective,
     RowDirective,
     FormSelectDirective
   ]
@@ -62,6 +62,8 @@ export class DashboardComponent implements OnInit {
   icons = { cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch };
 
   isModalOpen = false;
+  isModalAggiungiOpen = false;
+  mode = "add";
 
   tessereData = [
     {
@@ -121,9 +123,17 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  doSearch() {
+    console.log("DO SEARCH");
+  }
 
-  openModal() {
+  openModal(mode:string) {
     this.isModalOpen = true;
+    this.mode = mode
+  }
+
+  openModalAggiungi() {
+    this.isModalAggiungiOpen = true;
   }
 
   mapSede(codiceSede: string): string {

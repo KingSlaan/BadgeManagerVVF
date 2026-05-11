@@ -4,7 +4,7 @@
   (visibleChange)="visibleChange.emit($event)"
 >
   <c-modal-header style="justify-content: space-between !important">
-    <h5 cModalTitle>Modal title</h5>
+    <h5 cModalTitle>{{getTitle(mode)}}</h5>
 
     <button
       (click)="close()"
@@ -30,6 +30,7 @@
           id="idTessera"
           placeholder="Id Tessera"
           type="text"
+          [disabled]="checkDisabled('idTessera',mode)"
         />
       </c-col>
       <c-col xs="6">
