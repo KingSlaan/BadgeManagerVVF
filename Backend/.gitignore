@@ -1,1 +1,18 @@
+# File compilati
+*.class
+
+# Cartelle di build (es. Maven o Gradle)
+/target/
 /build/
+/bin/
+
+# File e cartelle di configurazione IDE (Eclipse/IntelliJ/VSCode)
+.settings/
+.classpath
+.project
+.vscode/
+.idea/
+
+# File temporanei del sistema operativo
+.DS_Store
+Thumbs.db

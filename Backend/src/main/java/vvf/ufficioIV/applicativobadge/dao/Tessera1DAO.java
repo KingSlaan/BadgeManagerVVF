@@ -1,6 +1,8 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
 import vvf.ufficioIV.applicativobadge.entity.Tessera1;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public interface Tessera1DAO {
@@ -16,4 +18,6 @@ public interface Tessera1DAO {
     List<Tessera1> getAllTessere();
     
     boolean deleteTesseraById(String idTessera) throws Exception;
-}
+    
+    boolean updateSede(String idTessera, String nuovaSede) throws SQLException;
+} 

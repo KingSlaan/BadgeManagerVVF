@@ -27,6 +27,16 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     }
 
     @Override
+    public boolean updateSede(String idTessera, String nuovaSede) throws SQLException {
+        String sql = "UPDATE TESSERA1 SET SEDE = ? WHERE IDTESSERA = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nuovaSede);
+            ps.setString(2, idTessera);
+            return ps.executeUpdate() == 1;
+        }
+    }
+    
+    @Override
     public boolean insertTessera(Tessera1 t) throws SQLException {
         String sql = "INSERT INTO TESSERA1 (IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE) " +
                      "VALUES (?, ?, ?, ?, ?)";
