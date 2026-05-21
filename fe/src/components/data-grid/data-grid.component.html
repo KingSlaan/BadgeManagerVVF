@@ -1,0 +1,222 @@
+<c-card class="my-4">
+  <!-- HEADER -->
+  <c-card-header>
+    @if (searchConfig?.enabled) {
+      <form [gutter]="3" cForm cRow>
+        @for (f of searchConfig?.fields; track f.field) {
+          <c-col [xs]="f.size || '2'">
+            @if (!f.type || f.type === "text") {
+              <input
+                cFormControl
+                type="text"
+                [name]="f.field"
+                [(ngModel)]="filterValues[f.field]"
+                [placeholder]="f.label"
+              />
+            }
+            @if (f.type === "select") {
+              <select
+                cSelect
+                [name]="f.field"
+                [(ngModel)]="filterValues[f.field]"
+              >
+                <option value="">All</option>
+                @for (o of f.options; track o.value) {
+                  <option [value]="o.value">
+                    {{ o.label }}
+                  </option>
+                }
+              </select>
+            }
+            @if (f.type === "date") {
+              <app-datepicker
+                [name]="f.field"
+                [(ngModel)]="filterValues[f.field]"
+                [placeholder]="f.label"
+                min="1900-01-01"
+                max="2100-12-31"
+              />
+            }
+          </c-col>
+        }
+        <c-col xs="2">
+          <div class="d-flex gap-2 flex-wrap">
+            <button
+              cButton
+              color="primary"
+              variant="ghost"
+              shape="rounded-pill"
+              (click)="applyFilters()"
+            >
+              <svg [cIcon]="icons.cilSearch" title="Ricerca"></svg>
+            </button>
+            <button
+              cButton
+              color="danger"
+              variant="ghost"
+              shape="rounded-pill"
+              (click)="clearFilters()"
+            >
+              <svg [cIcon]="icons.cilFilterX" title="Pulisci Filtri"></svg>
+            </button>
+          </div>
+        </c-col>
+      </form>
+    }
+    @if (toolbarConfig?.enabled) {
+      <hr />
+      <div class="d-flex gap-2 mb-3 flex-wrap justify-content-end">
+        @for (action of toolbarConfig?.actions; track action.label) {
+          @if (!action.visible || action.visible()) {
+            <button
+              cButton
+              [color]="action.color || 'primary'"
+              variant="ghost"
+              shape="rounded-pill"
+              [disabled]="action.disabled?.()"
+              (click)="action.action()"
+              size="sm"
+            >
+              <!-- ICON -->
+              @if (action.icon) {
+                <svg [cIcon]="action.icon" title="Pulisci Filtri"></svg>
+              }
+              {{ action.label }}
+            </button>
+          }
+        }
+      </div>
+    }
+  </c-card-header>
+
+  <!-- BODY -->
+  <c-card-body>
+    <table cTable>
+      <thead>
+        <tr>
+          @for (column of columns; track column.field) {
+            <th [style.width]="column.width" [class]="column.className">
+              {{ column.header }}
+            </th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (row of displayedRows; track $index) {
+          <tr>
+            @for (column of columns; track column.field) {
+              <td [class]="column.className">
+                <!-- TEMPLATE MODE -->
+                @if (column.template) {
+                  <ng-container
+                    *ngTemplateOutlet="
+                      column.template;
+                      context: {
+                        $implicit: row,
+                        row: row,
+                      }
+                    "
+                  />
+                }
+                <!-- STRING RENDER MODE -->
+                @else {
+                  <span [innerHTML]="renderCell(row, column)"></span>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </c-card-body>
+
+  <!-- FOOTER -->
+  <c-card-footer>
+    @if (paginationConfig?.enabled) {
+      <div
+        class="d-flex justify-content-between align-items-center mt-3 flex-wrap"
+      >
+        <!-- PAGE SIZE -->
+
+        @if (paginationConfig?.showPageSizeSelector) {
+          <div class="d-flex gap-2 align-items-center">
+            <span style="width: 300px"> Rows per page </span>
+
+            <select
+              cSelect
+              [value]="paginationConfig?.pageSize"
+              (change)="changePageSize($any($event.target).value)"
+            >
+              @for (
+                size of paginationConfig?.pageSizes ?? [5, 10, 25, 50];
+                track size
+              ) {
+                <option [value]="size">
+                  {{ size }}
+                </option>
+              }
+            </select>
+          </div>
+        }
+
+        <!-- PAGE BUTTONS -->
+
+        <div class="d-flex gap-2 align-items-center">
+          <!-- PREVIOUS -->
+
+          <button
+            cButton
+            color="secondary"
+            size="sm"
+            variant="ghost"
+            [disabled]="paginationConfig!.page === 1"
+            (click)="changePage(paginationConfig!.page - 1)"
+          >
+            Previous
+          </button>
+
+          <!-- PAGE NUMBERS -->
+
+          @if (paginationConfig!.showPageNumbers) {
+            @for (p of pages; track p) {
+              <button
+                cButton
+                size="sm"
+                variant="ghost"
+                [color]="p === paginationConfig!.page ? 'primary' : 'secondary'"
+                (click)="changePage(p)"
+              >
+                {{ p }}
+              </button>
+            }
+          }
+
+          <!-- SIMPLE MODE -->
+
+          @else {
+            <span>
+              Page
+              {{ paginationConfig!.page }}
+              /
+              {{ totalPages }}
+            </span>
+          }
+
+          <!-- NEXT -->
+
+          <button
+            cButton
+            color="secondary"
+            size="sm"
+            variant="ghost"
+            [disabled]="paginationConfig!.page === totalPages"
+            (click)="changePage(paginationConfig!.page + 1)"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    }
+  </c-card-footer>
+</c-card>

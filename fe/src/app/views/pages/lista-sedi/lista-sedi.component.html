@@ -1,1 +1,23 @@
-<p>lista-sedi works!</p>
+<app-datagrid
+  [columns]="columns"
+  [rows]="data"
+  [searchConfig]="searchConfig"
+  [paginationConfig]="paginationConfig"
+  (dataRequest)="loadData($event)"
+/>
+
+<hr />
+
+<form [formGroup]="form">
+  <c-row>
+    <c-col xs="12">
+      <app-datepicker
+        formControlName="birthDate"
+        placeholder="Choose a delivery date"
+        label="Birth date"
+        min="1900-01-01"
+        max="2100-12-31"
+      />
+    </c-col>
+  </c-row>
+</form>

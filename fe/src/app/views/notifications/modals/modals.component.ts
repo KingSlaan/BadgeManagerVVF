@@ -17,12 +17,11 @@ import {
   RowComponent,
   TooltipDirective
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   selector: 'app-modals',
   templateUrl: './modals.component.html',
-  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, NgTemplateOutlet, ModalToggleDirective, PopoverDirective, TooltipDirective, DocsComponentsComponent]
+  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, ModalComponent, ModalHeaderComponent, ModalTitleDirective, ButtonCloseDirective, ModalBodyComponent, ModalFooterComponent, ButtonDirective, NgTemplateOutlet, ModalToggleDirective, PopoverDirective, TooltipDirective]
 })
 export class ModalsComponent {
 

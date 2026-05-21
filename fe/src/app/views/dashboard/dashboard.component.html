@@ -1,183 +1,82 @@
-<c-card class="my-4">
-  <c-card-header>
-    <form [gutter]="3" cForm cRow>
-      <c-col xs="2">
-        <input
-          cFormControl
-          id="idTessera"
-          placeholder="Id Tessera"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="2">
-        <input cFormControl id="nome" placeholder="Nome" type="text" />
-      </c-col>
-      <c-col xs="2">
-        <input cFormControl id="cognome" placeholder="Cognome" type="text" />
-      </c-col>
-      <c-col xs="2">
-        <input cFormControl id="sede" placeholder="Sede" type="text" />
-      </c-col>
-      <c-col xs="2">
-        <input
-          cFormControl
-          id="codiceInterno"
-          placeholder="Codice Interno"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="2">
-        <select cSelect>
-          <option>Tipo Tessera</option>
-          <option value="D">Dipendente</option>
-          <option value="S">Sostitutiva</option>
-        </select>
-      </c-col>
-      <c-col xs="2">
-        <input
-          cFormControl
-          id="dataInizioAssegnazione"
-          placeholder="Data Inizio Assegnazione"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="2">
-        <input
-          cFormControl
-          id="dataFineAssegnazione"
-          placeholder="Data Fine Assegnazione"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="2">
-        <input
-          cFormControl
-          id="dataInvalidita"
-          placeholder="Data Invalidità"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="2">
-        <button cButton color="primary" variant="ghost" shape="rounded-pill" (click)="doSearch()">
-          <svg [cIcon]="icons.cilSearch" title="Ricerca" ></svg>
-        </button>
-      </c-col>
-      <c-col xs="2">
+<c-container>
+  <h3>Statistiche Badge</h3>
+  <c-row>
+    <c-col lg="3" xs="6">
+      <c-widget-stat-c
+        [title]="'Badge Totali'"
+        color="primary"
+        inverse
+        value="972"
+      >
+        <ng-template cTemplateId="widgetIconTemplate">
+          <svg cIcon height="25" name="cilUser"></svg>
+        </ng-template>
+        <ng-template cTemplateId="widgetProgressTemplate">
+          <c-progress class="mt-3 mb-0" thin white [value]="100" />
+        </ng-template>
+      </c-widget-stat-c>
+    </c-col>
 
-      </c-col>
-      <c-col xs="2" class="text-right">
-        <button cButton color="success" variant="ghost" shape="rounded-pill" (click)="openModalAggiungi()">
-          <svg [cIcon]="icons.cilPlus" title="Aggiungi"></svg>
-          Aggiungi Tessera
-        </button>
-      </c-col>
-    </form>
-  </c-card-header>
+    <c-col lg="3" xs="6">
+      <c-widget-stat-c
+        [title]="'Badge Assegnati'"
+        color="success"
+        inverse
+        value="972"
+      >
+        <ng-template cTemplateId="widgetIconTemplate">
+          <svg cIcon height="25" name="cilUserFollow"></svg>
+        </ng-template>
+        <ng-template cTemplateId="widgetProgressTemplate">
+          <c-progress class="mt-3 mb-0" thin white [value]="60" />
+        </ng-template>
+      </c-widget-stat-c>
+    </c-col>
 
-  <c-card-body>
-    <table cTable>
-      <thead>
-        <tr>
-          <th scope="col">Id</th>
-          <th scope="col">Tipo</th>
-          <th scope="col">Nominativo</th>
-          <th scope="col">CF</th>
-          <th scope="col">Sede</th>
-          <th scope="col">Data Indisponibilità</th>
-          <th scope="col">Assegnazione</th>
-          <th scope="col">Codice Interno</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (tessera of tessereData; track tessera.idTessera; let i = $index) {
-          <tr>
-            <td>{{ tessera.idTessera }}</td>
-            <td>{{ tessera.codTipoTessera }}</td>
-            <td>{{ tessera.cognome }} {{ tessera.nome }}</td>
-            <td>{{ tessera.codiceFiscale }}</td>
-            <td>{{ mapSede(tessera.sede) }}</td>
-            <td>
-              <small>
-                {{ tessera.dataOraIndisponibilita }}
-              </small>
-            </td>
-            <td>
-              <small>
-                <strong> Inizio: </strong>
-                {{ tessera.dataOraInizioAssegnazione }} <br />
-              </small>
-              <small>
-                <strong> Fine: </strong>
-                {{ tessera.dataOraFineAssegnazione }}
-              </small>
-            </td>
-            <td>{{ tessera.codiceInterno }}</td>
-            <td>
-              @if (!tessera.codiceFiscale) {
-                <button
-                  cButton
-                  color="info"
-                  variant="ghost"
-                  shape="rounded-pill"
-                  (click)="openModal('assign')"
-                >
-                  <svg
-                    [cIcon]="icons.cilActionUndo"
-                    title="Assegna Dipendente"
-                  ></svg>
-                </button>
-              }
-              @if (tessera.codiceFiscale) {
-                <button
-                  cButton
-                  color="primary"
-                  variant="ghost"
-                  shape="rounded-pill"
-                  (click)="openModal('edit')"
-                >
-                  <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
-                </button>
-              }
-              @if (!tessera.disuso) {
-                <button
-                  cButton
-                  color="danger"
-                  variant="ghost"
-                  shape="rounded-pill"
-                  (click)="openModal('remove')"
-                >
-                  <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
-                </button>
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </c-card-body>
-  <c-card-footer>
-    <!-- <c-pagination aria-label="Page navigation example">
-      <li cPageItem [disabled]="true">
-        <a cPageLink [routerLink]>Previous</a>
-      </li>
-      <li cPageItem>
-        <a cPageLink [routerLink]>1</a>
-      </li>
-      <li cPageItem [active]="true">
-        <a cPageLink [routerLink]>2</a>
-      </li>
-      <li cPageItem>
-        <a cPageLink [routerLink]>3</a>
-      </li>
-      <li cPageItem>
-        <a cPageLink [routerLink]>Next</a>
-      </li>
-    </c-pagination> -->
-  </c-card-footer>
-</c-card>
+    <c-col lg="3" xs="6">
+      <c-widget-stat-c
+        [title]="'Badge non assegnati'"
+        color="warning"
+        inverse
+        value="972"
+      >
+        <ng-template cTemplateId="widgetIconTemplate">
+          <svg cIcon height="25" name="cilUserUnfollow"></svg>
+        </ng-template>
+        <ng-template cTemplateId="widgetProgressTemplate">
+          <c-progress class="mt-3 mb-0" thin white [value]="25" />
+        </ng-template>
+      </c-widget-stat-c>
+    </c-col>
 
-<!-- <app-widgets-brand [withCharts]="true" /> -->
+    <c-col lg="3" xs="6">
+      <c-widget-stat-c
+        [title]="'Badge Scaduti'"
+        color="danger"
+        inverse
+        value="972"
+      >
+        <ng-template cTemplateId="widgetIconTemplate">
+          <svg cIcon height="25" name="cilTrash"></svg>
+        </ng-template>
+        <ng-template cTemplateId="widgetProgressTemplate">
+          <c-progress class="mt-3 mb-0" thin white [value]="15" />
+        </ng-template>
+      </c-widget-stat-c>
+    </c-col>
+  </c-row>
 
-<app-tessera-modal-cmp [(visible)]="isModalOpen" [mode]="mode"></app-tessera-modal-cmp>
-<app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
+  <hr />
+
+  <c-row>
+    <c-col xs="12" lg="12">
+      <c-card class="mb-4">
+        <c-card-header> Badge per Sedi </c-card-header>
+        <c-card-body>
+          <c-chart type="bar" [data]="chartBarData" [options]="options" />
+        </c-card-body>
+      </c-card>
+    </c-col>
+  </c-row>
+
+</c-container>

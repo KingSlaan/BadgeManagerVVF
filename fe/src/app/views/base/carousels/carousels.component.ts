@@ -15,14 +15,13 @@ import {
   RowComponent
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 export type Slide = { id: number, src: SafeUrl | string, title: string, subtitle: string };
 
 @Component({
   selector: 'app-carousels',
   templateUrl: './carousels.component.html',
-  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, CarouselComponent, CarouselInnerComponent, CarouselItemComponent, CarouselControlComponent, CarouselIndicatorsComponent, CarouselCaptionComponent, ButtonDirective, IconDirective, DocsComponentsComponent]
+  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, CarouselComponent, CarouselInnerComponent, CarouselItemComponent, CarouselControlComponent, CarouselIndicatorsComponent, CarouselCaptionComponent, ButtonDirective, IconDirective]
   // providers: [{ provide: CarouselConfig, useClass: CarouselCustomConfig  }]
 })
 export class CarouselsComponent {

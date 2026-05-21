@@ -2,6 +2,7 @@
   [visible]="visible"
   backdrop="static"
   (visibleChange)="visibleChange.emit($event)"
+  size="lg"
 >
   <c-modal-header style="justify-content: space-between !important">
     <h5 cModalTitle>Inserisci Tessere</h5>
@@ -13,7 +14,7 @@
       cButton
       color="danger"
     >
-      <svg [cIcon]="icons.cilXCircle" title="Aggiungi"></svg>
+      <svg [cIcon]="icons.cilX" title="Aggiungi"></svg>
     </button>
   </c-modal-header>
   <c-modal-body>
@@ -58,7 +59,7 @@
           cButton
           color="success"
           (click)="createBadgeList()"
-          [disabled]="checkImportDIsabled()"
+          [disabled]="checkImportDisabled()"
         >
           Importa Tessere
         </button>
@@ -68,6 +69,7 @@
           <table cTable>
             <thead>
               <tr>
+                <th scope="col"></th>
                 <th scope="col">Id Tessera</th>
                 <th scope="col">Codice Interno</th>
                 <th scope="col">Status</th>
@@ -80,35 +82,55 @@
                 let i = $index
               ) {
                 <tr>
+                  <td>{{$index}}</td>
                   <td>{{ tessera.idTessera }}</td>
                   <td>{{ tessera.codiceInterno }}</td>
                   <td>
                     @if (tessera.options.valid) {
-                       <c-badge color="success">
+                      <c-badge color="success">
                         <svg [cIcon]="icons.cilCheckAlt" title="Valida"></svg>
-                       </c-badge>
+                      </c-badge>
                     } @else {
-                      <c-badge color="danger"
-                        [cTooltip]="createErrorMessages(tessera.options.errorMessages)" cTooltipPlacement="right"
+                      <c-badge
+                        color="danger"
+                        [cTooltip]="
+                          createErrorMessages(tessera.options.errorMessages)
+                        "
+                        cTooltipPlacement="right"
                       >
                         <svg [cIcon]="icons.cilX" title="Valida"></svg>
-                       </c-badge>
+                      </c-badge>
                     }
                   </td>
                 </tr>
               }
             </tbody>
           </table>
-          <p>
-            Range di Id tessere inserite {{badgeListArray.length}} <br/>
-            Range di Codici interno letti {{badgeListArrayFinal.length}}
-          </p>
+          @if(badgeListArray?.length! !== badgeListArrayFinal?.length!) {
+            <c-alert color="danger">
+              @if (badgeListArray?.length! > badgeListArrayFinal?.length!) {
+                Ci sono più codici letti del range di tessere indicate
+              }
+              @if (badgeListArrayFinal?.length! > badgeListArray?.length!) {
+                Ci sono più tessere dei codici letti
+              }
+              :
+              <small>
+                 {{badgeListArray?.length!}}/{{badgeListArrayFinal?.length!}} (Codici/Tessere)
+              </small>
+            </c-alert>
+          }
         </c-col>
       }
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm()" [disabled]="true">
+    <button
+      cButton
+      color="success"
+      (click)="confirm()"
+      [disabled]="checkTessereValidity()"
+    >
       Crea Tessere
     </button>
   </c-modal-footer>

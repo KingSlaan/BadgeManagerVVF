@@ -1,3 +1,4 @@
+import { ACTION_CONSTANTS } from './../../../constants/action.constants';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
 import {
@@ -8,13 +9,13 @@ import {
   ModalHeaderComponent,
   ModalTitleDirective,
 
-  FormControlDirective, FormDirective, FormLabelDirective, FormTextDirective,
+  FormControlDirective, FormDirective, FormLabelDirective,
   ColComponent,
   GutterDirective,
   RowDirective
 } from '@coreui/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { cilXCircle } from '@coreui/icons';
+import { cilX } from '@coreui/icons';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -42,19 +43,19 @@ export class TesseraModalCmpComponent {
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Input() mode = "create";
+  @Input() mode = ACTION_CONSTANTS.CREATE;
 
-  icons = { cilXCircle };
+  icons = { cilX };
 
   getTitle(mode: string) {
     switch (mode) {
-      case "assign":
+      case ACTION_CONSTANTS.ASSIGN:
         return "Assegna Tessera"
         break;
-      case "edit":
+      case ACTION_CONSTANTS.EDIT:
         return "Modifica Tessera"
         break;
-      case "remove":
+      case ACTION_CONSTANTS.REMOVE:
         return "Revoca Tessera"
         break;
 
@@ -68,12 +69,10 @@ export class TesseraModalCmpComponent {
     const checkFields: Record<string, Record<string, boolean>> = {
       idTessera: {
         edit: true,
-        add: false,
         remove: false
       },
-      nome: {
+      codiceInterno: {
         edit: true,
-        add: true,
         remove: false
       }
     };

@@ -26,7 +26,6 @@ import {
   NavLinkDirective,
   RowComponent
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   selector: 'app-dropdowns',
@@ -37,7 +36,6 @@ import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
-    DocsExampleComponent,
     DropdownComponent,
     ButtonDirective,
     DropdownToggleDirective,
@@ -57,8 +55,7 @@ import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/
     ReactiveFormsModule,
     FormDirective,
     FormControlDirective,
-    ButtonGroupComponent,
-    DocsComponentsComponent
+    ButtonGroupComponent
   ]
 })
 export class DropdownsComponent {

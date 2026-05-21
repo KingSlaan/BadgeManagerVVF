@@ -1,149 +1,59 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
-import {
-  ButtonDirective,
-  CardBodyComponent,
-  CardComponent,
-  CardFooterComponent,
-  CardHeaderComponent,
-  ColComponent,
-  FormControlDirective,
-  FormDirective,
-  FormSelectDirective,
-  GutterDirective,
-  RowComponent,
-  RowDirective,
-  TableDirective,
-} from '@coreui/angular';
+import { Component, OnInit } from '@angular/core';
+import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ContainerComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
+import { ChartjsComponent } from '@coreui/angular-chartjs';
+import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { TesseraModalCmpComponent } from './../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
-import { TesseraAggiungiComponent } from './../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo } from '@coreui/icons';
-
-// interface IUser {
-//   name: string;
-//   state: string;
-//   registered: string;
-//   country: string;
-//   usage: number;
-//   period: string;
-//   payment: string;
-//   activity: string;
-//   avatar: string;
-//   status: string;
-//   color: string;
-// }
+import { ChartData } from 'chart.js';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
   imports: [
-    CardComponent,
-    CardBodyComponent,
     RowComponent,
     ColComponent,
-    ButtonDirective,
+    WidgetStatCComponent,
+    TemplateIdDirective,
     IconDirective,
-    ReactiveFormsModule,
-    CardFooterComponent,
-    GutterDirective,
+    ContainerComponent,
+    ProgressComponent,
+    CardComponent,
     CardHeaderComponent,
-    TableDirective,
-    TesseraModalCmpComponent,
-    TesseraAggiungiComponent,
-    FormControlDirective,
-    FormDirective,
-    RowDirective,
-    FormSelectDirective
+    CardBodyComponent,
+    ChartjsComponent
   ]
 })
 export class DashboardComponent implements OnInit {
 
-  icons = { cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch };
+  icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
 
-  isModalOpen = false;
-  isModalAggiungiOpen = false;
-  mode = "add";
+  options = {
+    maintainAspectRatio: false,
+  };
 
-  tessereData = [
-    {
-      idTessera: "0000090801",
-      codTipoTessera: "D",
-      sede: "RO",
-      dataOraIndisponibilita: "10/11/1994 23:59:59",
-      nome: "Luca",
-      cognome: "Cropoli",
-      codiceFiscale: "CRPLCU00L19A783Q",
-      codiceInterno: "0005121205",
-      dataOraInizioAssegnazione: "19/06/2024 06:00:00",
-      dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso: false
-    },
-    {
-      idTessera: "0000090802",
-      codTipoTessera: "D",
-      sede: "001",
-      dataOraIndisponibilita: "10/11/1994 23:59:59",
-      nome: "Pluto",
-      cognome: "ABC",
-      codiceFiscale: "ABCD",
-      codiceInterno: "ABCD",
-      dataOraInizioAssegnazione: "10/11/1994",
-      dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso: false
-    },
-    {
-      idTessera: "0000090803",
-      codTipoTessera: "D",
-      sede: "001",
-      dataOraIndisponibilita: "10/11/1994 23:59:59",
-      nome: "Pluto",
-      cognome: "ABC",
-      codiceFiscale: "ABCD",
-      codiceInterno: "ABCD",
-      dataOraInizioAssegnazione: "10/11/1994",
-      dataOraFineAssegnazione: "31/12/9999 23:59:59",
-      disuso: true
-    },
-    {
-      idTessera: "0000090804",
-      codTipoTessera: "",
-      sede: "",
-      dataOraIndisponibilita: "10/11/1994 23:59:59",
-      nome: "",
-      cognome: "",
-      codiceFiscale: "",
-      codiceInterno: "ABCD",
-      dataOraInizioAssegnazione: "",
-      dataOraFineAssegnazione: "",
-      disuso: false
-    },
-  ];
+  chartBarData: ChartData = {
+    labels: ['Uffici Centrali', 'Salerno', 'Catanzaro', 'Venezia', 'Milano'],
+    datasets: [
+      {
+        label: 'Badge totali',
+        backgroundColor: '#3634a3',
+        data: [40, 20, 12, 11, 25]
+      },
+      {
+        label: 'Badge assegnati',
+        backgroundColor: '#1b9e3e',
+        data: [10, 10, 22, 39, 10]
+      },
+      {
+        label: 'Badge non assegnati',
+        backgroundColor: '#e55353',
+        data: [30, 15, 5, 9, 10]
+      }
+    ],
+
+  };
 
   ngOnInit(): void {
-  }
 
-  doSearch() {
-    console.log("DO SEARCH");
-  }
-
-  openModal(mode:string) {
-    this.isModalOpen = true;
-    this.mode = mode
-  }
-
-  openModalAggiungi() {
-    this.isModalAggiungiOpen = true;
-  }
-
-  mapSede(codiceSede: string): string {
-    let sediTradotte = {
-      "AN": "ANCONA",
-      "RO": "ROVIGO",
-    }
-
-    const value = sediTradotte[codiceSede as keyof typeof sediTradotte];
-    return value;
   }
 
 }

@@ -13,11 +13,10 @@ import {
   GutterDirective,
   RowComponent
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   selector: 'app-floating-labels',
   templateUrl: './floating-labels.component.html',
-  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, FormFloatingDirective, FormControlDirective, FormLabelDirective, ReactiveFormsModule, FormsModule, FormDirective, FormSelectDirective, GutterDirective, DocsComponentsComponent]
+  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, FormFloatingDirective, FormControlDirective, FormLabelDirective, ReactiveFormsModule, FormsModule, FormDirective, FormSelectDirective, GutterDirective]
 })
 export class FloatingLabelsComponent {}

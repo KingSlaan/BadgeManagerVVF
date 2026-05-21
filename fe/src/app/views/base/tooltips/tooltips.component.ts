@@ -10,11 +10,10 @@ import {
   TextColorDirective,
   TooltipDirective
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   selector: 'app-tooltips',
   templateUrl: './tooltips.component.html',
-  imports: [RowComponent, ColComponent, TextColorDirective, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, TooltipDirective, RouterLink, ButtonDirective, DocsComponentsComponent]
+  imports: [RowComponent, ColComponent, TextColorDirective, CardComponent, CardHeaderComponent, CardBodyComponent, TooltipDirective, RouterLink, ButtonDirective]
 })
 export class TooltipsComponent {}

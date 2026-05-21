@@ -13,12 +13,11 @@ import {
   FormDirective,
   RowComponent
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   selector: 'app-checks-radios',
   templateUrl: './checks-radios.component.html',
-  imports: [RowComponent, ReactiveFormsModule, FormDirective, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ButtonGroupComponent, ButtonDirective, DocsComponentsComponent]
+  imports: [RowComponent, ReactiveFormsModule, FormDirective, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, ButtonGroupComponent, ButtonDirective]
 })
 export class ChecksRadiosComponent {
   private formBuilder = inject(UntypedFormBuilder);

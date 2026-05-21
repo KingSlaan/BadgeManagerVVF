@@ -1,0 +1,25 @@
+<c-modal
+  [visible]="visible"
+  backdrop="static"
+  (visibleChange)="visibleChange.emit($event)"
+>
+  <c-modal-header style="justify-content: space-between !important">
+    <h5 cModalTitle>Cronologia Tessera</h5>
+
+    <button
+      (click)="close()"
+      variant="ghost"
+      shape="rounded-pill"
+      cButton
+      color="danger"
+    >
+      <svg [cIcon]="icons.cilX"></svg>
+    </button>
+  </c-modal-header>
+  <c-modal-body>
+
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="success" (click)="confirm()">Save</button>
+  </c-modal-footer>
+</c-modal>
