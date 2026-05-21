@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
-
-import { IconDirective } from '@coreui/icons-angular';
 import {
   ContainerComponent,
   ShadowOnScrollDirective,
@@ -40,7 +38,6 @@ function isOverflown(element: HTMLElement) {
     ContainerComponent,
     DefaultFooterComponent,
     DefaultHeaderComponent,
-    IconDirective,
     NgScrollbar,
     RouterOutlet,
     RouterLink,
@@ -49,4 +46,15 @@ function isOverflown(element: HTMLElement) {
 })
 export class DefaultLayoutComponent {
   public navItems = [...navItems];
+
+
+  logoPath(): string {
+    let theme = document.documentElement.getAttribute('data-coreui-theme');
+    return theme === 'light'
+      // ? '../../../assets/images/BannerDEFINITIVOVer1.svg'
+      ? '../../../assets/images/BannerDEFINITIVO.svg'
+      // : '../../../assets/images/BannerDEFINITIVO_BiancoVer2.svg';
+      : '../../../assets/images/BannerDEFINITIVO_Bianco.svg';
+  }
+
 }

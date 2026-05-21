@@ -7,11 +7,19 @@ import { delay, filter, map, tap } from 'rxjs/operators';
 import { ColorModeService } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
+import { LoadingSpinnerComponent } from './../components/loading-spinner/loading-spinner.component';
+import { ToastContainerComponent } from './../components/toast-container/toast-container.component';
+import { ScrollTopFabComponent } from '../components/fab/fab.component';
 
 @Component({
-    selector: 'app-root',
-    template: '<router-outlet />',
-    imports: [RouterOutlet]
+  selector: 'app-root',
+  template: `
+    <router-outlet />
+    <app-toast-container />
+    <app-loading-spinner />
+    <app-scroll-top-fab [showAfter]="100"></app-scroll-top-fab>
+    `,
+  imports: [RouterOutlet, ToastContainerComponent, LoadingSpinnerComponent, ScrollTopFabComponent]
 })
 export class AppComponent implements OnInit {
   title = 'CoreUI Angular Admin Template';
@@ -35,8 +43,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
 
     this.#router.events.pipe(
-        takeUntilDestroyed(this.#destroyRef)
-      ).subscribe((evt) => {
+      takeUntilDestroyed(this.#destroyRef)
+    ).subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;
       }

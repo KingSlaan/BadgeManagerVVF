@@ -1,0 +1,32 @@
+<c-toaster
+  placement="top-end"
+  position="fixed"
+  class="p-3"
+>
+
+  @for (toast of toastService.toasts(); track toast.id) {
+
+    <c-toast
+      [visible]="true"
+      [autohide]="true"
+      [delay]="toast.delay || 5000"
+      [color]="toast.color || 'primary'"
+      (visibleChange)="!$event && remove(toast.id)"
+    >
+
+      <c-toast-header>
+
+        <strong class="me-auto">
+          {{ toast.title }}
+        </strong>
+
+      </c-toast-header>
+
+      <c-toast-body [innerHTML]="toast.message">
+      </c-toast-body>
+
+    </c-toast>
+
+  }
+
+</c-toaster>

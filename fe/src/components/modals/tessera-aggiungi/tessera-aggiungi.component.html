@@ -1,0 +1,137 @@
+<c-modal
+  [visible]="visible"
+  backdrop="static"
+  (visibleChange)="visibleChange.emit($event)"
+  size="lg"
+>
+  <c-modal-header style="justify-content: space-between !important">
+    <h5 cModalTitle>Inserisci Tessere</h5>
+
+    <button
+      (click)="close()"
+      variant="ghost"
+      shape="rounded-pill"
+      cButton
+      color="danger"
+    >
+      <svg [cIcon]="icons.cilX" title="Aggiungi"></svg>
+    </button>
+  </c-modal-header>
+  <c-modal-body>
+    <form [gutter]="3" cForm cRow [formGroup]="listaBadgeForm">
+      <p>
+        Inserire l'id della prima e l'ultima tessera di cui si vuole leggere il
+        codice interno. Range Iniziale e Finale
+      </p>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="idTessera">
+          Id Tessera Iniziale
+        </label>
+        <input
+          cFormControl
+          formControlName="badgeValueStart"
+          id="idTesseraRangeStart"
+          placeholder="Id Tessera Iniziale"
+          type="number"
+        />
+      </c-col>
+      <c-col xs="6">
+        <label cLabel class="visually-hidden" for="idTessera">
+          Id Tessera Finale
+        </label>
+        <input
+          cFormControl
+          formControlName="badgeValueEnd"
+          id="idTesseraRangeEnd"
+          placeholder="Id Tessera Finale"
+          type="number"
+        />
+      </c-col>
+      <c-col xs="12">
+        <textarea
+          cFormControl
+          formControlName="listaBadgeString"
+          placeholder="Inserisci lista di codici interni suddivisi da invio"
+        ></textarea>
+      </c-col>
+      <c-col xs="12">
+        <button
+          cButton
+          color="success"
+          (click)="createBadgeList()"
+          [disabled]="checkImportDisabled()"
+        >
+          Importa Tessere
+        </button>
+      </c-col>
+      @if (badgeListArrayFinal.length > 0) {
+        <c-col xs="12">
+          <table cTable>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Id Tessera</th>
+                <th scope="col">Codice Interno</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (
+                tessera of badgeListArrayFinal;
+                track tessera.idTessera;
+                let i = $index
+              ) {
+                <tr>
+                  <td>{{$index}}</td>
+                  <td>{{ tessera.idTessera }}</td>
+                  <td>{{ tessera.codiceInterno }}</td>
+                  <td>
+                    @if (tessera.options.valid) {
+                      <c-badge color="success">
+                        <svg [cIcon]="icons.cilCheckAlt" title="Valida"></svg>
+                      </c-badge>
+                    } @else {
+                      <c-badge
+                        color="danger"
+                        [cTooltip]="
+                          createErrorMessages(tessera.options.errorMessages)
+                        "
+                        cTooltipPlacement="right"
+                      >
+                        <svg [cIcon]="icons.cilX" title="Valida"></svg>
+                      </c-badge>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          @if(badgeListArray?.length! !== badgeListArrayFinal?.length!) {
+            <c-alert color="danger">
+              @if (badgeListArray?.length! > badgeListArrayFinal?.length!) {
+                Ci sono più codici letti del range di tessere indicate
+              }
+              @if (badgeListArrayFinal?.length! > badgeListArray?.length!) {
+                Ci sono più tessere dei codici letti
+              }
+              :
+              <small>
+                 {{badgeListArray?.length!}}/{{badgeListArrayFinal?.length!}} (Codici/Tessere)
+              </small>
+            </c-alert>
+          }
+        </c-col>
+      }
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button
+      cButton
+      color="success"
+      (click)="confirm()"
+      [disabled]="checkTessereValidity()"
+    >
+      Crea Tessere
+    </button>
+  </c-modal-footer>
+</c-modal>

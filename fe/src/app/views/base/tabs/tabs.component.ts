@@ -13,7 +13,6 @@ import {
   TabsListComponent
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { DocsComponentsComponent } from '@docs-components/docs-components/docs-components.component';
 
 @Component({
   selector: 'app-tabs',
@@ -31,7 +30,6 @@ import { DocsComponentsComponent } from '@docs-components/docs-components/docs-c
     TabsContentComponent,
     TabsListComponent,
     IconDirective,
-    DocsComponentsComponent
   ]
 })
 export class AppTabsComponent {

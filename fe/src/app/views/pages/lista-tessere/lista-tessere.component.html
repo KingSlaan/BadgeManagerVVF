@@ -1,0 +1,61 @@
+<app-datagrid
+  [columns]="columns"
+  [rows]="tessere"
+  [searchConfig]="searchConfig"
+  [toolbarConfig]="toolbarConfig"
+  [paginationConfig]="paginationConfig"
+  (dataRequest)="loadData($event)"
+/>
+
+<app-tessera-modal-cmp
+  [(visible)]="isModalOpen"
+  [mode]="mode"
+></app-tessera-modal-cmp>
+<app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
+
+<app-tessera-history [(visible)]="isModalHistoryOpen"></app-tessera-history>
+
+<ng-template #actionTemplate let-row>
+  @if (!row.codiceFiscale) {
+    <button
+      cButton
+      color="info"
+      variant="ghost"
+      shape="rounded-pill"
+      (click)="openModal('assign')"
+    >
+      <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+    </button>
+  }
+  @if (row.codiceFiscale) {
+    <button
+      cButton
+      color="primary"
+      variant="ghost"
+      shape="rounded-pill"
+      (click)="openModal('edit')"
+    >
+      <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
+    </button>
+  }
+  @if (!row.disuso) {
+    <button
+      cButton
+      color="danger"
+      variant="ghost"
+      shape="rounded-pill"
+      (click)="openModal('remove')"
+    >
+      <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
+    </button>
+  }
+  <button
+    cButton
+    color="secondary"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openHistoryModal()"
+  >
+    <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
+  </button>
+</ng-template>

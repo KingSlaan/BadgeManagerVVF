@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'tessere-mngt',
+    redirectTo: '',
     pathMatch: 'full'
   },
   {
@@ -14,12 +14,16 @@ export const routes: Routes = [
     },
     children: [
       {
-        path: 'tessere-mngt',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        path: '',
+        data: {
+          title: ''
+        },
+        // loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        loadComponent: () => import('./views/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
       {
-        path: 'lista-sedi',
-        loadChildren: () => import('./views/dashboard/routes').then((m) => m.routes)
+        path: 'liste',
+        loadChildren: () => import('./views/pages/routes').then((m) => m.routes)
       },
       {
         path: 'theme',
@@ -87,5 +91,5 @@ export const routes: Routes = [
       title: 'Register Page'
     }
   },
-  { path: '**', redirectTo: 'tessere-mngt' }
+  { path: '**', redirectTo: '' }
 ];

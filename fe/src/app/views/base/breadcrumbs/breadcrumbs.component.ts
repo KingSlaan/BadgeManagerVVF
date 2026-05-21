@@ -10,11 +10,10 @@ import {
   ColComponent,
   RowComponent
 } from '@coreui/angular';
-import { DocsComponentsComponent, DocsExampleComponent } from '@docs-components/public-api';
 
 @Component({
   templateUrl: './breadcrumbs.component.html',
-  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, DocsExampleComponent, BreadcrumbComponent, BreadcrumbItemComponent, BreadcrumbRouterComponent, DocsComponentsComponent]
+  imports: [RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, BreadcrumbComponent, BreadcrumbItemComponent, BreadcrumbRouterComponent]
 })
 export class BreadcrumbsComponent implements OnInit {
   public breadcrumbItems = signal<any>([]);
