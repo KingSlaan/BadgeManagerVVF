@@ -1,0 +1,216 @@
+package vvf.ufficioIV.applicativobadge.dao;
+
+import vvf.ufficioIV.applicativobadge.dto.TesseraFiltroDTO;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.sql.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
+
+    private Connection conn;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    public RicercaTessereDAOJDBCImpl(String ip, String port, String dbName, String userName, String pwd) {
+        try {
+            Class.forName("oracle.jdbc.OracleDriver");
+            String dbUrl = "jdbc:oracle:thin:@//" + ip + ":" + port + "/" + dbName;
+            conn = DriverManager.getConnection(dbUrl, userName, pwd);
+        } catch (Exception e) {
+            System.err.println("Errore connessione DB (RicercaTessereDAO): " + e.getMessage());
+        }
+    }
+
+    // Metodo helper per costruire la clausola WHERE in base ai filtri
+    private String buildWhereClause(JsonArray filters, List<Object> params) {
+        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
+        if (filters != null) {
+            for (JsonElement el : filters) {
+                JsonObject filter = el.getAsJsonObject();
+                String field = filter.get("field").getAsString();
+                String operator = filter.get("operator").getAsString();
+                String value = filter.get("value").getAsString();
+
+                // Mappatura campi JSON sulle colonne DB reali
+                String dbColumn = "";
+                switch (field) {
+                    case "idTessera": dbColumn = "t.IDTESSERA"; break;
+                    case "codiceFiscale": dbColumn = "tp.CODFISDIP"; break;
+                    case "nome": dbColumn = "a.NOME"; break;
+                    case "cognome": dbColumn = "a.COGNOME"; break;
+                    case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
+                    default: continue; // ignora filtri non riconosciuti
+                }
+
+                if ("contains".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
+                    params.add("%" + value.toUpperCase() + "%");
+                } else if ("equals".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
+                    params.add(value.toUpperCase());
+                }
+            }
+        }
+        return where.toString();
+    }
+
+    private String getBaseQuery() {
+        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
+               "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
+               "a.NOME, a.COGNOME " +
+               "FROM TESSERA1 t " +
+               "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
+               "LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
+               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE ";
+    }
+
+    @Override
+    public List<TesseraFiltroDTO> getTessereByFilters(JsonArray filters, int page, int pageSize) {
+        List<TesseraFiltroDTO> result = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+        
+        String whereClause = buildWhereClause(filters, params);
+        String baseQuery = getBaseQuery() + whereClause + " ORDER BY t.IDTESSERA DESC";
+
+        // Paginazione compatibile con Oracle 10g e 12c (uso di ROWNUM)
+        int minRow = (page - 1) * pageSize + 1;
+        int maxRow = page * pageSize;
+
+        String paginatedQuery = 
+            "SELECT * FROM (" +
+            "  SELECT a.*, ROWNUM rnum FROM (" + baseQuery + ") a " +
+            "  WHERE ROWNUM <= ?" +
+            ") WHERE rnum >= ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(paginatedQuery)) {
+            int i = 1;
+            // Setta i parametri dei filtri
+            for (Object p : params) {
+                ps.setString(i++, p.toString());
+            }
+            // Setta i parametri della paginazione
+            ps.setInt(i++, maxRow);
+            ps.setInt(i, minRow);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    TesseraFiltroDTO dto = new TesseraFiltroDTO();
+                    dto.setIdTessera(rs.getString("IDTESSERA"));
+                    dto.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
+                    dto.setSede(rs.getString("SEDE"));
+                    dto.setCodiceInterno(rs.getString("CODICEINTERNO"));
+                    dto.setCodiceFiscale(rs.getString("CODFISDIP"));
+                    dto.setNome(rs.getString("NOME"));
+                    dto.setCognome(rs.getString("COGNOME"));
+
+                    // Formattazione Date
+                    Timestamp tsIndisp = rs.getTimestamp("DATAORAINDISPONIBILITA");
+                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
+
+                    Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
+                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
+
+                    Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
+                    if (tsFine != null) dto.setDataOraFineAssegnazione(tsFine.toLocalDateTime().format(formatter));
+
+                    result.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getTessereByFilters: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public int countTessereByFilters(JsonArray filters) {
+        List<Object> params = new ArrayList<>();
+        String whereClause = buildWhereClause(filters, params);
+        
+        // Count veloce usando la stessa logica di join
+        String countQuery = "SELECT COUNT(*) FROM TESSERA1 t " +
+                            "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
+                            "LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
+                            "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+                            whereClause;
+
+        try (PreparedStatement ps = conn.prepareStatement(countQuery)) {
+            int i = 1;
+            for (Object p : params) {
+                ps.setString(i++, p.toString());
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore countTessereByFilters: " + e.getMessage());
+        }
+        return 0;
+    }
+    
+    
+    @Override
+    public TesseraFiltroDTO getTesseraById(String idTessera) {
+        // ROWNUM=1 assicura di prendere l'ultima assegnazione in caso di storico multiplo
+        String sql = "SELECT * FROM (" +
+                     "  SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
+                     "         td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
+                     "         a.NOME, a.COGNOME " +
+                     "  FROM TESSERA1 t " +
+                     "  LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
+                     "  LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
+                     "  LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+                     "  WHERE t.IDTESSERA = ? " +
+                     "  ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC " +
+                     ") WHERE ROWNUM = 1";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idTessera);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    TesseraFiltroDTO dto = new TesseraFiltroDTO();
+                    dto.setIdTessera(rs.getString("IDTESSERA"));
+                    dto.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
+                    dto.setSede(rs.getString("SEDE"));
+                    dto.setCodiceInterno(rs.getString("CODICEINTERNO"));
+                    dto.setCodiceFiscale(rs.getString("CODFISDIP"));
+                    dto.setNome(rs.getString("NOME"));
+                    dto.setCognome(rs.getString("COGNOME"));
+
+                    Timestamp tsIndisp = rs.getTimestamp("DATAORAINDISPONIBILITA");
+                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
+
+                    Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
+                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
+
+                    Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
+                    if (tsFine != null) dto.setDataOraFineAssegnazione(tsFine.toLocalDateTime().format(formatter));
+
+                    return dto;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getTesseraById: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+
+    @Override
+    public void closeConnection() {
+        try {
+            if (conn != null && !conn.isClosed()) conn.close();
+        } catch (SQLException e) {
+            System.err.println("Errore chiusura connessione (RicercaTessereDAO): " + e.getMessage());
+        }
+    }
+}
