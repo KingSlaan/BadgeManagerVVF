@@ -17,7 +17,7 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-    <form [gutter]="3" cForm cRow>
+    <form [formGroup]="formTessera" [gutter]="3" cForm cRow>
       <c-col xs="6">
         <label cLabel class="visually-hidden" for="idTessera">
           Id Tessera
@@ -25,6 +25,7 @@
         <input
           cFormControl
           id="idTessera"
+          formControlName="idTessera"
           placeholder="Id Tessera"
           type="text"
           [disabled]="checkDisabled('idTessera', mode)"

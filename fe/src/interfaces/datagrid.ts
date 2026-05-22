@@ -1,5 +1,42 @@
 import { TemplateRef } from '@angular/core';
 
+export interface DataGridPersistConfig {
+  enabled: boolean;
+  storageKey: string;
+}
+
+export interface DataGridState {
+  filters: Record<string, any>;
+  sorting: DataGridSorting | null;
+  pagination?: {
+    page: number;
+    pageSize: number;
+  };
+}
+
+export type DataGridSortDirection =
+  | 'asc'
+  | 'desc';
+
+export interface DataGridSorting {
+  field: string;
+  direction: DataGridSortDirection;
+}
+
+export interface DataGridSortingConfig {
+  enabled: boolean;
+  defaultSorting?: DataGridSorting;
+}
+
+export interface DataGridEmptyStateConfig {
+  title?: string;
+  description?: string;
+}
+
+export interface DataGridLoadingConfig {
+  text?: string;
+}
+
 export interface DataGridPaginationConfig {
   enabled: boolean;
   page: number;
@@ -64,6 +101,7 @@ export interface DataGridColumn<T = any> {
   field: keyof T | string;
   header: string;
   width?: string;
+  sortable?: boolean;
   className?: string;
   render?: (
     row: T,
@@ -78,8 +116,5 @@ export interface DataGridRequest {
     page: number;
     pageSize: number;
   };
-  sorting?: {
-    field: string;
-    direction: 'asc' | 'desc';
-  };
+  sorting?: DataGridSorting | null;
 }

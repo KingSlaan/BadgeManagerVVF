@@ -1,15 +1,21 @@
 <app-datagrid
   [columns]="columns"
-  [rows]="tessere"
+  [rows]="tessere()"
   [searchConfig]="searchConfig"
   [toolbarConfig]="toolbarConfig"
   [paginationConfig]="paginationConfig"
+  [sortingConfig]="sortingConfig"
+  [loadingConfig]="loadingConfig"
+  [persistConfig]="persistConfig"
+  [loading]="datagridLoading()"
+  [emptyStateConfig]="emptyStateConfig"
   (dataRequest)="loadData($event)"
 />
 
 <app-tessera-modal-cmp
   [(visible)]="isModalOpen"
   [mode]="mode"
+  [tesseraSelected]="tesseraSelected()"
 ></app-tessera-modal-cmp>
 <app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
 
@@ -22,7 +28,7 @@
       color="info"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('assign')"
+      (click)="openModal('assign',row.idTessera)"
     >
       <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
     </button>
@@ -33,12 +39,12 @@
       color="primary"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('edit')"
+      (click)="openModal('edit',row.idTessera)"
     >
       <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
     </button>
   }
-  @if (!row.disuso) {
+  <!-- @if (!row.disuso) {
     <button
       cButton
       color="danger"
@@ -48,7 +54,7 @@
     >
       <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
     </button>
-  }
+  } -->
   <button
     cButton
     color="secondary"

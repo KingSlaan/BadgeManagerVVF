@@ -12,9 +12,14 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-calculator' },
   },
   {
-    name: 'Lista Sedi',
+    name: 'Sedi',
     url: '/liste/sedi',
     iconComponent: { name: 'cil-notes' },
+  },
+  {
+    name: 'Qualifiche',
+    url: '/liste/qualifiche',
+    iconComponent: { name: 'cil-star' },
   },
   // {
   //   title: true,

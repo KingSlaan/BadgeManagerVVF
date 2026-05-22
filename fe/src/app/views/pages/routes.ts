@@ -5,14 +5,21 @@ export const routes: Routes = [
     path: 'sedi',
     loadComponent: () => import('./lista-sedi/lista-sedi.component').then(m => m.ListaSediComponent),
     data: {
-      title: $localize`Lista Sedi`
+      title: $localize`Sedi`
     }
   },
   {
     path: 'tessere',
     loadComponent: () => import('./lista-tessere/lista-tessere.component').then(m => m.ListaTessereComponent),
     data: {
-      title: $localize`Lista Tessere`
+      title: $localize`Gestione Tessere`
+    }
+  },
+  {
+    path: 'qualifiche',
+    loadComponent: () => import('./lista-qualifiche/lista-qualifiche.component').then(m => m.ListaQualificheComponent),
+    data: {
+      title: $localize`Qualifiche`
     }
   },
   // {

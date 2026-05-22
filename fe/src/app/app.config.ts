@@ -11,6 +11,7 @@ import {
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
 import { loadingInterceptor } from '../interceptors/loading.interceptors';
+import { errorInterceptor } from '../interceptors/error.interceptors';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
@@ -31,7 +32,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withInterceptors([
-        loadingInterceptor
+        loadingInterceptor,
+        errorInterceptor
       ])
     )
   ]

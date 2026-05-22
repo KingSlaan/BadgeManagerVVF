@@ -64,7 +64,7 @@ export class TesseraAggiungiComponent {
   }
 
   confirm() {
-    this.tessereService.getTessere().subscribe({
+    this.tessereService.createTessere(this.badgeListArrayFinal).subscribe({
       next: (data: any) => {
         let dataReturn = data;
         this.toast.success('User saved successfully');

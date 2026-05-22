@@ -1,7 +1,9 @@
+import { API_CONSTANTS } from './../../constants/api.constants';
 import { HttpClient } from '@angular/common/http';
-import { Tessera } from './../interfaces/tessere';
+import { Tessera } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { DataGridRequest } from 'src/interfaces/datagrid';
 
 @Injectable({
   providedIn: 'root'
@@ -10,27 +12,31 @@ export class TessereService {
   private http = inject(HttpClient);
 
   // Example base API URL
-  private apiUrl = 'https://api.example.com';
+  private apiUrl = API_CONSTANTS.BASE_URL;
 
   /**
    * GET - Get all tessere
    */
-  getTessere(): Observable<Tessera[]> {
-    return this.http.get<Tessera[]>(this.apiUrl);
+  getTessere(body:DataGridRequest): Observable<Tessera[]> {
+    return this.http.post<Tessera[]>(`${this.apiUrl}/getTessereListByFiltersServlet`,body);
   }
 
   /**
    * GET - Get single tessera by id
    */
-  getTesseraById(id: number): Observable<Tessera> {
-    return this.http.get<Tessera>(`${this.apiUrl}/${id}`);
+  getTesseraById(id: string): Observable<Tessera> {
+    return this.http.get<Tessera>(`${this.apiUrl}/getTesseraByIdTesseraServlet?idTessera=${id}`);
   }
 
   /**
-   * POST - Create new tessera
+   * POST - Create new tessere
    */
   createTessere(tessere: Array<Tessera>) {
-    return this.http.post<Array<Tessera>>(this.apiUrl, tessere);
+    return this.http.post<Array<Tessera>>(`${this.apiUrl}/inserimentoTessereServlet`, tessere);
+  }
+
+  assegnaTessere(tessere: Array<Tessera>) {
+    return this.http.post<Array<Tessera>>(`${this.apiUrl}/assegnaTessereServlet`, tessere);
   }
 
   /**

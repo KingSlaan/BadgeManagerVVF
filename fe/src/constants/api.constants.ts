@@ -1,3 +1,3 @@
 export const API_CONSTANTS = {
-  BASE_URL: 'https://api.example.com'
+  BASE_URL: 'http://192.168.0.101:8080/ApplicativoBadgeVVF'
 };

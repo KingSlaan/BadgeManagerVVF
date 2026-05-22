@@ -12,6 +12,7 @@
                 [name]="f.field"
                 [(ngModel)]="filterValues[f.field]"
                 [placeholder]="f.label"
+                (keydown)="onFilterKeydown($event)"
               />
             }
             @if (f.type === "select") {
@@ -35,6 +36,7 @@
                 [placeholder]="f.label"
                 min="1900-01-01"
                 max="2100-12-31"
+                (keydown)="onFilterKeydown($event)"
               />
             }
           </c-col>
@@ -91,44 +93,91 @@
 
   <!-- BODY -->
   <c-card-body>
-    <table cTable>
-      <thead>
-        <tr>
-          @for (column of columns; track column.field) {
-            <th [style.width]="column.width" [class]="column.className">
-              {{ column.header }}
-            </th>
-          }
-        </tr>
-      </thead>
+    @if (!loading && !hasRows) {
+      <div class="datagrid-empty-state">
+        <!-- ICON -->
+        <svg
+          [cIcon]="icons.cilFrown"
+          title="Pulisci Filtri"
+          size="3xl"
+          class="mb-3 text-medium-emphasis"
+        ></svg>
 
-      <tbody>
-        @for (row of displayedRows; track $index) {
+        <!-- TITLE -->
+        <h5>
+          {{ emptyStateConfig?.title || "No data found" }}
+        </h5>
+
+        <!-- DESCRIPTION -->
+        <p class="text-medium-emphasis">
+          {{ emptyStateConfig?.description || "Try changing filters" }}
+        </p>
+      </div>
+    } @else {
+      <table cTable>
+        <thead>
           <tr>
             @for (column of columns; track column.field) {
-              <td [class]="column.className">
-                <!-- TEMPLATE MODE -->
-                @if (column.template) {
-                  <ng-container
-                    *ngTemplateOutlet="
-                      column.template;
-                      context: {
-                        $implicit: row,
-                        row: row,
-                      }
-                    "
-                  />
-                }
-                <!-- STRING RENDER MODE -->
-                @else {
-                  <span [innerHTML]="renderCell(row, column)"></span>
-                }
-              </td>
+              <!-- <th [style.width]="column.width" [class]="column.className">
+                {{ column.header }}
+              </th> -->
+              <th
+                [style.width]="column.width"
+                (click)="sort(column)"
+                [class.sortable]="column.sortable"
+              >
+                <div class="d-flex align-items-center gap-2">
+                  {{ column.header }}
+
+                  @if (sortingConfig?.enabled && column.sortable) {
+                    <span class="sort-icon">
+                      {{ getSortIcon(column) }}
+                    </span>
+                  }
+                </div>
+              </th>
             }
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          @if (loading) {
+            <div class="datagrid-loading-overlay">
+              <c-spinner size="sm" color="primary"></c-spinner>
+
+              <span class="ms-2">
+                {{ loadingConfig?.text || "Loading..." }}
+              </span>
+            </div>
+          }
+
+          @for (row of displayedRows; track $index) {
+            <tr>
+              @for (column of columns; track column.field) {
+                <td [class]="column.className">
+                  <!-- TEMPLATE MODE -->
+                  @if (column.template) {
+                    <ng-container
+                      *ngTemplateOutlet="
+                        column.template;
+                        context: {
+                          $implicit: row,
+                          row: row,
+                        }
+                      "
+                    />
+                  }
+                  <!-- STRING RENDER MODE -->
+                  @else {
+                    <span [innerHTML]="renderCell(row, column)"></span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </c-card-body>
 
   <!-- FOOTER -->

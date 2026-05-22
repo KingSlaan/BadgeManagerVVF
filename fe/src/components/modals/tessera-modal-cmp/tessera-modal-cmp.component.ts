@@ -1,5 +1,5 @@
 import { ACTION_CONSTANTS } from './../../../constants/action.constants';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
 import {
   ButtonDirective,
@@ -14,8 +14,9 @@ import {
   GutterDirective,
   RowDirective
 } from '@coreui/angular';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { cilX } from '@coreui/icons';
+import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -34,7 +35,8 @@ import { cilX } from '@coreui/icons';
     FormDirective,
     FormLabelDirective,
     GutterDirective,
-    RowDirective
+    RowDirective,
+    ReactiveFormsModule,
   ],
   templateUrl: './tessera-modal-cmp.component.html',
   styleUrl: './tessera-modal-cmp.component.scss',
@@ -44,8 +46,30 @@ export class TesseraModalCmpComponent {
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Input() mode = ACTION_CONSTANTS.CREATE;
+  @Input() tesseraSelected: Tessera = tesseraEmpty;
+
+ formTessera: FormGroup = this.fb.group({
+    idTessera: [''],
+    codiceInterno: [''],
+    codiceFiscale: [''],
+    nome: [''],
+    cognome: [''],
+    sede: [''],
+    codTipoTessera: [''],
+    dataOraInizioAssegnazione: [''],
+    dataOraFineAssegnazione: [''],
+    dataOraIndisponibilita: [''],
+  });
 
   icons = { cilX };
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['tesseraSelected'] && this.tesseraSelected) {
+      this.formTessera.patchValue(this.tesseraSelected);
+    }
+  }
 
   getTitle(mode: string) {
     switch (mode) {
@@ -84,8 +108,7 @@ export class TesseraModalCmpComponent {
     this.visibleChange.emit(false);
   }
 
-  confirm() {
-    // do something here if needed
+ confirm() {
     this.visibleChange.emit(false);
   }
 }

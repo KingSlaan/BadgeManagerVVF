@@ -1,8 +1,32 @@
-<!--<c-footer>-->
-<div class="ms-auto">
-  Powered by
-  <a href="https://bloob.io/yatch" target="_blank">
-    <span> Ciola, Gabbon, Mattia</span>
-  </a>
+<!-- <div class="d-flex justify-content-between">
+  <div class="version-info-box">
+    @if (versionInfo) {
+      Version: {{ versionInfo.version }} ({{ versionInfo.environment }}) - {{ versionInfo.buildDate }}
+    }
+  </div>
+  <div>
+    Powered by
+    <a href="https://bloob.io/yatch" target="_blank">
+      <span> Ciola, Gabbon, Mattia</span>
+    </a>
+  </div>
+</div> -->
+
+<div
+  class="d-flex justify-content-between align-items-center"
+  style="width: 100vw"
+>
+  <strong class="version-info-box">
+    @if (versionInfo) {
+      {{ versionInfo.version }} ({{ versionInfo.environment }})
+      <br/>
+      {{ versionInfo.buildDate | date:'d MMM y' }}
+    }
+  </strong>
+  <div>
+    Powered by
+    <a href="https://bloob.io/yatch" target="_blank">
+      <span> Ciola, Gabbon, Mattia</span>
+    </a>
+  </div>
 </div>
-<!--</c-footer>-->

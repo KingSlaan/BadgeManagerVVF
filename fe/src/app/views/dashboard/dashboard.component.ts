@@ -27,10 +27,12 @@ export class DashboardComponent implements OnInit {
   icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
 
   options = {
+    responsive: true,
+    indexAxis:'y' as const,
     maintainAspectRatio: false,
   };
 
-  chartBarData: ChartData = {
+  chartBarTessereData: ChartData = {
     labels: ['Uffici Centrali', 'Salerno', 'Catanzaro', 'Venezia', 'Milano'],
     datasets: [
       {
@@ -47,6 +49,28 @@ export class DashboardComponent implements OnInit {
         label: 'Badge non assegnati',
         backgroundColor: '#e55353',
         data: [30, 15, 5, 9, 10]
+      }
+    ],
+
+  };
+
+  chartBarQualificheData: ChartData = {
+    labels: ['Dirigente', 'Operativo', 'Amministrativo',],
+    datasets: [
+      {
+        label: 'Badge totali',
+        backgroundColor: '#3634a3',
+        data: [40, 20, 12]
+      },
+      {
+        label: 'Badge assegnati',
+        backgroundColor: '#1b9e3e',
+        data: [10, 10, 22]
+      },
+      {
+        label: 'Badge non assegnati',
+        backgroundColor: '#e55353',
+        data: [30, 15, 5]
       }
     ],
 

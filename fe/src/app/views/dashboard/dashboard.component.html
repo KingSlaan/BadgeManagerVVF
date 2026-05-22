@@ -69,11 +69,19 @@
   <hr />
 
   <c-row>
-    <c-col xs="12" lg="12">
+    <c-col xs="6" lg="6">
       <c-card class="mb-4">
         <c-card-header> Badge per Sedi </c-card-header>
         <c-card-body>
-          <c-chart type="bar" [data]="chartBarData" [options]="options" />
+          <c-chart type="bar" [data]="chartBarTessereData" [options]="options" />
+        </c-card-body>
+      </c-card>
+    </c-col>
+    <c-col xs="6" lg="6">
+      <c-card class="mb-4">
+        <c-card-header> Badge per Qualifica </c-card-header>
+        <c-card-body>
+          <c-chart type="bar" [data]="chartBarQualificheData" [options]="options" />
         </c-card-body>
       </c-card>
     </c-col>

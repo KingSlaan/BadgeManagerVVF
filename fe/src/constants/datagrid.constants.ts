@@ -6,5 +6,5 @@ export const DATAGRID_CONSTANTS = {
     pageSizes: [5, 10, 25, 50],
     showPageNumbers: true,
     showPageSizeSelector: true,
-    serverSide: false,
+    serverSide: true,
   };

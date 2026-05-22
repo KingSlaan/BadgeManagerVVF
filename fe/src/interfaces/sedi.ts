@@ -1,4 +1,6 @@
 export interface Sede {
-  codice: number;
+  codice: string;
   descrizione: string;
 }
+
+export type Sedi = Sede[];

@@ -8,8 +8,20 @@ export interface Tessera {
   nome: string;
   cognome: string;
   codiceInterno: string;
-  codiceFiscale:string;
-  disuso:boolean;
+  codiceFiscale: string;
 }
 
 export type Tessere = Tessera[];
+
+export const tesseraEmpty: Tessera = {
+  idTessera: "",
+  codTipoTessera: "",
+  sede: "",
+  dataOraIndisponibilita: "",
+  dataOraInizioAssegnazione: "",
+  dataOraFineAssegnazione: "",
+  nome: "",
+  cognome: "",
+  codiceInterno: "",
+  codiceFiscale: "",
+}

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DocsIconsComponent } from './docs-icons.component';
+import { ListaQualificheComponent } from './lista-qualifiche.component';
 
-describe('DocsIconsComponent', () => {
-  let component: DocsIconsComponent;
-  let fixture: ComponentFixture<DocsIconsComponent>;
+describe('ListaQualificheComponent', () => {
+  let component: ListaQualificheComponent;
+  let fixture: ComponentFixture<ListaQualificheComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DocsIconsComponent]
+      imports: [ListaQualificheComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DocsIconsComponent);
+    fixture = TestBed.createComponent(ListaQualificheComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
