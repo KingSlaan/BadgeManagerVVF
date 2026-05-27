@@ -3,6 +3,7 @@ package vvf.ufficioIV.applicativobadge.dao;
 import vvf.ufficioIV.applicativobadge.entity.Tessera1;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +128,16 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
             ps.setString(1, idTessera);
             int rows = ps.executeUpdate();
             return rows == 1;
+        }
+    }
+    
+    @Override
+    public boolean invalidaTessera(String idTessera, LocalDateTime dataOraIndisponibilita) throws SQLException {
+        String sql = "UPDATE TESSERA1 SET DATAORAINDISPONIBILITA = ? WHERE IDTESSERA = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(dataOraIndisponibilita));
+            ps.setString(2, idTessera);
+            return ps.executeUpdate() == 1;
         }
     }
 

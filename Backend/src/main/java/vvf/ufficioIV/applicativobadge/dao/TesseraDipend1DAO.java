@@ -1,10 +1,15 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
 import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TesseraDipend1DAO {
+	
+	boolean revocaAssegnazioneAttiva(String idTessera, LocalDateTime dataOraFine) throws SQLException;
+	
     void closeConnection();
     boolean insertAssegnazione(TesseraDipend1 assegnazione) throws Exception;
     TesseraDipend1 getAssegnazione(String idTessera, String codFisDip, LocalDateTime dataOraInizio);

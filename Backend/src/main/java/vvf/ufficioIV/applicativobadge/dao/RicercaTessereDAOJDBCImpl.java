@@ -1,5 +1,6 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
+import vvf.ufficioIV.applicativobadge.dto.CronologiaTesseraDTO;
 import vvf.ufficioIV.applicativobadge.dto.TesseraFiltroDTO;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -202,6 +203,45 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
             e.printStackTrace();
         }
         return null;
+    }
+    
+    
+    @Override
+    public List<CronologiaTesseraDTO> getCronologiaByTessera(String idTessera) {
+        List<CronologiaTesseraDTO> result = new ArrayList<>();
+        
+        // Ordiniamo per data di inizio decrescente (la più recente in cima)
+        String sql = "SELECT tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
+                     "       a.NOME, a.COGNOME " +
+                     "FROM TESSERADIPEND1 tp " +
+                     "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+                     "WHERE tp.IDTESSERA = ? " +
+                     "ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idTessera);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    CronologiaTesseraDTO dto = new CronologiaTesseraDTO();
+                    dto.setCodFiscale(rs.getString("CODFISDIP"));
+                    dto.setNome(rs.getString("NOME"));
+                    dto.setCognome(rs.getString("COGNOME"));
+
+                    Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
+                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
+
+                    Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
+                    if (tsFine != null) dto.setDataOraFineAssegnazione(tsFine.toLocalDateTime().format(formatter));
+
+                    result.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getCronologiaByTessera: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return result;
     }
     
 

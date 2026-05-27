@@ -102,6 +102,22 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
         t.setDataOraFineAssegnazione(rs.getTimestamp("DATAORAFINEASSEGNAZIONE").toLocalDateTime());
         return t;
     }
+    
+    @Override
+    public boolean revocaAssegnazioneAttiva(String idTessera, LocalDateTime dataOraFine) throws SQLException {
+        // La logica è: aggiorno la data di fine solo per il record di quella tessera 
+        // che attualmente è "aperto" (es. data fine nel 9999 o comunque > di adesso)
+        // Per sicurezza, ordiniamo e prendiamo la più recente (se ce ne fosse più di una aperta)
+        String sql = "UPDATE TESSERADIPEND1 " +
+                     "SET DATAORAFINEASSEGNAZIONE = ? " +
+                     "WHERE IDTESSERA = ? AND DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setTimestamp(1, Timestamp.valueOf(dataOraFine));
+            ps.setString(2, idTessera);
+            return ps.executeUpdate() > 0; // Può aggiornare 0 righe se non ci sono assegnazioni attive
+        }
+    }
 
     @Override
     public void closeConnection() {
