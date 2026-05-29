@@ -28,7 +28,6 @@
           formControlName="idTessera"
           placeholder="Id Tessera"
           type="text"
-          [disabled]="checkDisabled('idTessera', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -38,9 +37,9 @@
         <input
           cFormControl
           id="codiceInterno"
+          formControlName="codiceInterno"
           placeholder="Codice Interno"
           type="text"
-          [disabled]="checkDisabled('codiceInterno', mode)"
         />
       </c-col>
       <c-col xs="12">
@@ -50,9 +49,9 @@
         <input
           cFormControl
           id="codiceFiscale"
+          formControlName="codiceFiscale"
           placeholder="Codice Fiscale"
           type="text"
-          [disabled]="checkDisabled('codiceFiscale', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -60,9 +59,9 @@
         <input
           cFormControl
           id="nome"
+          formControlName="nome"
           placeholder="Nome"
           type="text"
-          [disabled]="checkDisabled('nome', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -70,9 +69,9 @@
         <input
           cFormControl
           id="cognome"
+          formControlName="cognome"
           placeholder="Cognome"
           type="text"
-          [disabled]="checkDisabled('cognome', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -80,62 +79,69 @@
         <input
           cFormControl
           id="sede"
+          formControlName="sede"
           placeholder="Sede"
           type="text"
-          [disabled]="checkDisabled('sede', mode)"
         />
       </c-col>
       <c-col xs="6">
         <label cLabel class="visually-hidden" for="tipoTessera">
           Tipo Tessera
         </label>
-        <input
+        <select
+          cSelect
           cFormControl
           id="tipoTessera"
           placeholder="Tipo Tessera"
-          type="text"
-          [disabled]="checkDisabled('tipoTessera', mode)"
-        />
+          formControlName="codTipoTessera"
+        >
+          <option value="">-</option>
+          <option value="S">Sostitutiva</option>
+          <option value="D">Dipendente</option>
+        </select>
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataInizioAssegnazione">
           Data Inizio Assegnazione
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataInizioAssegnazione"
+          formControlName="dataOraInizioAssegnazione"
           placeholder="Data Inizio Assegnazione"
-          type="text"
-          [disabled]="checkDisabled('dataInizioAssegnazione', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
         />
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataFineAssegnazione">
           Data Fine Assegnazione
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataFineAssegnazione"
+          formControlName="dataOraFineAssegnazione"
           placeholder="Data Fine Assegnazione"
-          type="text"
-          [disabled]="checkDisabled('dataFineAssegnazione', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
         />
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataInvalidità">
           Data Invalidità
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataInvalidita"
+          formControlName="dataOraIndisponibilita"
           placeholder="Data Invalidità"
-          type="text"
-          [disabled]="checkDisabled('dataInvalidita', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
         />
       </c-col>
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm()">Save</button>
+    <button cButton color="success" (click)="confirm(mode)">Save</button>
   </c-modal-footer>
 </c-modal>

@@ -1,13 +1,17 @@
 <div class="cui-datepicker">
-  <div class="cui-input-wrapper">
-
+  <div
+    class="cui-input-wrapper"
+    [class.invalid]="invalid"
+    [class.disabled]="disabled"
+  >
     <input
       #dateInput
-      type="date"
+      type="datetime-local"
       class="native-date-input"
       [value]="value || ''"
       [min]="min"
       [max]="max"
+      [disabled]="disabled"
       (change)="onValueChange($event)"
     />
 
@@ -16,6 +20,7 @@
       class="cui-input"
       [value]="displayValue"
       [placeholder]="placeholder"
+      [disabled]="disabled"
       readonly
       (click)="openPicker(dateInput)"
     />
@@ -34,8 +39,6 @@
         <path d="M3 10h18"></path>
       </svg> -->
       <svg [cIcon]="icons.cilCalendar" title="Assegna Dipendente"></svg>
-
     </span>
-
   </div>
 </div>

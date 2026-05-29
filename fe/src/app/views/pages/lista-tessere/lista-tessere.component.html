@@ -16,10 +16,15 @@
   [(visible)]="isModalOpen"
   [mode]="mode"
   [tesseraSelected]="tesseraSelected()"
+  (saved)="loadData(this.initialRequest)"
 ></app-tessera-modal-cmp>
+
 <app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
 
-<app-tessera-history [(visible)]="isModalHistoryOpen"></app-tessera-history>
+<app-tessera-history
+  [(visible)]="isModalHistoryOpen"
+  [tesseraSelected]="tesseraSelected()"
+></app-tessera-history>
 
 <ng-template #actionTemplate let-row>
   @if (!row.codiceFiscale) {
@@ -28,39 +33,47 @@
       color="info"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('assign',row.idTessera)"
+      (click)="openModal('assign', row.idTessera)"
     >
       <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
     </button>
   }
+
+  <!-- <button
+    cButton
+    color="primary"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('edit', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
+  </button> -->
+  <button
+    cButton
+    color="danger"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('disabled', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilBan" title="Disabilita"></svg>
+  </button>
   @if (row.codiceFiscale) {
-    <button
-      cButton
-      color="primary"
-      variant="ghost"
-      shape="rounded-pill"
-      (click)="openModal('edit',row.idTessera)"
-    >
-      <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
-    </button>
-  }
-  <!-- @if (!row.disuso) {
     <button
       cButton
       color="danger"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('remove')"
+      (click)="openModal('remove', row.idTessera)"
     >
       <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
     </button>
-  } -->
+  }
   <button
     cButton
     color="secondary"
     variant="ghost"
     shape="rounded-pill"
-    (click)="openHistoryModal()"
+    (click)="openHistoryModal(row.idTessera)"
   >
     <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
   </button>

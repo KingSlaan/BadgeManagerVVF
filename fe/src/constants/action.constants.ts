@@ -4,4 +4,5 @@ export const ACTION_CONSTANTS = {
   EDIT: 'edit',
   CREATE: 'create',
   REMOVE: 'remove',
+  DISABLED: 'disabled',
 };

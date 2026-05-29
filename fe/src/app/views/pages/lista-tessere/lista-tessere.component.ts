@@ -2,10 +2,10 @@ import { DATAGRID_CONSTANTS } from './../../../../constants/datagrid.constants';
 import { Component, inject, OnInit, AfterViewInit, TemplateRef, ViewChild, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonDirective,
+  ButtonDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilCloudUpload, cilCloudDownload, cilHistory, cilInbox } from '@coreui/icons';
+import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilCloudUpload, cilCloudDownload, cilHistory, cilInbox, cilBan, cilOptions } from '@coreui/icons';
 import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
@@ -37,7 +37,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   private loading = inject(LoadingService);
   private tessereService = inject(TessereService);
 
-  icons = { cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory };
+  icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions };
 
   isModalOpen = false;
   isModalAggiungiOpen = false;
@@ -149,15 +149,32 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       },
     });
 
-
   }
 
   openModalAggiungi() {
     this.isModalAggiungiOpen = true;
   }
 
-  openHistoryModal() {
-    this.isModalHistoryOpen = true;
+  openHistoryModal(idTessera:string) {
+    this.tessereService.getTessereHistory(idTessera).subscribe({
+      next: (data: any) => {
+        this.isModalHistoryOpen = true;
+
+        this.tesseraSelected.set(data.data ?? tesseraEmpty);
+      },
+      error: (err: any) => {
+        console.error('Error loading tessere', err);
+      },
+    });
+
+  }
+
+  onTesseraModalVisibleChange(visible: boolean): void {
+    this.isModalOpen = visible;
+
+    if (!visible) {
+      this.loadData(this.initialRequest);
+    }
   }
 
 }

@@ -1,5 +1,8 @@
 .cui-datepicker {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cui-input-wrapper {
@@ -7,31 +10,50 @@
   display: flex;
   align-items: center;
 
-  height: 37.6px;
+  width: 100%;
+  height: 46px;
 
   background: var(--cui-body-bg);
-  border: 1px solid #d8dbe0;
-  border-radius: 10px;
+  border: 1px solid var(--cui-border-color);
+  border-radius: 6px;
 
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
-    background 0.2s ease;
+    background-color 0.2s ease,
+    opacity 0.2s ease;
 
   &:focus-within {
-    background: #fff;
-    border-color: #5856d6;
-    box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.12);
+    border-color: var(--cui-primary);
+    box-shadow: 0 0 0 3px rgba(var(--cui-primary-rgb), 0.2);
   }
 
   &.invalid {
-    border-color: #e55353;
+    border-color: var(--cui-danger);
   }
 
   &.disabled {
-    opacity: 0.65;
-    pointer-events: none;
+    background: var(--cui-secondary-bg);
+    border-color: var(--cui-border-color);
+    opacity: 0.75;
+    cursor: not-allowed;
+
+    .cui-input {
+      color: var(--cui-secondary-color);
+      cursor: not-allowed;
+    }
+
+    .calendar-icon {
+      color: var(--cui-secondary-color);
+      opacity: 0.8;
+    }
   }
+}
+
+.native-date-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .cui-input {
@@ -42,59 +64,44 @@
   outline: none;
   background: transparent;
 
-  padding: 0 42px 0 16px;
+  padding: 0 48px 0 16px;
 
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 500;
 
-  color: #2f353a;
+  color: var(--cui-body-color);
 
-  appearance: none;
+  cursor: pointer;
 
   &::placeholder {
-    color: #8a93a2;
+    color: var(--cui-secondary-color);
   }
 
-  &::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
+  &:disabled {
+    color: var(--cui-secondary-color);
+    -webkit-text-fill-color: var(--cui-secondary-color);
   }
 }
 
 .calendar-icon {
   position: absolute;
-  right: 18px;
+  right: 16px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #6b7280;
-
+  color: var(--cui-secondary-color);
   pointer-events: none;
 
-  ::ng-deep svg {
+  svg {
     width: 20px;
     height: 20px;
   }
 }
 
 .helper-text {
-  display: block;
-  margin-top: 6px;
-
   padding-left: 4px;
-
-  font-size: 0.78rem;
-  color: #8a93a2;
-}
-
-.native-date-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  font-size: 0.85rem;
+  color: var(--cui-secondary-color);
 }

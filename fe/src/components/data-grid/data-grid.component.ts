@@ -8,14 +8,13 @@ import { DatepickerComponent } from './../datepicker/datepicker.component';
 
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
-  Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
+  input,
+  computed,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -70,47 +69,19 @@ import { IconDirective } from '@coreui/icons-angular';
   changeDetection:
     ChangeDetectionStrategy.OnPush,
 })
-export class DataGridComponent<T = any> implements OnInit, OnChanges {
+export class DataGridComponent<T = any> implements OnInit {
 
-  // LOADING
-  @Input()
-  loadingConfig?: DataGridLoadingConfig;
+  loading = input(false);
+  rows = input<T[]>([]);
+  columns = input.required<DataGridColumn<T>[]>();
 
-  @Input()
-  loading = false;
-  // END LOADING
-
-  @Input()
-  emptyStateConfig?: DataGridEmptyStateConfig;
-
-  // PAGINATION
-  @Input()
-  paginationConfig?: DataGridPaginationConfig;
-
-  @Output()
-  pageChange = new EventEmitter<DataGridPageEvent>();
-  // END PAGINATION
-
-  // SEARCH
-  @Input() searchConfig?: DataGridSearchConfig;
-  // END SEARCH
-
-  // SORTING
-  @Input()
-  sortingConfig?: DataGridSortingConfig;
-  // END SORTING
-
-  @Input()
-  persistConfig?: DataGridPersistConfig;
-
-  @Input({ required: true })
-  columns: DataGridColumn<T>[] = [];
-
-  @Input({ required: true })
-  rows: T[] = [];
-
-  @Input()
-  toolbarConfig?: DataGridToolbarConfig<T>;
+  paginationConfig = input<DataGridPaginationConfig>();
+  searchConfig = input<DataGridSearchConfig>();
+  sortingConfig = input<DataGridSortingConfig>();
+  loadingConfig = input<DataGridLoadingConfig>();
+  emptyStateConfig = input<DataGridEmptyStateConfig>();
+  toolbarConfig = input<DataGridToolbarConfig<T>>();
+  persistConfig = input<DataGridPersistConfig>();
 
   @Output()
   dataRequest = new EventEmitter<DataGridRequest>();
@@ -129,13 +100,9 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
 
   currentSorting: DataGridSorting | null = null;
 
-  constructor(
-    private cdr: ChangeDetectorRef
-  ) { }
-
   ngOnInit() {
     // Init empty object keys first
-    this.searchConfig?.fields.forEach((f: any) => {
+    this.searchConfig()?.fields.forEach((f: any) => {
       this.filterValues[f.field] ??= '';
     });
 
@@ -144,29 +111,17 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
 
     // Default sorting only if none persisted
     if (
-      this.sortingConfig?.defaultSorting && !this.currentSorting
+      this.sortingConfig()?.defaultSorting && !this.currentSorting
     ) {
-      this.currentSorting = this.sortingConfig.defaultSorting;
-    }
-  }
+      const defaultSorting = this.sortingConfig()?.defaultSorting ?? null;
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-    // ROWS CHANGED
-    if (changes['rows']) {
-      // this.updateDisplayedRows();
-      this.cdr.markForCheck();
-    }
-
-    // LOADING CHANGED
-    if (changes['loading']) {
-      this.cdr.markForCheck();
+      this.currentSorting = defaultSorting;
     }
   }
 
 
   applyFilters() {
-    const filters = this.searchConfig?.fields.filter((f: any) => {
+    const filters = this.searchConfig()?.fields.filter((f: any) => {
       const value = this.filterValues[f.field];
 
       return (value !== null && value !== undefined && value !== '');
@@ -184,12 +139,12 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
     // ADD PAGINATION IF SERVER SIDE
 
     if (
-      this.paginationConfig?.enabled &&
-      this.paginationConfig.serverSide
+      this.paginationConfig()?.enabled &&
+      this.paginationConfig()?.serverSide
     ) {
       request.pagination = {
-        page: this.paginationConfig.page,
-        pageSize: this.paginationConfig.pageSize,
+        page: this.paginationConfig()?.page || 0,
+        pageSize: this.paginationConfig()?.pageSize || 0,
       };
     }
 
@@ -218,13 +173,13 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
   }
 
   get totalPages(): number {
-    if (!this.paginationConfig) {
+    if (!this.paginationConfig()) {
       return 0;
     }
 
     return Math.ceil(
-      this.paginationConfig.totalItems /
-      this.paginationConfig.pageSize
+      (this.paginationConfig()?.totalItems || 0) /
+      (this.paginationConfig()?.pageSize || 0)
     );
   }
 
@@ -235,76 +190,83 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
     );
   }
 
-  get displayedRows(): T[] {
+  displayedRows = computed(() => {
+    const rows = this.rows();
+    const pagination = this.paginationConfig();
 
-    if (
-      !this.paginationConfig?.enabled
-    ) {
-      return this.rows;
+    if (!pagination?.enabled) {
+      return rows;
     }
 
-    // SERVER SIDE:
-    // backend already paginated
-    if (
-      this.paginationConfig.serverSide
-    ) {
-      return this.rows;
+    if (pagination.serverSide) {
+      return rows;
     }
 
-    // FRONTEND PAGINATION
+    const start = (pagination.page - 1) * pagination.pageSize;
+    const end = start + pagination.pageSize;
 
-    const start = (this.paginationConfig.page - 1) * this.paginationConfig.pageSize;
+    return rows.slice(start, end);
+  });
 
-    const end = start + this.paginationConfig.pageSize;
-
-    return this.rows.slice(start, end);
+  private buildFilters() {
+    return this.searchConfig()?.fields
+      .filter((f: any) => {
+        const value = this.filterValues[f.field];
+        return value !== null && value !== undefined && value !== '';
+      })
+      .map((f: any) => ({
+        field: f.field,
+        operator: f.operator ?? 'contains',
+        value: this.filterValues[f.field],
+      })) ?? [];
   }
 
-  changePage(page: number) {
+  changePage(page: number): void {
+    const pagination = this.paginationConfig();
 
-    if (!this.paginationConfig) {
+    if (!pagination) {
       return;
     }
 
-    const updatedConfig = {
-      ...this.paginationConfig,
-      page,
+    const request: DataGridRequest = {
+      filters: this.buildFilters(),
+      sorting: this.currentSorting,
+      pagination: {
+        page,
+        pageSize: pagination.pageSize,
+      },
     };
 
-    this.paginationConfig = updatedConfig;
-
-    this.applyFilters();
-
-    this.saveState();
+    this.dataRequest.emit(request);
   }
 
-  changePageSize(size: number) {
+  changePageSize(size: number): void {
+    const pagination = this.paginationConfig();
 
-    if (!this.paginationConfig) {
+    if (!pagination) {
       return;
     }
 
-    this.paginationConfig = {
-      ...this.paginationConfig,
-      page: 1,
-      pageSize: Number(size),
+    const request: DataGridRequest = {
+      filters: this.buildFilters(),
+      sorting: this.currentSorting,
+      pagination: {
+        page: 1,
+        pageSize: Number(size),
+      },
     };
 
-    this.applyFilters();
-
-    this.saveState();
+    this.dataRequest.emit(request);
   }
 
-  get hasRows(): boolean {
-    return this.displayedRows.length > 0;
-  }
+  hasRows = computed(() => this.displayedRows().length > 0);
 
   sort(
     column: DataGridColumn<T>
   ): void {
 
     if (
-      !this.sortingConfig?.enabled ||
+      !this.sortingConfig()?.enabled ||
       !column.sortable
     ) {
       return;
@@ -383,36 +345,33 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
 
   saveState(): void {
 
-    if (
-      !this.persistConfig?.enabled
-    ) {
+    const persist = this.persistConfig();
+
+    if (!persist?.enabled) {
       return;
     }
 
     const state: DataGridState = {
       filters: this.filterValues,
       sorting: this.currentSorting,
-      pagination:
-        this.paginationConfig ? {
-          page: this.paginationConfig.page,
-          pageSize: this.paginationConfig.pageSize,
-        }
-          : undefined,
     };
 
     localStorage.setItem(
-      this.persistConfig.storageKey,
+      persist.storageKey,
       JSON.stringify(state)
     );
   }
 
   restoreState(): void {
 
-    if (!this.persistConfig?.enabled) {
+    const persist =
+      this.persistConfig();
+
+    if (!persist?.enabled) {
       return;
     }
 
-    const savedState = localStorage.getItem(this.persistConfig.storageKey);
+    const savedState = localStorage.getItem(persist.storageKey);
 
     if (!savedState) {
       return;
@@ -421,19 +380,14 @@ export class DataGridComponent<T = any> implements OnInit, OnChanges {
     const state: DataGridState = JSON.parse(savedState);
 
     // FILTERS
-    Object.assign(this.filterValues, state.filters ?? {});
+    Object.assign(
+      this.filterValues,
+      state.filters ?? {}
+    );
 
     // SORTING
-    this.currentSorting = state.sorting ?? null;
 
-    // PAGINATION
-    if (state.pagination && this.paginationConfig) {
-      this.paginationConfig = {
-        ...this.paginationConfig,
-        page: state.pagination.page,
-        pageSize: state.pagination.pageSize,
-      };
-    }
+    this.currentSorting = state.sorting ?? null;
   }
 
   // handleClick(

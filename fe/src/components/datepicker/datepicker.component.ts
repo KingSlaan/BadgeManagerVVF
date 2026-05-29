@@ -46,7 +46,12 @@ export class DatepickerComponent implements ControlValueAccessor {
   private onTouched: () => void = () => { };
 
   writeValue(value: string | null): void {
-    this.value = value;
+    if (!value) {
+      this.value = null;
+      return;
+    }
+
+    this.value = this.toNativeDateTime(value);
   }
 
   registerOnChange(fn: (value: string | null) => void): void {
@@ -66,13 +71,13 @@ export class DatepickerComponent implements ControlValueAccessor {
       return '';
     }
 
-    const [year, month, day] = this.value.split('-');
-
-    return `${day}-${month}-${year}`;
+    return this.toDisplayFormat(this.value);
   }
 
   openPicker(input: HTMLInputElement): void {
-    input.showPicker();
+    if (!this.disabled && input.showPicker) {
+      input.showPicker();
+    }
   }
 
   onValueChange(event: Event): void {
@@ -80,7 +85,33 @@ export class DatepickerComponent implements ControlValueAccessor {
 
     this.value = input.value;
 
-    this.onChange(this.value);
+    const formatted = this.toDisplayFormat(this.value);
+
+    this.onChange(formatted);
     this.onTouched();
+  }
+
+  private toNativeDateTime(value: string): string {
+    // 27/05/2026 14:04:00
+    // -> 2026-05-27T14:04
+
+    const [datePart, timePart] = value.split(' ');
+
+    const [day, month, year] = datePart.split('/');
+
+    const [hours, minutes] = timePart.split(':');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  private toDisplayFormat(value: string): string {
+    // 2026-05-27T14:04
+    // -> 27/05/2026 14:04:00
+
+    const [datePart, timePart] = value.split('T');
+
+    const [year, month, day] = datePart.split('-');
+
+    return `${day}/${month}/${year} ${timePart}:00`;
   }
 }

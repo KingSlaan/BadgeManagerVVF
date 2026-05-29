@@ -118,42 +118,47 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
     {
       field: 'codTipoTessera',
       header: 'Tipo',
+       render: (row: any) => row.codTipoTessera === "D" ? "Dipendente" : "Sostitutiva"
     },
     {
-      field: 'nominativo',
-      header: 'Nominativo',
+      field: 'persona',
+      header: 'Persona',
       render: (row: any) =>
-        `${row.cognome} ${row.nome}`,
+        `${row.cognome} ${row.nome} <br/> <small> <strong>${row.codiceFiscale} </strong></small>`,
     },
-    {
-      field: 'codiceFiscale',
-      header: 'CF',
-    },
-    {
-      field: 'dataOraIndisponibilita',
-      header: 'Data Indisponibilità',
-    },
-    {
-      field: 'assegnazione',
-      header: 'Assegnazione',
-      render: (row: any) => `
-          <small>
-            <strong> Inizio: </strong>
-            ${row.dataOraInizioAssegnazione} <br />
-          </small>
-          <small>
-            <strong> Fine: </strong>
-            ${row.dataOraFineAssegnazione}
-          </small>
-        `
-    },
+    // {
+    //   field: 'codiceFiscale',
+    //   header: 'CF',
+    // },
     {
       field: 'codiceInterno',
       header: 'Codice Interno',
       render: (row: any) =>
         `${row.codiceInterno}`,
     },
-
+    // {
+    //   field: 'dataOraIndisponibilita',
+    //   header: 'Data Indisponibilità',
+    // },
+    {
+      field: 'assegnazione',
+      header: 'Assegnazione',
+      render: (row: any) => `
+          <small>
+            <strong> Inizio: </strong>
+            ${row.dataOraInizioAssegnazione || "-"}
+          </small> <br/>
+          <small>
+            <strong> Fine: </strong>
+            ${row.dataOraFineAssegnazione || "-"}
+          </small> <br/>
+          <small>
+            <strong> Indisponibilità: </strong>
+            ${row.dataOraIndisponibilita || "-"}
+          </small>
+        `,
+        width:"350px"
+    },
     {
       field: 'actions',
       header: 'Actions',
