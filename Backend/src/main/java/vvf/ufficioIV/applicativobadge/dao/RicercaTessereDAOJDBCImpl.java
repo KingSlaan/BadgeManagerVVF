@@ -57,6 +57,10 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "nome": dbColumn = "a.NOME"; break;
                     case "cognome": dbColumn = "a.COGNOME"; break;
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
+                    
+                    // ---> AGGIUNGI QUESTA RIGA PER SOSTITUZIONE CODICE SEDE CON DESCRIZIONE SEDE<---
+                    case "sede": dbColumn = "d.DESCRIZIONE"; break;
+                    
                     default: continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
@@ -72,7 +76,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         return where.toString();
     }
 
-    // Nuovo metodo che estrae solo l'ultima assegnazione per ogni tessera
+    // 1. Aggiorno la FROM clause aggiungendo la JOIN con DIPARTIMENTO1
     private String getFromClause() {
         return "FROM TESSERA1 t " +
                "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
@@ -81,12 +85,13 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
                "    FROM TESSERADIPEND1" +
                ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE ";
+               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+               "LEFT JOIN DIPARTIMENTO1 d ON t.SEDE = d.CODSEDE "; // <-- NUOVA JOIN
     }
 
-    // Aggiornamento di getBaseQuery
+    // 2. Aggiorno la getBaseQuery per estrarre la DESCRIZIONE aliasandola come SEDE
     private String getBaseQuery() {
-        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
+        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, d.DESCRIZIONE AS SEDE, t.DATAORAINDISPONIBILITA, " + // <-- MODIFICA QUI
                "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                "a.NOME, a.COGNOME " +
                getFromClause();

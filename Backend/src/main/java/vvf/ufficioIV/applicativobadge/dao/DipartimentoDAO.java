@@ -9,5 +9,7 @@ public interface DipartimentoDAO {
 	
     List<DipartimentoDTO> getDipartimentiByFilters(JsonArray filters);
     
+    List<DipartimentoDTO> getDipartimentiConConteggioTessere();
+    
     void closeConnection();
 }

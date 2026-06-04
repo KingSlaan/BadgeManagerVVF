@@ -4,6 +4,7 @@ public class DipartimentoDTO {
 
     private String codSede;
     private String descrizione;
+    private Integer conteggioTessere; // <-- NUOVO CAMPO
 
     public DipartimentoDTO() {}
 
@@ -17,4 +18,8 @@ public class DipartimentoDTO {
 
     public String getDescrizione() { return descrizione; }
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+
+    // <-- NUOVI GETTER E SETTER -->
+    public Integer getConteggioTessere() { return conteggioTessere; }
+    public void setConteggioTessere(Integer conteggioTessere) { this.conteggioTessere = conteggioTessere; }
 }

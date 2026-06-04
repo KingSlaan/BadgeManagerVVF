@@ -83,6 +83,38 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
         return results;
     }
     
+    
+    @Override
+    public List<DipartimentoDTO> getDipartimentiConConteggioTessere() {
+        List<DipartimentoDTO> results = new ArrayList<>();
+        
+        // La LEFT JOIN assicura che se una sede non ha tessere, esce comunque con COUNT = 0
+        String sql = "SELECT d.CODSEDE, d.DESCRIZIONE, COUNT(t.IDTESSERA) AS CONTEGGIO " +
+                     "FROM DIPARTIMENTO1 d " +
+                     "LEFT JOIN TESSERA1 t ON d.CODSEDE = t.SEDE " +
+                     "GROUP BY d.CODSEDE, d.DESCRIZIONE " +
+                     "ORDER BY d.DESCRIZIONE";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            while (rs.next()) {
+                DipartimentoDTO dto = new DipartimentoDTO(
+                    rs.getString("CODSEDE"),
+                    rs.getString("DESCRIZIONE")
+                );
+                // Impostiamo il conteggio appena calcolato dal DB
+                dto.setConteggioTessere(rs.getInt("CONTEGGIO"));
+                
+                results.add(dto);
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getDipartimentiConConteggioTessere: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return results;
+    }
 
     @Override
     public void closeConnection() {

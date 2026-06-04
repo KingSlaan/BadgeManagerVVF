@@ -27,7 +27,9 @@ import java.util.Properties;
  * API ENDPOINT : /getTessereListByFiltersServlet
  * METODO HTTP  : POST
  * DESCRIZIONE  : Restituisce una lista di tessere applicando filtri di ricerca dinamici 
- * e supportando la paginazione dei risultati.
+ * e supportando la paginazione dei risultati. 
+ * NOTA: Il campo "sede" restituito rappresenta ora la DESCRIZIONE del dipartimento, 
+ * e i filtri su "sede" agiscono in modo testuale (LIKE) su tale descrizione.
  * ==========================================================================================
  * * 📥 REQUEST (Cosa deve inviare il Frontend)
  * ------------------------------------------------------------------------------------------
@@ -36,17 +38,17 @@ import java.util.Properties;
  * {
  * "filters": [                           // (Opzionale) Se presente, DEVE essere un array
  * {
- * "field": "nome_colonna",           // (Obbligatorio nel filtro) es. "matricola"
- * "operator": "=",                   // (Obbligatorio nel filtro) es. "=", "LIKE", ">"
- * "value": "12345"                   // (Obbligatorio nel filtro) valore da cercare
+ * "field": "sede",                   // (Obbligatorio) es. "idTessera", "sede", "nome"
+ * "operator": "contains",            // (Obbligatorio) es. "equals", "contains"
+ * "value": "Comando di Roma"                    // (Obbligatorio) valore da cercare
  * }
  * ],
  * "pagination": {                        // (Opzionale) Se presente, DEVE essere un oggetto
- * "page": 1,                           // (Opzionale) intero, default: 1 se mancante o < 1
- * "pageSize": 10                       // (Opzionale) intero, default: 10 se mancante o < 1
+ * "page": 1,                           // (Opzionale) intero, default: 1
+ * "pageSize": 10                       // (Opzionale) intero, default: 10
  * }
  * }
- * *
+ * 
  * 📤 RESPONSE OK (Casi di successo - HTTP 200)
  * ------------------------------------------------------------------------------------------
  * Utilizza   : ResponseUtil.sendOkWithPagination
