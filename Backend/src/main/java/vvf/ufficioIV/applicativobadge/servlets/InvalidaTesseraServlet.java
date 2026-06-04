@@ -6,13 +6,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
+import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,30 +21,58 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
-
 /**
- * -----------------------------------------------------------------------------
- * SERVIZIO: Invalida Tessera
- * DESCRIZIONE: Imposta una data di indisponibilità sulla tessera e, a cascata, ne revoca l'eventuale assegnazione in corso.
- * METODO: PUT
- * URL: http://host:port/ApplicativoBadgeVVF/InvalidaTessera/{idTessera}
- *
- * BODY ESEMPIO (JSON):
+ * ==========================================================================================
+ * API ENDPOINT : /invalidaTessera/{idTessera}
+ * METODO HTTP  : PUT
+ * DESCRIZIONE  : Invalida una specifica tessera e revoca a cascata l'eventuale 
+ * assegnazione attualmente in corso, utilizzando la data/ora fornita.
+ * ==========================================================================================
+ * 📥 REQUEST (Cosa deve inviare il Frontend)
+ * ------------------------------------------------------------------------------------------
+ * Content-Type : application/json
+ * URL Path     : idTessera deve essere accodato all'URL (es. /invalidaTessera/123)
+ * Body         :
  * {
- * "dataOraIndisponibilita": "31/12/9999 23:59:59"
+ * "dataOraIndisponibilita": "dd/MM/yyyy HH:mm:ss"  // Es: "04/06/2026 15:30:00" (obbligatorio)
  * }
- * -----------------------------------------------------------------------------
+ *
+ * 📤 RESPONSE OK (Casi di successo - HTTP 200)
+ * ------------------------------------------------------------------------------------------
+ * Utilizza   : ResponseUtil.sendOkNoData
+ * Struttura  :
+ * {
+ * "esito": "OK",
+ * "messaggio": "Tessera invalidata e relativa assegnazione revocata con successo.",
+ * "data": null
+ * }
+ * * 🚫 RESPONSE KO (Casi di errore - HTTP 400, 404, 500)
+ * ------------------------------------------------------------------------------------------
+ * Utilizza   : ResponseUtil.sendError
+ * Casistiche :
+ * - HTTP 400 : "ID Tessera mancante nell'URL."
+ * - HTTP 400 : "Body JSON non valido."
+ * - HTTP 400 : "Parametro dataOraIndisponibilita mancante."
+ * - HTTP 400 : "Formato data non valido (atteso dd/MM/yyyy HH:mm:ss)."
+ * - HTTP 404 : "Tessera non trovata."
+ * - HTTP 500 : "Errore DB Config" oppure "Errore interno: <dettaglio_errore>"
+ * Struttura  :
+ * {
+ * "esito": "KO",
+ * "messaggio": "<descrizione specifica dell'errore>"
+ * }
+ * ==========================================================================================
  */
-@WebServlet("/InvalidaTessera/*")
+@WebServlet("/invalidaTessera/*")
 public class InvalidaTesseraServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         String pathInfo = request.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera mancante nell'URL.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera mancante nell'URL.");
             return;
         }
         String idTessera = pathInfo.substring(1);
@@ -53,19 +82,19 @@ public class InvalidaTesseraServlet extends HttpServlet {
             String line;
             while ((line = reader.readLine()) != null) sb.append(line);
         }
-        
+
         JsonObject json;
         try {
             json = JsonParser.parseString(sb.toString()).getAsJsonObject();
         } catch (Exception e) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Body JSON non valido.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Body JSON non valido.");
             return;
         }
 
         String dataIndispStr = getStringSafe(json, "dataOraIndisponibilita");
 
         if (isBlank(dataIndispStr)) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Parametro dataOraIndisponibilita mancante.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametro dataOraIndisponibilita mancante.");
             return;
         }
 
@@ -73,40 +102,44 @@ public class InvalidaTesseraServlet extends HttpServlet {
         try {
             dataIndisp = LocalDateTime.parse(dataIndispStr, formatter);
         } catch (Exception e) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido (atteso dd/MM/yyyy HH:mm:ss).");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido (atteso dd/MM/yyyy HH:mm:ss).");
             return;
         }
 
         Properties props = loadDbProps();
-        if(props == null) { sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB Config"); return; }
+        if (props == null) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB Config");
+            return;
+        }
 
         Tessera1DAO daoTessera = null;
         TesseraDipend1DAO daoAssegnaz = null;
 
         try {
-            daoTessera = new Tessera1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
+            daoTessera  = new Tessera1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
             daoAssegnaz = new TesseraDipend1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
-            
+
             // Invalida: 1. Aggiorna TESSERA1
             boolean invalidata = daoTessera.invalidaTessera(idTessera, dataIndisp);
-            
+
             if (invalidata) {
                 // 2. Cascata: Revoca l'assegnazione in corso (se presente) usando la stessa data
                 daoAssegnaz.revocaAssegnazioneAttiva(idTessera, dataIndisp);
-                sendSuccessResponse(response, "Tessera invalidata e relativa assegnazione revocata con successo.");
+                ResponseUtil.sendOkNoData(response, "Tessera invalidata e relativa assegnazione revocata con successo.");
             } else {
-                sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Tessera non trovata.");
+                ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera non trovata.");
             }
 
         } catch (Exception e) {
-            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno: " + e.getMessage());
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno: " + e.getMessage());
         } finally {
-            if (daoTessera != null) daoTessera.closeConnection();
+            if (daoTessera != null)  daoTessera.closeConnection();
             if (daoAssegnaz != null) daoAssegnaz.closeConnection();
         }
     }
 
- // --- Metodi di utilità standardizzati (usali anche nelle altre due servlet) ---
+    // --- Metodi di utilità locali ---
+
     private Properties loadDbProps() {
         Properties props = new Properties();
         try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/db.properties")) {
@@ -114,20 +147,11 @@ public class InvalidaTesseraServlet extends HttpServlet {
         } catch (Exception e) {}
         return null;
     }
+
     private String getStringSafe(JsonObject json, String key) {
         try { return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString() : null; }
         catch (Exception e) { return null; }
     }
+
     private boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
-    
-    private void sendErrorResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
-        response.setContentType("application/json"); response.setCharacterEncoding("UTF-8"); response.setStatus(statusCode);
-        JsonObject errorObj = new JsonObject(); errorObj.addProperty("esito", "KO"); errorObj.addProperty("messaggio", message);
-        response.getWriter().print(new Gson().toJson(errorObj));
-    }
-    private void sendSuccessResponse(HttpServletResponse response, String message) throws IOException {
-        response.setContentType("application/json"); response.setCharacterEncoding("UTF-8"); response.setStatus(HttpServletResponse.SC_OK);
-        JsonObject obj = new JsonObject(); obj.addProperty("esito", "OK"); obj.addProperty("messaggio", message);
-        response.getWriter().print(new Gson().toJson(obj));
-    }
 }

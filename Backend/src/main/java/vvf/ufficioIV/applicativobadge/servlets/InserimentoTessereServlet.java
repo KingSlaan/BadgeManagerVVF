@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,22 +17,69 @@ import vvf.ufficioIV.applicativobadge.dao.TesseraDecode1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDecode1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.entity.Tessera1;
 import vvf.ufficioIV.applicativobadge.entity.TesseraDecode1;
+import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Properties;
 
+
+/**
+ * ==========================================================================================
+ * API ENDPOINT : /inserimentoTessereServlet
+ * METODO HTTP  : POST
+ * DESCRIZIONE  : Inserimento massivo di una lista di tessere nel database. 
+ * Esegue l'inserimento incrociato sulle tabelle Tessera1 e TesseraDecode1.
+ * ==========================================================================================
+ * * 📥 REQUEST (Cosa deve inviare il Frontend)
+ * ------------------------------------------------------------------------------------------
+ * Content-Type : application/json
+ * Body         : Array di oggetti JSON
+ * [
+ * {
+ * "idTessera": "stringa",     // Obbligatorio - ID della tessera
+ * "codiceInterno": "stringa"  // Obbligatorio - Codice interno da associare
+ * }
+ * ]
+ * * * 📤 RESPONSE OK (Casi di successo - HTTP 200)
+ * ------------------------------------------------------------------------------------------
+ * Utilizza   : ResponseUtil.sendOkNoData
+ * Struttura  :
+ * {
+ * "esito": "OK",
+ * "messaggio": "Tessere (X) inserite correttamente.",
+ * "data": null
+ * }
+ * * * 🚫 RESPONSE KO (Casi di errore - HTTP 400, 405, 500)
+ * ------------------------------------------------------------------------------------------
+ * Utilizza   : ResponseUtil.sendError
+ * Casistiche :
+ * - HTTP 400 : "Body della richiesta vuoto o mancante."
+ * - HTTP 400 : "Body JSON non valido, atteso un array."
+ * - HTTP 400 : "Sintassi JSON non valida."
+ * - HTTP 400 : "Nessuna tessera inviata."
+ * - HTTP 405 : "Usa POST" (Se l'endpoint viene chiamato in GET)
+ * - HTTP 500 : "Configurazione DB non trovata."
+ * - HTTP 500 : "Errore interno: Parametri obbligatori mancanti per il record con idTessera: <idTessera>"
+ * - HTTP 500 : "Errore interno: Inserimento in Tessera1 fallito per idTessera: <idTessera>"
+ * - HTTP 500 : "Errore interno: Inserimento in TesseraDecode1 fallito per idTessera: <idTessera>"
+ * Struttura  :
+ * {
+ * "esito": "KO",
+ * "messaggio": "<descrizione specifica dell'errore>"
+ * }
+ * ==========================================================================================
+ */
 @WebServlet("/inserimentoTessereServlet")
-public class inserimentoTessereServlet extends HttpServlet {
+public class InserimentoTessereServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private static final String         DEFAULT_SEDE              = "00";
-    private static final String         DEFAULT_COD_TIPO_TESSERA  = "S";
-    private static final Integer        DEFAULT_TESSERA_ATE       = 0;
-    private static final LocalDateTime  DEFAULT_DATA_ORA_INDISP   = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+    private static final String        DEFAULT_SEDE             = "00";
+    private static final String        DEFAULT_COD_TIPO_TESSERA = "S";
+    private static final Integer       DEFAULT_TESSERA_ATE      = 0;
+    private static final LocalDateTime DEFAULT_DATA_ORA_INDISP  = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("[inserimentoTessereServlet] >>> Inizio doPost");
@@ -47,7 +93,7 @@ public class inserimentoTessereServlet extends HttpServlet {
         String bodyJson = sb.toString();
 
         if (bodyJson == null || bodyJson.trim().isEmpty()) {
-            sendJsonResponse(response, HttpServletResponse.SC_BAD_REQUEST, "KO", "Body della richiesta vuoto o mancante.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Body della richiesta vuoto o mancante.");
             return;
         }
 
@@ -56,17 +102,17 @@ public class inserimentoTessereServlet extends HttpServlet {
         try {
             JsonElement parsedElement = JsonParser.parseString(bodyJson);
             if (!parsedElement.isJsonArray()) {
-                sendJsonResponse(response, HttpServletResponse.SC_BAD_REQUEST, "KO", "Body JSON non valido, atteso un array.");
+                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Body JSON non valido, atteso un array.");
                 return;
             }
             jsonArray = parsedElement.getAsJsonArray();
         } catch (JsonSyntaxException e) {
-            sendJsonResponse(response, HttpServletResponse.SC_BAD_REQUEST, "KO", "Sintassi JSON non valida.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Sintassi JSON non valida.");
             return;
         }
 
         if (jsonArray.isEmpty()) {
-            sendJsonResponse(response, HttpServletResponse.SC_BAD_REQUEST, "KO", "Nessuna tessera inviata.");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Nessuna tessera inviata.");
             return;
         }
 
@@ -74,7 +120,7 @@ public class inserimentoTessereServlet extends HttpServlet {
         Properties props = new Properties();
         try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/db.properties")) {
             if (is == null) {
-                sendJsonResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "KO", "Configurazione DB non trovata.");
+                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Configurazione DB non trovata.");
                 return;
             }
             props.load(is);
@@ -86,19 +132,19 @@ public class inserimentoTessereServlet extends HttpServlet {
         String user = props.getProperty("db.user");
         String pwd  = props.getProperty("db.password");
 
-        Tessera1DAO daoTessera = null;
+        Tessera1DAO       daoTessera       = null;
         TesseraDecode1DAO daoTesseraDecode = null;
         int tessereInserite = 0;
 
         try {
-            daoTessera = new Tessera1DAOJDBCImpl(ip, port, db, user, pwd);
+            daoTessera       = new Tessera1DAOJDBCImpl(ip, port, db, user, pwd);
             daoTesseraDecode = new TesseraDecode1DAOJDBCImpl(ip, port, db, user, pwd);
 
             // 4. Cicla ed Inserisci
             for (JsonElement element : jsonArray) {
                 if (!element.isJsonObject()) continue;
-                
-                JsonObject json = element.getAsJsonObject();
+
+                JsonObject json     = element.getAsJsonObject();
                 String idTessera     = getStringSafe(json, "idTessera");
                 String codiceInterno = getStringSafe(json, "codiceInterno");
 
@@ -113,19 +159,20 @@ public class inserimentoTessereServlet extends HttpServlet {
                 // INSERT TESSERADECODE1
                 boolean okDecode = daoTesseraDecode.insertTesseraDecode(new TesseraDecode1(idTessera, codiceInterno));
                 if (!okDecode) {
-                    daoTessera.deleteTesseraById(idTessera); // Rollback
+                    daoTessera.deleteTesseraById(idTessera); // Rollback manuale
                     throw new Exception("Inserimento in TesseraDecode1 fallito per idTessera: " + idTessera);
                 }
-                
+
                 tessereInserite++;
             }
 
-            sendJsonResponse(response, HttpServletResponse.SC_OK, "OK", "Tessere (" + tessereInserite + ") inserite correttamente.");
+            // Operazione di scrittura: nessun dato da restituire, solo conferma
+            ResponseUtil.sendOkNoData(response, "Tessere (" + tessereInserite + ") inserite correttamente.");
 
         } catch (Exception e) {
             System.err.println("[inserimentoTessereServlet] Eccezione: " + e.getMessage());
             // Gson si occuperà di fare l'escape sicuro del messaggio di errore
-            sendJsonResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "KO", "Errore interno: " + e.getMessage());
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno: " + e.getMessage());
         } finally {
             if (daoTessera != null)       daoTessera.closeConnection();
             if (daoTesseraDecode != null) daoTesseraDecode.closeConnection();
@@ -133,8 +180,10 @@ public class inserimentoTessereServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        sendJsonResponse(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, "KO", "Usa POST");
+        ResponseUtil.sendError(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Usa POST");
     }
+
+    // ── Utility locali ────────────────────────────────────────────────────────
 
     private String getStringSafe(JsonObject json, String key) {
         try { return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString() : null; }
@@ -143,19 +192,5 @@ public class inserimentoTessereServlet extends HttpServlet {
 
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
-    }
-
-    private void sendJsonResponse(HttpServletResponse response, int statusCode, String esito, String messaggio) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(statusCode);
-        
-        JsonObject resObj = new JsonObject();
-        resObj.addProperty("esito", esito);
-        resObj.addProperty("messaggio", messaggio);
-        
-        PrintWriter out = response.getWriter();
-        out.print(new Gson().toJson(resObj));
-        out.flush();
     }
 }

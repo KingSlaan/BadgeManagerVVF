@@ -140,6 +140,16 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
             return ps.executeUpdate() == 1;
         }
     }
+    
+    @Override
+    public boolean updateCodTipoTessera(String idTessera, String codTipoTessera) throws SQLException {
+        String sql = "UPDATE TESSERA1 SET CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, codTipoTessera);
+            ps.setString(2, idTessera);
+            return ps.executeUpdate() == 1;
+        }
+    }
 
     @Override
     public void closeConnection() {

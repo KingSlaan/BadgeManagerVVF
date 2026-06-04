@@ -26,17 +26,29 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         }
     }
 
+    
     // Metodo helper per costruire la clausola WHERE in base ai filtri
     private String buildWhereClause(JsonArray filters, List<Object> params) {
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
         if (filters != null) {
             for (JsonElement el : filters) {
                 JsonObject filter = el.getAsJsonObject();
-                String field = filter.get("field").getAsString();
-                String operator = filter.get("operator").getAsString();
-                String value = filter.get("value").getAsString();
+                
+                // Evitiamo NullPointerException se mancano chiavi per filtri custom
+                String field = filter.has("field") ? filter.get("field").getAsString() : "";
+                String operator = filter.has("operator") ? filter.get("operator").getAsString() : "";
+                String value = filter.has("value") ? filter.get("value").getAsString() : "";
 
-                // Mappatura campi JSON sulle colonne DB reali
+                // --- INIZIO GESTIONE FILTRI SPECIALI ---
+                if ("soloNonAssegnate".equals(field)) {
+                    if ("true".equalsIgnoreCase(value)) {
+                        where.append(" AND tp.CODFISDIP IS NULL ");
+                    }
+                    continue; // Gestito, passa al prossimo filtro
+                }
+                // --- FINE GESTIONE FILTRI SPECIALI ---
+
+                // Mappatura campi JSON sulle colonne DB reali per i filtri standard
                 String dbColumn = "";
                 switch (field) {
                     case "idTessera": dbColumn = "t.IDTESSERA"; break;
@@ -44,7 +56,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "nome": dbColumn = "a.NOME"; break;
                     case "cognome": dbColumn = "a.COGNOME"; break;
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
-                    default: continue; // ignora filtri non riconosciuti
+                    default: continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
                 if ("contains".equalsIgnoreCase(operator)) {
@@ -59,14 +71,24 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         return where.toString();
     }
 
+    // Nuovo metodo che estrae solo l'ultima assegnazione per ogni tessera
+    private String getFromClause() {
+        return "FROM TESSERA1 t " +
+               "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
+               "LEFT JOIN (" +
+               "    SELECT IDTESSERA, CODFISDIP, DATAORAINIZIOASSEGNAZIONE, DATAORAFINEASSEGNAZIONE, " +
+               "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
+               "    FROM TESSERADIPEND1" +
+               ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
+               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE ";
+    }
+
+    // Aggiornamento di getBaseQuery
     private String getBaseQuery() {
         return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
                "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                "a.NOME, a.COGNOME " +
-               "FROM TESSERA1 t " +
-               "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
-               "LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
-               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE ";
+               getFromClause();
     }
 
     @Override
@@ -75,7 +97,9 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         List<Object> params = new ArrayList<>();
         
         String whereClause = buildWhereClause(filters, params);
-        String baseQuery = getBaseQuery() + whereClause + " ORDER BY t.IDTESSERA DESC";
+	    // Ordiniamo per data di inizio assegnazione decrescente (la più recente prima).
+	    // NULLS LAST assicura che le tessere mai assegnate appaiano in fondo e non rompano l'ordine.
+	    String baseQuery = getBaseQuery() + whereClause + " ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC NULLS LAST, t.IDTESSERA DESC";
 
         // Paginazione compatibile con Oracle 10g e 12c (uso di ROWNUM)
         int minRow = (page - 1) * pageSize + 1;
@@ -133,12 +157,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         List<Object> params = new ArrayList<>();
         String whereClause = buildWhereClause(filters, params);
         
-        // Count veloce usando la stessa logica di join
-        String countQuery = "SELECT COUNT(*) FROM TESSERA1 t " +
-                            "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
-                            "LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
-                            "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
-                            whereClause;
+        // Count veloce usando la stessa logica di join centralizzata
+        String countQuery = "SELECT COUNT(*) " + getFromClause() + whereClause;
 
         try (PreparedStatement ps = conn.prepareStatement(countQuery)) {
             int i = 1;
