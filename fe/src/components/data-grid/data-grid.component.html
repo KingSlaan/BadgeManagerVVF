@@ -39,6 +39,20 @@
                 (keydown)="onFilterKeydown($event)"
               />
             }
+            @if (f.type === "checkbox") {
+              <div class="form-check mt-2">
+                <input
+                  cFormCheckInput
+                  type="checkbox"
+                  [name]="f.field"
+                  [(ngModel)]="filterValues[f.field]"
+                />
+
+                <label class="form-check-label">
+                  {{ f.label }}
+                </label>
+              </div>
+            }
           </c-col>
         }
         <c-col xs="2">
@@ -129,7 +143,7 @@
                 <div class="d-flex align-items-center gap-2">
                   {{ column.header }}
 
-                  @if (sortingConfig()?.enabled === true && column.sortable) {
+                  @if (sortingEnabled() && column.sortable) {
                     <span class="sort-icon">
                       {{ getSortIcon(column) }}
                     </span>
@@ -143,7 +157,7 @@
         <tbody>
           @if (loading()) {
             <div class="datagrid-loading-overlay">
-              <c-spinner size="sm" color="primary"></c-spinner>
+              <c-spinner size="sm"></c-spinner>
 
               <span class="ms-2">
                 {{ loadingConfig()?.text || "Loading..." }}
@@ -212,6 +226,16 @@
         <!-- PAGE BUTTONS -->
 
         <div class="d-flex gap-2 align-items-center">
+          <button
+            cButton
+            color="secondary"
+            size="sm"
+            variant="ghost"
+            [disabled]="paginationConfig()!.page === 1"
+            (click)="changePage(1)"
+          >
+            Start
+          </button>
           <!-- PREVIOUS -->
 
           <button
@@ -265,6 +289,17 @@
             (click)="changePage(paginationConfig()!.page + 1)"
           >
             Next
+          </button>
+
+          <button
+            cButton
+            color="secondary"
+            size="sm"
+            variant="ghost"
+            [disabled]="paginationConfig()!.page === totalPages"
+            (click)="changePage(totalPages)"
+          >
+            End
           </button>
         </div>
       </div>

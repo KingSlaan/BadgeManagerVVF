@@ -16,6 +16,7 @@ import { LoadingService } from '../../../services/loading.service';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
 import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_MOCK, TESSERE_PERSIST_CONFIG, TESSERE_SEARCH_CONFIG } from './lista-tessere.datagrid';
 import { TessereService } from 'src/app/services/tessere.service';
+import { UtilsService } from 'src/app/services/utils.service';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -34,8 +35,8 @@ import { TessereService } from 'src/app/services/tessere.service';
 })
 export class ListaTessereComponent implements OnInit, AfterViewInit {
 
-  private loading = inject(LoadingService);
   private tessereService = inject(TessereService);
+  public utilsService = inject(UtilsService);
 
   icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions };
 
@@ -44,6 +45,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   isModalHistoryOpen = false;
   mode = ACTION_CONSTANTS.ADD;
   datagridLoading = signal(false);
+
+  today: Date = new Date();
 
   @ViewChild('actionTemplate', {
     static: true,
@@ -78,6 +81,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   tessere = signal<Tessere>([]);
   tesseraSelected = signal<Tessera>(tesseraEmpty);
+  tesseraHistory = signal<any>([]);
 
   initialRequest: DataGridRequest = {
     filters: [],
@@ -88,6 +92,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     sorting: this.sortingConfig?.defaultSorting ?? null,
   };
 
+  requestSearch = signal(this.initialRequest);
+
   exportCsv() {
     return console.log("exportCsv")
   }
@@ -97,6 +103,12 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData(this.initialRequest);
+
+  }
+
+  debug(row: any) {
+    console.log("FINE ASSEGNAZIUONE", this.utilsService.parseItalianDate(row.dataOraFineAssegnazione))
+    console.log("TODAY", this.today)
   }
 
   ngAfterViewInit() {
@@ -115,8 +127,14 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     console.log("AW", row);
   }
 
+  refresh() {
+    debugger;
+    this.loadData(this.requestSearch())
+  }
+
   loadData(request: DataGridRequest) {
     this.datagridLoading.set(true);
+    this.requestSearch.set(request);
 
     this.tessereService.getTessere(request).subscribe({
       next: (data: any) => {
@@ -155,12 +173,12 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.isModalAggiungiOpen = true;
   }
 
-  openHistoryModal(idTessera:string) {
+  openHistoryModal(idTessera: string) {
     this.tessereService.getTessereHistory(idTessera).subscribe({
       next: (data: any) => {
         this.isModalHistoryOpen = true;
 
-        this.tesseraSelected.set(data.data ?? tesseraEmpty);
+        this.tesseraHistory.set(data.data ?? []);
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);

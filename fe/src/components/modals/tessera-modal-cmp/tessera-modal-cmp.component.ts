@@ -1,3 +1,4 @@
+import { ToastService } from 'src/app/services/toast.service';
 import { UtilsService } from './../../../app/services/utils.service';
 import { ACTION_CONSTANTS } from './../../../constants/action.constants';
 import { Component, EventEmitter, inject, Input, OnInit, Output, SimpleChanges } from '@angular/core';
@@ -21,6 +22,7 @@ import { cilX } from '@coreui/icons';
 import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
 import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
 import { TessereService } from 'src/app/services/tessere.service';
+import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -51,6 +53,7 @@ import { TessereService } from 'src/app/services/tessere.service';
 export class TesseraModalCmpComponent {
   private tessereService = inject(TessereService);
   private utilsService = inject(UtilsService);
+  private toast = inject(ToastService);
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
@@ -116,7 +119,7 @@ export class TesseraModalCmpComponent {
         'codiceInterno',
         'nome',
         'cognome',
-        'sede',
+        // 'sede',
         'dataOraIndisponibilita'
       ],
       add: [],
@@ -177,18 +180,23 @@ export class TesseraModalCmpComponent {
     switch (mode) {
       case ACTION_CONSTANTS.ASSIGN:
         request = {
+          idTessera: this.tesseraSelected.idTessera,
           codiceFiscale: this.formTessera.controls.codiceFiscale.value,
+          sede: this.formTessera.controls.sede.value,
           codTipoTessera: this.formTessera.controls.codTipoTessera.value,
-          dataOraInizioAssegnazione: this.formTessera.controls.dataOraIndisponibilita.value,
-          dataOraFineAssegnazione: this.formTessera.controls.dataOraFineAssegnazione.value
+          dataInizioAssegnazione: this.formTessera.controls.dataOraInizioAssegnazione.value,
+          dataFineAssegnazione: this.formTessera.controls.dataOraFineAssegnazione.value
         }
 
-        this.tessereService.revocaTessera(this.tesseraSelected.idTessera, request).subscribe({
+        this.tessereService.assegnaTessera(this.tesseraSelected.idTessera, request).subscribe({
           next: (data: any) => {
             this.saved.emit();
+            this.toast.success(MESSAGES_CONSTANTS.SUCCESSO_ASSEGNA_TESSERA);
+
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
+            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });
@@ -204,9 +212,11 @@ export class TesseraModalCmpComponent {
         this.tessereService.revocaTessera(this.tesseraSelected.idTessera, request).subscribe({
           next: (data: any) => {
             this.saved.emit();
+            this.toast.success(MESSAGES_CONSTANTS.SUCCESSO_REVOCA_TESSERA);
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
+            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });
@@ -219,9 +229,11 @@ export class TesseraModalCmpComponent {
         this.tessereService.invalidaTessera(this.tesseraSelected.idTessera, request).subscribe({
           next: (data: any) => {
             this.saved.emit();
+            this.toast.success(MESSAGES_CONSTANTS.SUCCESSO_INVALIDA_TESSERA);
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
+            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });

@@ -39,6 +39,7 @@ export class TesseraAggiungiComponent {
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() saved = new EventEmitter<void>();
 
 
   listaBadgeForm = new FormGroup({
@@ -68,10 +69,11 @@ export class TesseraAggiungiComponent {
       next: (data: any) => {
         let dataReturn = data;
         this.toast.success('User saved successfully');
+         this.saved.emit();
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
-        this.toast.error('Errore nel sarvataggio delle tessere brother <br/> WEWEWE!!!','Inserimento Tessere');
+        this.toast.error('Errore nel sarvataggio delle tessere brother <br/> WEWEWE!!!', 'Inserimento Tessere');
       }
     });
     // do something here if needed

@@ -87,7 +87,7 @@ export interface DataGridSearchField {
   field: string;
   label: string;
   size?: string;
-  type?: 'text' | 'select' | 'date';
+  type?: 'text' | 'select' | 'date' | 'checkbox';
   operator?: 'contains' | 'equals';
   options?: DataGridSelectOption[];
 }

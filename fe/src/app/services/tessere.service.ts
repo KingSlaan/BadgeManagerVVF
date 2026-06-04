@@ -23,27 +23,27 @@ export class TessereService {
   }
 
   getTessereHistory(id: string): Observable<Tessera[]> {
-    return this.http.get<Tessera[]>(`${this.apiUrl}/TesseraCronology/${id}`);
+    return this.http.get<Tessera[]>(`${this.apiUrl}/tesseraCronology/${id}`);
   }
 
   createTessere(tessere: Array<Tessera>) {
     return this.http.post<Array<Tessera>>(`${this.apiUrl}/inserimentoTessereServlet`, tessere);
   }
 
-  assegnaTessera(tessere: any) {
-    return this.http.post<Tessera>(`${this.apiUrl}/assegnaTessereServlet`, tessere);
+  assegnaTessera(id: string,tessere: any) {
+    return this.http.post<Tessera>(`${this.apiUrl}/assegnaTesseraServlet`, tessere);
   }
 
-  updateTessera(id: number, tessera: Partial<Tessera>): Observable<Tessera> {
+  updateTessera(id: string, tessera: Partial<Tessera>): Observable<Tessera> {
     return this.http.put<Tessera>(`${this.apiUrl}/${id}`, tessera);
   }
 
   revocaTessera(id: string, tessera: any): any {
-    return this.http.put<Tessera>(`${this.apiUrl}/RevocaTessera/${id}`, tessera);
+    return this.http.put<Tessera>(`${this.apiUrl}/revocaTessera/${id}`, tessera);
   }
 
   invalidaTessera(id: string, tessera: any): any {
-    return this.http.put<Tessera>(`${this.apiUrl}/InvalidaTessera/${id}`, tessera);
+    return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
   }
 
   /**

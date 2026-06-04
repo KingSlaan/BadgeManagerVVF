@@ -36,6 +36,7 @@ import {
   RowDirective,
   FormSelectDirective,
   SpinnerComponent,
+  FormCheckInputDirective,
 } from '@coreui/angular';
 import { cilSearch, cilFilterX, cilFrown } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -62,7 +63,8 @@ import { IconDirective } from '@coreui/icons-angular';
     IconDirective,
     FormSelectDirective,
     DatepickerComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    FormCheckInputDirective
   ],
   templateUrl: './data-grid.component.html',
   styleUrls: ['./data-grid.component.scss'],
@@ -91,7 +93,7 @@ export class DataGridComponent<T = any> implements OnInit {
   selectedField = '';
   searchValue = '';
 
-  filterValues: Record<string, string> = {};
+  filterValues: Record<string, any> = {};
 
   // form row (temporary UI state)
   currentField = '';
@@ -103,7 +105,10 @@ export class DataGridComponent<T = any> implements OnInit {
   ngOnInit() {
     // Init empty object keys first
     this.searchConfig()?.fields.forEach((f: any) => {
-      this.filterValues[f.field] ??= '';
+      this.filterValues[f.field] ??=
+        f.type === 'checkbox'
+          ? false
+          : '';
     });
 
     // Then restore persisted values
@@ -120,36 +125,24 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
 
-  applyFilters() {
-    const filters = this.searchConfig()?.fields.filter((f: any) => {
-      const value = this.filterValues[f.field];
-
-      return (value !== null && value !== undefined && value !== '');
-    }).map((f: any) => ({
-      field: f.field,
-      operator: f.operator ?? 'contains',
-      value: this.filterValues[f.field],
-    })) ?? [];
+  applyFilters(): void {
+    const filters = this.buildFilters();
 
     const request: DataGridRequest = {
       filters,
-      sorting: this.currentSorting
+      sorting: this.currentSorting,
     };
 
-    // ADD PAGINATION IF SERVER SIDE
+    const pagination = this.paginationConfig();
 
-    if (
-      this.paginationConfig()?.enabled &&
-      this.paginationConfig()?.serverSide
-    ) {
+    if (pagination?.enabled && pagination.serverSide) {
       request.pagination = {
-        page: this.paginationConfig()?.page || 0,
-        pageSize: this.paginationConfig()?.pageSize || 0,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
       };
     }
 
     this.dataRequest.emit(request);
-
     this.saveState();
   }
 
@@ -209,16 +202,19 @@ export class DataGridComponent<T = any> implements OnInit {
   });
 
   private buildFilters() {
-    return this.searchConfig()?.fields
-      .filter((f: any) => {
-        const value = this.filterValues[f.field];
-        return value !== null && value !== undefined && value !== '';
-      })
-      .map((f: any) => ({
-        field: f.field,
-        operator: f.operator ?? 'contains',
-        value: this.filterValues[f.field],
-      })) ?? [];
+    return this.searchConfig()?.fields.filter((f: any) => {
+      const value = this.filterValues[f.field];
+
+      if (f.type === 'checkbox') {
+        return value === true;
+      }
+
+      return value !== null && value !== undefined && value !== '';
+    }).map((f: any) => ({
+      field: f.field,
+      operator: f.operator ?? 'equals',
+      value: this.filterValues[f.field],
+    })) ?? [];
   }
 
   changePage(page: number): void {
@@ -260,6 +256,10 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
   hasRows = computed(() => this.displayedRows().length > 0);
+
+  sortingEnabled = computed(
+    () => this.sortingConfig()?.enabled === true
+  );
 
   sort(
     column: DataGridColumn<T>

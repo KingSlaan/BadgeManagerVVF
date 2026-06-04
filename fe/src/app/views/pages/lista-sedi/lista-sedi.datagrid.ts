@@ -3,33 +3,16 @@ import { TemplateRef } from '@angular/core';
 import { DataGridColumn, DataGridEmptyStateConfig, DataGridSortingConfig } from '../../../../interfaces/datagrid';
 import { DataGridSearchConfig } from './../../../../interfaces/datagrid';
 
-export const SEDI_SEARCH_CONFIG: DataGridSearchConfig = {
-  enabled: true,
+export function createSearchConfig(): DataGridSearchConfig {
+  return {
+    enabled: true,
+    fields: [
+      { field: 'codSede', label: 'Codice', type: 'text' },
+      { field: 'descrizione', label: 'Descrizione', type: 'text',size: '4', operator: 'contains' },
+    ]
+  };
 
-  fields: [
-    { field: 'codSede', label: 'Sede', type: 'text' },
-    {
-      field: 'descrizione',
-      label: 'Descrizione',
-      type: 'select',
-      operator: 'equals',
-      options: [
-        {
-          label: 'RO',
-          value: 'Rovigo',
-        },
-        {
-          label: '00',
-          value: 'Uffici Centrali',
-        },
-        {
-          label: 'Pending',
-          value: 'PENDING',
-        },
-      ],
-    },
-  ]
-};
+}
 
 export const SEDI_SORTING_CONFIG: DataGridSortingConfig = {
   enabled: true,
@@ -42,20 +25,21 @@ export const SEDI_SORTING_CONFIG: DataGridSortingConfig = {
 export function createGridColumn(): DataGridColumn<Sede>[] {
   return [
     {
-      field: 'codice',
-      header: 'Sede',
+      field: 'codSede',
+      header: 'Codice',
     },
     {
       field: 'descrizione',
       header: 'Descrizione',
-    },
-    {
-      field: 'actions',
-      header: 'Actions',
-      render: (row: any) => ``,
     }
   ];
 }
+
+export const SEDI_PERSIST_CONFIG = {
+  enabled: true,
+  storageKey: 'sedi-grid',
+};
+
 export const SEDI_MOCK: Sedi = [
   {
     codice: "RO",
@@ -65,4 +49,5 @@ export const SEDI_MOCK: Sedi = [
     codice: "00",
     descrizione: "Uffici Centrali"
   }
+
 ];

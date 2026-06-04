@@ -1,7 +1,9 @@
 <app-datagrid
   [columns]="columns"
-  [rows]="data"
+  [rows]="sedi()"
   [searchConfig]="searchConfig"
   [paginationConfig]="paginationConfig"
+  [sortingConfig]="sortingConfig"
+  [loading]="datagridLoading()"
   (dataRequest)="loadData($event)"
 />

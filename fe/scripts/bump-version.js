@@ -23,7 +23,9 @@ const boardGames = [
   'Elfenland',
   'Barony',
   'PuertoRico',
-  'SpiritIsland'
+  'SpiritIsland',
+  'Civolution',
+  'Dixit',
 ];
 
 const bumpType = process.argv[2] || 'patch';

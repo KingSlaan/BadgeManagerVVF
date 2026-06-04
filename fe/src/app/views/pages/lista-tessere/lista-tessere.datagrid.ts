@@ -15,9 +15,9 @@ export const TESSERE_SEARCH_CONFIG: DataGridSearchConfig = {
 
   fields: [
     { field: 'idTessera', label: 'Id Tessera', type: 'text', size: '3' },
-    { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3' },
-    { field: 'nome', label: 'Nome', type: 'text' },
-    { field: 'cognome', label: 'Cognome', type: 'text' },
+    { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator:'contains' },
+    { field: 'nome', label: 'Nome', type: 'text', operator:'contains' },
+    { field: 'cognome', label: 'Cognome', type: 'text', operator:'contains' },
     {
       field: 'status',
       label: 'Status',
@@ -35,9 +35,12 @@ export const TESSERE_SEARCH_CONFIG: DataGridSearchConfig = {
 
       ],
     },
-    { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
-    { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
-    { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
+    {
+      field: 'soloNonAssegnate', label: 'Solo non Assegnate', type: 'checkbox', operator: 'equals', size: '3'
+    }
+    // { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
+    // { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
+    // { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
 
   ]
 };
@@ -118,7 +121,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
     {
       field: 'codTipoTessera',
       header: 'Tipo',
-       render: (row: any) => row.codTipoTessera === "D" ? "Dipendente" : "Sostitutiva"
+      render: (row: any) => row.codTipoTessera === "D" ? "Dipendente" : "Sostitutiva"
     },
     {
       field: 'persona',
@@ -157,11 +160,11 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
             ${row.dataOraIndisponibilita || "-"}
           </small>
         `,
-        width:"350px"
+      width: "350px"
     },
     {
       field: 'actions',
-      header: 'Actions',
+      header: 'Azioni',
       template: actionTemplate,
     }
   ];

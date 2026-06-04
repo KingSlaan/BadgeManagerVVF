@@ -52,9 +52,9 @@ export class DefaultLayoutComponent {
     let theme = document.documentElement.getAttribute('data-coreui-theme');
     return theme === 'light'
       // ? '../../../assets/images/BannerDEFINITIVOVer1.svg'
-      ? '../../../assets/images/BannerDEFINITIVO.svg'
+      ? '../../../assets/images/BannerDEFINITIVO_NewVersion.svg'
       // : '../../../assets/images/BannerDEFINITIVO_BiancoVer2.svg';
-      : '../../../assets/images/BannerDEFINITIVO_Bianco.svg';
+      : '../../../assets/images/BannerDEFINITIVO_NewVersion_White.svg';
   }
 
 }

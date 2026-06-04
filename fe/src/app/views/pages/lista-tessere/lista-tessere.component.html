@@ -16,28 +16,31 @@
   [(visible)]="isModalOpen"
   [mode]="mode"
   [tesseraSelected]="tesseraSelected()"
-  (saved)="loadData(this.initialRequest)"
+  (saved)="refresh()"
 ></app-tessera-modal-cmp>
 
-<app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
+<app-tessera-aggiungi
+  [(visible)]="isModalAggiungiOpen"
+  (saved)="refresh()"
+></app-tessera-aggiungi>
 
 <app-tessera-history
   [(visible)]="isModalHistoryOpen"
-  [tesseraSelected]="tesseraSelected()"
+  [tesseraSelectedHistory]="tesseraHistory()"
 ></app-tessera-history>
 
 <ng-template #actionTemplate let-row>
-  @if (!row.codiceFiscale) {
-    <button
-      cButton
-      color="info"
-      variant="ghost"
-      shape="rounded-pill"
-      (click)="openModal('assign', row.idTessera)"
-    >
-      <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
-    </button>
-  }
+  <!-- @if (!row.codiceFiscale || utilsService.parseItalianDate(row.dataFineAssegnazione) >= today ) { -->
+  <button
+    cButton
+    color="info"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('assign', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+  </button>
+  <!-- } -->
 
   <!-- <button
     cButton

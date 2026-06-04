@@ -1,0 +1,70 @@
+<c-row>
+  <c-col xs="12" lg="8">
+    <c-card>
+      <c-card-body>
+        <h4>User Settings</h4>
+
+        @if (errorMessage) {
+          <div class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="alert alert-success">
+            {{ successMessage }}
+          </div>
+        }
+
+        <form cForm [formGroup]="form" (ngSubmit)="save()">
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              cFormControl
+              disabled
+              placeholder="Disabled input"
+              type="text"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Profile Image</label>
+            <input
+              cFormControl
+              type="file"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+            />
+          </div>
+        </form>
+      </c-card-body>
+      <c-card-footer>
+        <div class="d-flex justify-content-end mt-3 flex-wrap">
+          <button cButton color="success" type="submit" [disabled]="saving">
+            Salva
+          </button>
+        </div>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+
+  <c-col xs="12" lg="4">
+    <c-card>
+      <c-card-body class="text-center">
+        <h5>Preview</h5>
+
+        <div class="profile-preview-wrapper">
+          <img
+            [src]="imagePreview || 'assets/images/user-placeholder.png'"
+            class="profile-preview"
+            alt="Profile Preview"
+          />
+        </div>
+
+        <div class="text-body-secondary">
+          {{ form.get("email")?.value }}
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

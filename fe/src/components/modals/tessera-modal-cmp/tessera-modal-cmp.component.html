@@ -111,6 +111,8 @@
           placeholder="Data Inizio Assegnazione"
           min="1900-01-01"
           max="9999-12-31"
+          [showTodayButton]="true"
+          todayButtonLabel="Oggi"
         />
       </c-col>
       <c-col xs="12">
@@ -124,6 +126,11 @@
           placeholder="Data Fine Assegnazione"
           min="1900-01-01"
           max="9999-12-31"
+          [showTodayButton]="true"
+          [showSpecificDateButton]="true"
+          specificDateValue="31/12/9999 00:00:00"
+          todayButtonLabel="Oggi"
+          specificDateButtonLabel="Fine validità"
         />
       </c-col>
       <c-col xs="12">
@@ -137,11 +144,16 @@
           placeholder="Data Invalidità"
           min="1900-01-01"
           max="9999-12-31"
+          [showTodayButton]="true"
+          [showSpecificDateButton]="true"
+          specificDateValue="31/12/9999 00:00:00"
+          todayButtonLabel="Oggi"
+          specificDateButtonLabel="Fine validità"
         />
       </c-col>
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm(mode)">Save</button>
+    <button cButton color="success" (click)="confirm(mode)">Salva</button>
   </c-modal-footer>
 </c-modal>

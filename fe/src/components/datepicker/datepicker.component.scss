@@ -64,7 +64,7 @@
   outline: none;
   background: transparent;
 
-  padding: 0 48px 0 16px;
+  padding: 0 110px 0 16px;
 
   font-size: 1rem;
   font-weight: 500;
@@ -104,4 +104,77 @@
   padding-left: 4px;
   font-size: 0.85rem;
   color: var(--cui-secondary-color);
+}
+
+.datepicker-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.datepicker-action-btn {
+  border: 1px solid var(--cui-border-color);
+  border-radius: 6px;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--cui-tertiary-bg);
+    border-color: var(--cui-primary);
+    color: var(--cui-primary);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.input-actions {
+  position: absolute;
+  right: 8px;
+
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  z-index: 2;
+}
+
+.action-icon {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  color: var(--cui-secondary-color);
+
+  border-radius: 4px;
+
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--cui-tertiary-bg);
+    color: var(--cui-primary);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 }

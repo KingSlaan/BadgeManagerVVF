@@ -21,6 +21,11 @@ export const navItems: INavData[] = [
     url: '/liste/qualifiche',
     iconComponent: { name: 'cil-star' },
   },
+  {
+    name: 'Utenti',
+    url: '/liste/utenti',
+    iconComponent: { name: 'cil-user' },
+  },
   // {
   //   title: true,
   //   name: 'Theme'
