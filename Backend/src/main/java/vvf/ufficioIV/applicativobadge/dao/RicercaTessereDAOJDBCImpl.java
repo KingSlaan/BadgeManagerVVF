@@ -1,6 +1,7 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
 import vvf.ufficioIV.applicativobadge.dto.CronologiaTesseraDTO;
+import vvf.ufficioIV.applicativobadge.dto.StatisticheTessereDTO;
 import vvf.ufficioIV.applicativobadge.dto.TesseraFiltroDTO;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -264,6 +265,51 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         return result;
     }
     
+    @Override
+    public StatisticheTessereDTO getStatisticheGenerali() {
+        StatisticheTessereDTO stats = new StatisticheTessereDTO();
+        StatisticheTessereDTO.Generale generale = new StatisticheTessereDTO.Generale();
+
+        /*
+         * SPIEGAZIONE DELLA QUERY:
+         * 1. JOIN con una subquery che estrae SOLO l'ultima assegnazione per ogni tessera (rn = 1)
+         * 2. totali: Conto tutte le righe di TESSERA1
+         * 3. inutilizzabili: Sommo 1 se la data indisponibilità è passata (<= CURRENT_TIMESTAMP)
+         * 4. assegnati: La tessera è valida (> CURRENT_TIMESTAMP) E c'è un'assegnazione in corso (data fine > oggi)
+         * 5. nonAssegnati: La tessera è valida (> CURRENT_TIMESTAMP) MA l'assegnazione non c'è o è scaduta
+         */
+        String sql = "SELECT " +
+                     "  COUNT(t.IDTESSERA) AS totali, " +
+                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS inutilizzabili, " +
+                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+                     "            AND tp.CODFISDIP IS NOT NULL " +
+                     "            AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS assegnati, " +
+                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+                     "            AND (tp.CODFISDIP IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP) THEN 1 ELSE 0 END) AS nonAssegnati " +
+                     "FROM TESSERA1 t " +
+                     "LEFT JOIN ( " +
+                     "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
+                     "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
+                     "    FROM TESSERADIPEND1 " +
+                     ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                generale.setTotali(rs.getInt("totali"));
+                generale.setInutilizzabili(rs.getInt("inutilizzabili"));
+                generale.setAssegnati(rs.getInt("assegnati"));
+                generale.setNonAssegnati(rs.getInt("nonAssegnati"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getStatisticheGenerali: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        stats.setGenerale(generale);
+        return stats;
+    }
 
     @Override
     public void closeConnection() {
