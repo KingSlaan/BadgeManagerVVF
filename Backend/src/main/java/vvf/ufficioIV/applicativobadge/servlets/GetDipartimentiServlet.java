@@ -5,12 +5,18 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import vvf.ufficioIV.applicativobadge.dao.DipartimentoDAO;
 import vvf.ufficioIV.applicativobadge.dao.DipartimentoDAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dto.DipartimentoDTO;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -19,41 +25,63 @@ import java.util.Properties;
 /**
  * ==========================================================================================
  * API ENDPOINT : /getDipartimentiServlet
- * METODO HTTP  : GET
- * DESCRIZIONE  : Recupera la lista completa di tutti i dipartimenti registrati a database.
+ * METODI HTTP  : GET, POST
+ * DESCRIZIONE  : Recupera la lista delle sedi/dipartimenti. 
+ *                Se invocata in GET o in POST senza filtri, restituisce tutti i record.
+ *                Se invocata in POST con filtri JSON, restituisce i record filtrati per
+ *                codice sede o descrizione.
  * ==========================================================================================
- * 📥 REQUEST (Cosa deve inviare il Frontend)
+ * 📥 REQUEST GET (Cosa deve inviare il Frontend)
  * ------------------------------------------------------------------------------------------
- * Nessun parametro richiesto.
- * Non sono necessari né Query Parameters né Body.
+ * Nessun parametro richiesto. Non sono necessari né Query Parameters né Body.
  *
- * * 📤 RESPONSE OK (Casi di successo - HTTP 200)
+ * 📥 REQUEST POST (Cosa deve inviare il Frontend)
+ * ------------------------------------------------------------------------------------------
+ * Content-Type : application/json
+ * Body         :
+ * {
+ *   "filters": [                           // (Opzionale) Se presente, DEVE essere un array
+ *     {
+ *       "field": "descrizione",            // (Obbligatorio nel filtro) "codSede" o "descrizione"
+ *       "operator": "contains",            // (Obbligatorio nel filtro) es. "equals", "contains"
+ *       "value": "roma"                    // (Obbligatorio nel filtro) valore da cercare
+ *     }
+ *   ]
+ * }
+ *
+ * 📤 RESPONSE OK (Casi di successo - HTTP 200)
  * ------------------------------------------------------------------------------------------
  * Utilizza   : ResponseUtil.sendOk
  * Struttura  :
  * {
- * "esito": "OK",
- * "messaggio": "Dipartimenti recuperati con successo (N record trovati).",
- * "data": [
- * {
- * // NOTA: I campi riflettono la struttura della classe DipartimentoDTO
- * "id": 1,               
- * "nome": "Dipartimento Esempio" 
- * },
- * ...
- * ] 
+ *   "esito": "OK",
+ *   "messaggio": "Ricerca completata (X record trovati).",
+ *   "data": [
+ *     {
+ *       "codSede": "RM",
+ *       "descrizione": "COMANDO PROVINCIALE ROMA"
+ *     },
+ *     {
+ *       // ... altri dipartimenti ...
+ *     }
+ *   ]
  * }
- * * 🚫 RESPONSE KO (Casi di errore - HTTP 405, 500)
+ *
+ * 🚫 RESPONSE KO (Casi di errore - HTTP 400, 500)
  * ------------------------------------------------------------------------------------------
  * Utilizza   : ResponseUtil.sendError
  * Casistiche :
- * - HTTP 405 : "Endpoint supporta solo GET." (Se viene effettuata una chiamata POST)
+ * - HTTP 400 : "JSON malformato o non valido."
+ * - HTTP 400 : "Il parametro 'filters' deve essere un array."
+ * - HTTP 400 : "Ogni elemento in 'filters' deve essere un oggetto."
+ * - HTTP 400 : "Ogni filtro deve contenere 'field', 'operator' e 'value'."
  * - HTTP 500 : "Configurazione DB non trovata." (Errore lettura properties)
- * - HTTP 500 : "Errore interno: <dettaglio eccezione>" (Errore di connessione o query)
+ * - HTTP 500 : "Errore lettura configurazione DB."
+ * - HTTP 500 : "Errore interno del server durante il caricamento dei dati." (Es. DB offline)
  * Struttura  :
  * {
- * "esito": "KO",
- * "messaggio": "<descrizione specifica dell'errore>"
+ *   "esito": "KO",
+ *   "messaggio": "<descrizione specifica dell'errore tra quelle elencate sopra>"
  * }
  * ==========================================================================================
  */
@@ -64,24 +92,84 @@ public class GetDipartimentiServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        System.out.println("[getDipartimentiServlet] >>> SERVLET INIZIALIZZATA - mapping: /getDipartimentiServlet");
+        System.out.println("[GetDipartimentiServlet] >>> SERVLET INIZIALIZZATA");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        System.out.println("[GetDipartimentiServlet] >>> Chiamata GET (Nessun filtro)");
+        // Passando null, il DAO restituirà tutti i record
+        eseguiRicerca(response, null);
+    }
 
-        System.out.println("[getDipartimentiServlet] >>> Inizio doGet");
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        System.out.println("[GetDipartimentiServlet] >>> Chiamata POST (Possibili filtri)");
 
-        // Carica config DB
+        // 1. Lettura Body
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        String bodyJson = sb.toString();
+        JsonArray filters = null;
+
+        // 2. Parsing e validazione se il body è presente
+        // Se il body è vuoto, non andiamo in errore, semplicemente filters rimane null
+        if (bodyJson != null && !bodyJson.trim().isEmpty()) {
+            try {
+                JsonObject requestObj = JsonParser.parseString(bodyJson).getAsJsonObject();
+                if (requestObj.has("filters") && !requestObj.get("filters").isJsonNull()) {
+                    if (!requestObj.get("filters").isJsonArray()) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Il parametro 'filters' deve essere un array.");
+                        return;
+                    }
+                    filters = requestObj.getAsJsonArray("filters");
+
+                    for (JsonElement el : filters) {
+                        if (!el.isJsonObject()) {
+                            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Ogni elemento in 'filters' deve essere un oggetto.");
+                            return;
+                        }
+                        JsonObject filter = el.getAsJsonObject();
+                        if (!filter.has("field") || !filter.has("operator") || !filter.has("value")) {
+                            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Ogni filtro deve contenere 'field', 'operator' e 'value'.");
+                            return;
+                        }
+                    }
+                }
+            } catch (JsonSyntaxException | IllegalStateException e) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "JSON malformato o non valido.");
+                return;
+            }
+        }
+
+        // 3. Esecuzione ricerca
+        eseguiRicerca(response, filters);
+    }
+
+    /**
+     * Metodo centralizzato per eseguire la connessione al DB e interrogare il DAO
+     * sia in caso di GET che di POST.
+     */
+    private void eseguiRicerca(HttpServletResponse response, JsonArray filters) throws IOException {
         Properties props = new Properties();
         try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/db.properties")) {
             if (is == null) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Configurazione DB non trovata.");
+                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Configurazione DB non trovata.");
                 return;
             }
             props.load(is);
+        } catch (Exception e) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore lettura configurazione DB.");
+            return;
         }
 
         String ip   = props.getProperty("db.ip");
@@ -93,26 +181,20 @@ public class GetDipartimentiServlet extends HttpServlet {
         DipartimentoDAO dao = null;
         try {
             dao = new DipartimentoDAOJDBCImpl(ip, port, db, user, pwd);
-            List<DipartimentoDTO> lista = dao.getAllDipartimenti();
+            List<DipartimentoDTO> dataList = dao.getDipartimentiByFilters(filters);
 
-            System.out.println("[getDipartimentiServlet] >>> Record trovati: " + lista.size());
-
-            ResponseUtil.sendOk(response, "Dipartimenti recuperati con successo (" + lista.size() + " record trovati).", lista);
+            ResponseUtil.sendOk(
+                response,
+                "Ricerca completata (" + dataList.size() + " record trovati).",
+                dataList
+            );
 
         } catch (Exception e) {
-            System.err.println("[getDipartimentiServlet] Eccezione: " + e.getMessage());
+            System.err.println("[GetDipartimentiServlet] Errore interno: " + e.getMessage());
             e.printStackTrace();
-            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Errore interno: " + e.getMessage());
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno del server durante il caricamento dei dati.");
         } finally {
             if (dao != null) dao.closeConnection();
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        ResponseUtil.sendError(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED,
-                "Endpoint supporta solo GET.");
     }
 }

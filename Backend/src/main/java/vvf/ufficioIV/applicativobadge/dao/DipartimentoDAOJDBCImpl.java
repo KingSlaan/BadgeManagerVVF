@@ -6,6 +6,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
 
     private Connection conn;
@@ -22,29 +26,63 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
         }
     }
 
+    
     @Override
-    public List<DipartimentoDTO> getAllDipartimenti() {
+    public List<DipartimentoDTO> getDipartimentiByFilters(JsonArray filters) {
         List<DipartimentoDTO> results = new ArrayList<>();
-        // Leggi dalla vista: solo i due campi che ti servono
-        String sql = "SELECT CODSEDE, DESCRIZIONE FROM DIPARTIMENTO1";
+        List<Object> params = new ArrayList<>();
+        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        if (filters != null) {
+            for (JsonElement el : filters) {
+                JsonObject filter = el.getAsJsonObject();
+                
+                String field = filter.has("field") ? filter.get("field").getAsString() : "";
+                String operator = filter.has("operator") ? filter.get("operator").getAsString() : "";
+                String value = filter.has("value") ? filter.get("value").getAsString() : "";
 
-            while (rs.next()) {
-                DipartimentoDTO dto = new DipartimentoDTO(
-                    rs.getString("CODSEDE"),
-                    rs.getString("DESCRIZIONE")
-                );
-                results.add(dto);
+                // Mappatura campi JSON sulle colonne DB
+                String dbColumn = "";
+                switch (field) {
+                    case "codSede": dbColumn = "CODSEDE"; break;
+                    case "descrizione": dbColumn = "DESCRIZIONE"; break;
+                    default: continue; // ignora filtri non riconosciuti
+                }
+
+                if ("contains".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
+                    params.add("%" + value.toUpperCase() + "%");
+                } else if ("equals".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
+                    params.add(value.toUpperCase());
+                }
             }
+        }
 
+        String sql = "SELECT CODSEDE, DESCRIZIONE FROM DIPARTIMENTO1" + where.toString();
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+            for (Object p : params) {
+                ps.setString(i++, p.toString());
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DipartimentoDTO dto = new DipartimentoDTO(
+                        rs.getString("CODSEDE"),
+                        rs.getString("DESCRIZIONE")
+                    );
+                    results.add(dto);
+                }
+            }
         } catch (SQLException e) {
-            System.err.println("Errore getAllDipartimenti: " + e.getMessage());
+            System.err.println("Errore getDipartimentiByFilters: " + e.getMessage());
             e.printStackTrace();
         }
         return results;
     }
+    
 
     @Override
     public void closeConnection() {
