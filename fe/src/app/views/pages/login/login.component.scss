@@ -1,0 +1,35 @@
+.login-background {
+  position: relative;
+
+  background-image: url("/assets/images/SplashTessere2.png");
+  background-size: cover;
+  background-position: center;
+}
+
+c-card {
+  backdrop-filter: blur(10px);
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border: none;
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+[data-coreui-theme="dark"] c-card {
+  background: rgba(33, 37, 41, 0.92);
+}
+
+.login-background::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.login-background > * {
+  position: relative;
+  z-index: 1;
+}

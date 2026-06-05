@@ -25,16 +25,16 @@ export const errorInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
 
-    catchError((error: HttpErrorResponse) => {
+    catchError((error: any) => {
 
       let message: string | undefined;
 
       if (typeof error.error === 'string') {
         message = error.error;
-      } else if (error.error?.message) {
-        message = error.error.message;
-      } else if (error.message) {
-        message = error.message;
+      } else if (error.error?.messaggio) {
+        message = error.error.messaggio;
+      } else if (error.messaggio) {
+        message = error.messaggio;
       }
 
       if (!req.context.get(SKIP_ERROR_TOAST)) {

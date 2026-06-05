@@ -23,6 +23,7 @@ import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
 import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
 import { TessereService } from 'src/app/services/tessere.service';
 import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
+import { Sedi } from 'src/interfaces/sedi';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -35,7 +36,6 @@ import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
     ModalBodyComponent,
     ModalFooterComponent,
     IconDirective,
-
     ColComponent,
     FormControlDirective,
     FormDirective,
@@ -59,6 +59,7 @@ export class TesseraModalCmpComponent {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Input() mode = ACTION_CONSTANTS.CREATE;
   @Input() tesseraSelected: Tessera = tesseraEmpty;
+  @Input() sediList: any = [];
   @Output() saved = new EventEmitter<void>();
 
   formTessera = new FormGroup({
@@ -196,7 +197,6 @@ export class TesseraModalCmpComponent {
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
-            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });
@@ -216,7 +216,6 @@ export class TesseraModalCmpComponent {
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
-            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });
@@ -233,7 +232,6 @@ export class TesseraModalCmpComponent {
             this.visibleChange.emit(false);
           },
           error: (err: any) => {
-            this.toast.success(MESSAGES_CONSTANTS.ERRORE_GENERICO_MSG);
             console.error('Error loading tessere', err);
           },
         });

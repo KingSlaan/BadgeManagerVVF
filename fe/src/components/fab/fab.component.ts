@@ -16,7 +16,7 @@ import { IconDirective } from '@coreui/icons-angular';
   templateUrl: './fab.component.html',
   styleUrls: ['./fab.component.scss'],
 })
-export class ScrollTopFabComponent {
+export class FabComponent {
   @Input() showAfter = 300;
 
   visible = signal(false);

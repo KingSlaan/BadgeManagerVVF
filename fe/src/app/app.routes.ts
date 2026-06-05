@@ -16,6 +16,9 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./views/dashboard/dashboard.component')
             .then(m => m.DashboardComponent),
+        data: {
+          title: 'Dashboard'
+        },
       },
       {
         path: 'liste',
@@ -24,15 +27,14 @@ export const routes: Routes = [
             .then(m => m.routes)
       },
       {
-        path: 'pages',
-        loadChildren: () =>
-          import('./views/pages/routes')
-            .then(m => m.routes)
-      },
-      {
         path: 'user-settings',
         canActivate: [authGuard],
         loadComponent: () => import('./views/pages/user-settings/user-settings.component').then(m => m.UserSettingsComponent)
+      },
+      {
+        path: 'stampa-documenti',
+        canActivate: [authGuard],
+        loadComponent: () => import('./views/pages/stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent)
       }
     ]
   },

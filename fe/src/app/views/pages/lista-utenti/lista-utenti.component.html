@@ -1,1 +1,20 @@
-<p>lista-utenti works!</p>
+<app-datagrid
+  [columns]="columns"
+  [rows]="utenti()"
+  [searchConfig]="searchConfig"
+  [paginationConfig]="paginationConfig"
+  [persistConfig]="persistConfig"
+  [loading]="datagridLoading()"
+  (dataRequest)="loadData($event)"
+/>
+
+<ng-template #actionTemplate let-row>
+  <button
+    cButton
+    color="primary"
+    variant="ghost"
+    shape="rounded-pill"
+  >
+    <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
+  </button>
+</ng-template>

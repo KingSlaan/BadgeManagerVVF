@@ -1,15 +1,15 @@
 <div
-  class="bg-light dark:bg-transparent min-vh-100 d-flex flex-row align-items-center"
+  class="login-background min-vh-100 d-flex justify-content-center align-items-center"
 >
   <c-container breakpoint="md">
     <c-row class="justify-content-center">
-      <c-col lg="6" xl="6">
+      <c-col xs="11" sm="9" md="7" lg="5" xl="4">
         <c-card-group>
           <c-card class="p-4">
             <c-card-body>
               <form cForm [formGroup]="form" (ngSubmit)="login()">
                 <h1>Login</h1>
-                <p class="text-body-secondary">Sign In to your account</p>
+                <br />
 
                 @if (errorMessage) {
                   <div class="alert alert-danger">
@@ -42,19 +42,17 @@
                   />
                 </c-input-group>
 
-                <c-row>
-                  <c-col xs="6">
-                    <button
-                      cButton
-                      class="px-4"
-                      color="primary"
-                      type="submit"
-                      [disabled]="loading"
-                    >
-                      {{ loading ? "Logging in..." : "Login" }}
-                    </button>
-                  </c-col>
-                </c-row>
+                <div class="d-grid mt-4">
+                  <button
+                    cButton
+                    color="primary"
+                    type="submit"
+                    size="lg"
+                    [disabled]="loading || form.invalid"
+                  >
+                    {{ loading ? "Logging in..." : "Login" }}
+                  </button>
+                </div>
               </form>
             </c-card-body>
           </c-card>

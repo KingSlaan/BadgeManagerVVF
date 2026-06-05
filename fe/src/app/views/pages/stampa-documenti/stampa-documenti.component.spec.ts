@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListaQualificheComponent } from './lista-qualifiche.component';
+import { StampaDocumentiComponent } from './stampa-documenti.component';
 
-describe('ListaQualificheComponent', () => {
-  let component: ListaQualificheComponent;
-  let fixture: ComponentFixture<ListaQualificheComponent>;
+describe('StampaDocumentiComponent', () => {
+  let component: StampaDocumentiComponent;
+  let fixture: ComponentFixture<StampaDocumentiComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListaQualificheComponent]
+      imports: [StampaDocumentiComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ListaQualificheComponent);
+    fixture = TestBed.createComponent(StampaDocumentiComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

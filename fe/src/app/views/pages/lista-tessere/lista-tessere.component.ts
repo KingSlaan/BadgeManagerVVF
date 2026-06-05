@@ -12,11 +12,12 @@ import { TesseraModalCmpComponent } from './../../../../components/modals/tesser
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
-import { LoadingService } from '../../../services/loading.service';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
 import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_MOCK, TESSERE_PERSIST_CONFIG, TESSERE_SEARCH_CONFIG } from './lista-tessere.datagrid';
-import { TessereService } from 'src/app/services/tessere.service';
-import { UtilsService } from 'src/app/services/utils.service';
+import { TessereService } from '../../../services/tessere.service';
+import { UtilsService } from '../../../services/utils.service';
+import { Sedi } from 'src/interfaces/sedi';
+import { SediService } from 'src/app/services/sedi.service';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -36,6 +37,7 @@ import { UtilsService } from 'src/app/services/utils.service';
 export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   private tessereService = inject(TessereService);
+  private sediService = inject(SediService);
   public utilsService = inject(UtilsService);
 
   icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions };
@@ -80,6 +82,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   persistConfig = TESSERE_PERSIST_CONFIG;
 
   tessere = signal<Tessere>([]);
+  sedi = signal<Sedi>([]);
+
   tesseraSelected = signal<Tessera>(tesseraEmpty);
   tesseraHistory = signal<any>([]);
 
@@ -103,7 +107,18 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData(this.initialRequest);
+    this.getSedi();
+  }
 
+  getSedi() {
+    this.sediService.getSediList().subscribe({
+      next: (data: any) => {
+        this.sedi.set([...(data.data ?? [])])
+      },
+      error: (err: any) => {
+        console.error('Error loading tessere', err);
+      },
+    });
   }
 
   debug(row: any) {
@@ -128,7 +143,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    debugger;
     this.loadData(this.requestSearch())
   }
 

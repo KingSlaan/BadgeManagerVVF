@@ -74,17 +74,25 @@
           type="text"
         />
       </c-col>
-      <c-col xs="6">
+      <c-col xs="12">
         <label cLabel class="visually-hidden" for="sede"> Sede </label>
-        <input
+        <!-- <input
           cFormControl
           id="sede"
           formControlName="sede"
           placeholder="Sede"
           type="text"
-        />
+        /> -->
+        <select cSelect formControlName="sede">
+          <option value="">-</option>
+          @for (item of sediList; track $index) {
+            <option [value]="item.codSede">
+              {{ item.descrizione }}
+            </option>
+          }
+        </select>
       </c-col>
-      <c-col xs="6">
+      <c-col xs="12">
         <label cLabel class="visually-hidden" for="tipoTessera">
           Tipo Tessera
         </label>

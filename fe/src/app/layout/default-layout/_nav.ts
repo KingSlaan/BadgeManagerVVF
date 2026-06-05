@@ -17,14 +17,14 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-notes' },
   },
   {
-    name: 'Qualifiche',
-    url: '/liste/qualifiche',
-    iconComponent: { name: 'cil-star' },
-  },
-  {
     name: 'Utenti',
     url: '/liste/utenti',
     iconComponent: { name: 'cil-user' },
+  },
+  {
+    name: 'Stampa Documenti',
+    url: '/stampa-documenti',
+    iconComponent: { name: 'cil-cursor' },
   },
   // {
   //   title: true,

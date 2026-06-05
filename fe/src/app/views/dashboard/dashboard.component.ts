@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { DashboardService } from './../../services/dashboard.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ContainerComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ChartData } from 'chart.js';
+import { Statistiche, StatisticheSedeChart } from '../../../interfaces/statistiche';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -24,60 +26,69 @@ import { ChartData } from 'chart.js';
 })
 export class DashboardComponent implements OnInit {
 
+  private statisticheService = inject(DashboardService);
+
   icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
+
+  statistiche = signal<Statistiche>(
+    {
+      generale: {
+        totali: 0,
+        assegnati: 0,
+        nonAssegnati: 0,
+        inutilizzabili: 0,
+      }
+    });
 
   options = {
     responsive: true,
-    indexAxis:'y' as const,
+    indexAxis: 'y' as const,
     maintainAspectRatio: false,
   };
 
-  chartBarTessereData: ChartData = {
-    labels: ['Uffici Centrali', 'Salerno', 'Catanzaro', 'Venezia', 'Milano'],
+  chartBarTessereData = signal<ChartData>({
+    labels: [],
     datasets: [
       {
-        label: 'Badge totali',
+        label: '# Badge',
         backgroundColor: '#3634a3',
-        data: [40, 20, 12, 11, 25]
-      },
-      {
-        label: 'Badge assegnati',
-        backgroundColor: '#1b9e3e',
-        data: [10, 10, 22, 39, 10]
-      },
-      {
-        label: 'Badge non assegnati',
-        backgroundColor: '#e55353',
-        data: [30, 15, 5, 9, 10]
+        data: []
       }
     ],
-
-  };
-
-  chartBarQualificheData: ChartData = {
-    labels: ['Dirigente', 'Operativo', 'Amministrativo',],
-    datasets: [
-      {
-        label: 'Badge totali',
-        backgroundColor: '#3634a3',
-        data: [40, 20, 12]
-      },
-      {
-        label: 'Badge assegnati',
-        backgroundColor: '#1b9e3e',
-        data: [10, 10, 22]
-      },
-      {
-        label: 'Badge non assegnati',
-        backgroundColor: '#e55353',
-        data: [30, 15, 5]
-      }
-    ],
-
-  };
+  });
 
   ngOnInit(): void {
+    this.statisticheService.getStatistiche().subscribe({
+      next: (data: any) => {
+        this.statistiche.set(data.data ?? {});
+      },
+      error: (err: any) => {
+        console.error('Error loading statistiche generali', err);
+      },
+    });
 
+    this.statisticheService.getStatisticheSede().subscribe({
+      next: (data: any) => {
+        this.chartBarTessereData.set({
+          labels: data.data.labels,
+          datasets: [
+            {
+              label: '# Badge',
+              backgroundColor: '#3634a3',
+              data: data.data.values
+            }
+          ]
+        });
+      },
+      error: (err: any) => {
+        console.error('Error loading statistiche sede', err);
+      },
+    });
+
+  }
+
+  calPerc(actual: number, tot: number): number {
+    return (actual / tot) * 100;
   }
 
 }

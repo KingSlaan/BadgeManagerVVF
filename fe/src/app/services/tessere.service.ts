@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Tessera, Tessere } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { DataGridRequest } from 'src/interfaces/datagrid';
+import { DataGridRequest } from './../../interfaces/datagrid';
 
 @Injectable({
   providedIn: 'root'

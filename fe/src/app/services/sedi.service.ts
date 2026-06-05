@@ -2,8 +2,8 @@ import { API_CONSTANTS } from './../../constants/api.constants';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Sede } from 'src/interfaces/sedi';
-import { DataGridRequest } from 'src/interfaces/datagrid';
+import { Sede } from '../../interfaces/sedi';
+import { DataGridRequest } from '../../interfaces/datagrid';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +19,10 @@ export class SediService {
    */
   getSedi(body: DataGridRequest): Observable<Sede[]> {
     return this.http.post<Sede[]>(`${this.apiUrl}/getDipartimentiServlet`,body);
+  }
+
+  getSediList(): Observable<Sede[]> {
+    return this.http.get<Sede[]>(`${this.apiUrl}/getDipartimentiServlet`);
   }
 
 }

@@ -257,6 +257,80 @@ export class DataGridComponent<T = any> implements OnInit {
 
   hasRows = computed(() => this.displayedRows().length > 0);
 
+  pageItemsCount = computed(
+    () => this.displayedRows().length
+  );
+
+  totalItems = computed(
+    () => this.paginationConfig()?.totalItems ?? this.rows().length
+  );
+
+  pageStart = computed(() => {
+
+    const pagination =
+      this.paginationConfig();
+
+    if (!pagination?.enabled) {
+      return 0;
+    }
+
+    return (
+      (pagination.page - 1)
+      * pagination.pageSize
+    ) + 1;
+  });
+
+  pageEnd = computed(() => {
+
+    const pagination = this.paginationConfig();
+
+    if (!pagination?.enabled) {
+      return this.displayedRows().length;
+    }
+
+    return Math.min(this.pageStart() + this.displayedRows().length - 1,
+      this.totalItems()
+    );
+  });
+
+  paginationPages = computed(() => {
+    const pagination = this.paginationConfig();
+
+    if (!pagination) {
+      return [];
+    }
+
+    const current = pagination.page;
+    const total = this.totalPages;
+
+    const pages: Array<number | 'ellipsis'> = [];
+
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+
+    if (start > 1) {
+      pages.push(1);
+
+      if (start > 2) {
+        pages.push('ellipsis');
+      }
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (end < total) {
+      if (end < total - 1) {
+        pages.push('ellipsis');
+      }
+
+      pages.push(total);
+    }
+
+    return pages;
+  });
+
   sortingEnabled = computed(
     () => this.sortingConfig()?.enabled === true
   );

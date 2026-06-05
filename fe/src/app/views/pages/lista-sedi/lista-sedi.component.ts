@@ -2,8 +2,8 @@ import { SediService } from './../../../services/sedi.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig } from '../../../../interfaces/datagrid';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
-import { DATAGRID_CONSTANTS, DATAGRID_CONSTANTS_NO_PAGINATION } from '../../../../constants/datagrid.constants';
-import { createGridColumn, createSearchConfig, SEDI_MOCK, SEDI_PERSIST_CONFIG, SEDI_SORTING_CONFIG } from './lista-sedi.datagrid';
+import { DATAGRID_CONSTANTS_NO_PAGINATION } from '../../../../constants/datagrid.constants';
+import { createGridColumn, createSearchConfig, SEDI_PERSIST_CONFIG, SEDI_SORTING_CONFIG } from './lista-sedi.datagrid';
 import { Sede, Sedi } from 'src/interfaces/sedi';
 
 @Component({
@@ -35,14 +35,10 @@ export class ListaSediComponent implements OnInit {
     sorting: this.sortingConfig?.defaultSorting ?? null,
   };
 
-  columns: DataGridColumn<Sede>[] = [];
+columns: DataGridColumn<Sede>[] = createGridColumn();
 
   ngOnInit(): void {
     this.loadData(this.initialRequest);
-  }
-
-  ngAfterViewInit() {
-    this.columns = createGridColumn();
   }
 
   loadData(request: DataGridRequest) {

@@ -16,15 +16,15 @@ export const routes: Routes = [
     }
   },
   {
-    path: 'qualifiche',
-    loadComponent: () => import('./lista-qualifiche/lista-qualifiche.component').then(m => m.ListaQualificheComponent),
+    path: 'utenti',
+    loadComponent: () => import('./lista-utenti/lista-utenti.component').then(m => m.ListaUtentiComponent),
     data: {
-      title: $localize`Qualifiche`
+      title: $localize`Utenti`
     }
   },
   {
-    path: 'utenti',
-    loadComponent: () => import('./lista-utenti/lista-utenti.component').then(m => m.ListaUtentiComponent),
+    path: 'stampa-documenti',
+    loadComponent: () => import('./stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent),
     data: {
       title: $localize`Utenti`
     }

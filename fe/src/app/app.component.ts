@@ -9,7 +9,7 @@ import { IconSetService } from '@coreui/icons-angular';
 import { iconSubset } from './icons/icon-subset';
 import { LoadingSpinnerComponent } from './../components/loading-spinner/loading-spinner.component';
 import { ToastContainerComponent } from './../components/toast-container/toast-container.component';
-import { ScrollTopFabComponent } from '../components/fab/fab.component';
+import { FabComponent } from '../components/fab/fab.component';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +19,7 @@ import { ScrollTopFabComponent } from '../components/fab/fab.component';
     <app-loading-spinner />
     <app-scroll-top-fab [showAfter]="100"></app-scroll-top-fab>
     `,
-  imports: [RouterOutlet, ToastContainerComponent, LoadingSpinnerComponent, ScrollTopFabComponent]
+  imports: [RouterOutlet, ToastContainerComponent, LoadingSpinnerComponent, FabComponent]
 })
 export class AppComponent implements OnInit {
   title = 'CoreUI Angular Admin Template';
