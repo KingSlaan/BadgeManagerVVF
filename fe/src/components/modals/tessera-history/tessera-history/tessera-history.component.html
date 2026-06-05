@@ -2,6 +2,7 @@
   [visible]="visible"
   backdrop="static"
   (visibleChange)="visibleChange.emit($event)"
+  size="lg"
 >
   <c-modal-header style="justify-content: space-between !important">
     <h5 cModalTitle>Cronologia Tessera</h5>
@@ -17,9 +18,32 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-
+    <table cTable>
+      <thead>
+        <tr>
+          <th>Ordine</th>
+          <th>Codice Fiscale</th>
+          <th>Cognome</th>
+          <th>Nome</th>
+          <th>Data Inizio Assegnazione</th>
+          <th>Data Fine Assegnazione</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of tesseraSelectedHistory; track $index) {
+          <tr>
+            <td>{{$index+1}}</td>
+            <td>{{row.codFiscale}}</td>
+            <td>{{row.cognome}}</td>
+            <td>{{row.nome}}</td>
+            <td>{{row.dataOraInizioAssegnazione}}</td>
+            <td>{{row.dataOraFineAssegnazione}}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
   </c-modal-body>
-  <c-modal-footer>
-    <button cButton color="success" (click)="confirm()">Save</button>
-  </c-modal-footer>
+  <!-- <c-modal-footer>
+    <button cButton color="danger" (click)="confirm()">Chiudi</button>
+  </c-modal-footer> -->
 </c-modal>

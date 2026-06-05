@@ -1,13 +1,20 @@
-import { DataGridColumn, DataGridFilter, DataGridFilterRequest, DataGridPageEvent, DataGridPaginationConfig, DataGridRequest, DataGridSearchConfig, DataGridToolbarConfig } from './../../app/interfaces/datagrid';
+import {
+  DataGridColumn, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridPageEvent,
+  DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSorting, DataGridSortingConfig,
+  DataGridState,
+  DataGridToolbarConfig
+} from './../../interfaces/datagrid';
 import { DatepickerComponent } from './../datepicker/datepicker.component';
 
 import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnInit,
   Output,
+  input,
+  computed,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -28,8 +35,10 @@ import {
   GutterDirective,
   RowDirective,
   FormSelectDirective,
+  SpinnerComponent,
+  FormCheckInputDirective,
 } from '@coreui/angular';
-import { cilSearch, cilFilterX } from '@coreui/icons';
+import { cilSearch, cilFilterX, cilFrown } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
@@ -53,7 +62,9 @@ import { IconDirective } from '@coreui/icons-angular';
     RowDirective,
     IconDirective,
     FormSelectDirective,
-    DatepickerComponent
+    DatepickerComponent,
+    SpinnerComponent,
+    FormCheckInputDirective
   ],
   templateUrl: './data-grid.component.html',
   styleUrls: ['./data-grid.component.scss'],
@@ -62,95 +73,77 @@ import { IconDirective } from '@coreui/icons-angular';
 })
 export class DataGridComponent<T = any> implements OnInit {
 
-  @Input()
-  paginationConfig?: DataGridPaginationConfig;
+  loading = input(false);
+  rows = input<T[]>([]);
+  columns = input.required<DataGridColumn<T>[]>();
 
-  @Output()
-  pageChange =
-    new EventEmitter<DataGridPageEvent>();
-
-  @Input() searchConfig?: DataGridSearchConfig;
-
-  @Input({ required: true })
-  columns: DataGridColumn<T>[] = [];
-
-  @Input({ required: true })
-  rows: T[] = [];
-
-  @Input()
-  toolbarConfig?: DataGridToolbarConfig<T>;
+  paginationConfig = input<DataGridPaginationConfig>();
+  searchConfig = input<DataGridSearchConfig>();
+  sortingConfig = input<DataGridSortingConfig>();
+  loadingConfig = input<DataGridLoadingConfig>();
+  emptyStateConfig = input<DataGridEmptyStateConfig>();
+  toolbarConfig = input<DataGridToolbarConfig<T>>();
+  persistConfig = input<DataGridPersistConfig>();
 
   @Output()
   dataRequest = new EventEmitter<DataGridRequest>();
 
-  icons = { cilSearch, cilFilterX };
+  icons = { cilSearch, cilFilterX, cilFrown };
 
   selectedField = '';
   searchValue = '';
 
-  /**
-     * field -> value map
-     */
-  filterValues: Record<string, string> = {};
+  filterValues: Record<string, any> = {};
 
   // form row (temporary UI state)
   currentField = '';
   currentOperator: 'contains' | 'equals' = 'contains';
   currentValue = '';
 
+  currentSorting: DataGridSorting | null = null;
+
   ngOnInit() {
-    this.searchConfig?.fields.forEach(f => {
-      this.filterValues[f.field] = '';
+    // Init empty object keys first
+    this.searchConfig()?.fields.forEach((f: any) => {
+      this.filterValues[f.field] ??=
+        f.type === 'checkbox'
+          ? false
+          : '';
     });
+
+    // Then restore persisted values
+    this.restoreState();
+
+    // Default sorting only if none persisted
+    if (
+      this.sortingConfig()?.defaultSorting && !this.currentSorting
+    ) {
+      const defaultSorting = this.sortingConfig()?.defaultSorting ?? null;
+
+      this.currentSorting = defaultSorting;
+    }
   }
 
-  applyFilters() {
 
-    const filters =
-      this.searchConfig?.fields
-        .filter(f => {
-
-          const value =
-            this.filterValues[f.field];
-
-          return (
-            value !== null &&
-            value !== undefined &&
-            value !== ''
-          );
-        })
-        .map(f => ({
-          field: f.field,
-
-          operator:
-            f.operator ?? 'contains',
-
-          value:
-            this.filterValues[f.field],
-        })) ?? [];
+  applyFilters(): void {
+    const filters = this.buildFilters();
 
     const request: DataGridRequest = {
       filters,
+      sorting: this.currentSorting,
     };
 
-    // ADD PAGINATION IF SERVER SIDE
+    const pagination = this.paginationConfig();
 
-    if (
-      this.paginationConfig?.enabled &&
-      this.paginationConfig.serverSide
-    ) {
-
+    if (pagination?.enabled && pagination.serverSide) {
       request.pagination = {
-
-        page:
-          this.paginationConfig.page,
-
-        pageSize:
-          this.paginationConfig.pageSize,
+        page: pagination.page,
+        pageSize: pagination.pageSize,
       };
     }
 
     this.dataRequest.emit(request);
+    this.saveState();
   }
 
   clearFilters() {
@@ -161,9 +154,7 @@ export class DataGridComponent<T = any> implements OnInit {
     this.applyFilters();
   }
 
-  renderCell(
-    row: T,
-    column: DataGridColumn<T>
+  renderCell(row: T, column: DataGridColumn<T>
   ): string {
     if (column.render) {
       return column.render(row, column);
@@ -175,86 +166,302 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
   get totalPages(): number {
-    if (!this.paginationConfig) {
+    if (!this.paginationConfig()) {
       return 0;
     }
 
     return Math.ceil(
-      this.paginationConfig.totalItems /
-      this.paginationConfig.pageSize
+      (this.paginationConfig()?.totalItems || 0) /
+      (this.paginationConfig()?.pageSize || 0)
     );
   }
 
   get pages(): number[] {
-
     return Array.from(
       { length: this.totalPages },
       (_, i) => i + 1
     );
   }
 
-  get displayedRows(): T[] {
+  displayedRows = computed(() => {
+    const rows = this.rows();
+    const pagination = this.paginationConfig();
 
-    if (
-      !this.paginationConfig?.enabled
-    ) {
-      return this.rows;
+    if (!pagination?.enabled) {
+      return rows;
     }
 
-    // SERVER SIDE:
-    // backend already paginated
-    if (
-      this.paginationConfig.serverSide
-    ) {
-      return this.rows;
+    if (pagination.serverSide) {
+      return rows;
     }
 
-    // FRONTEND PAGINATION
+    const start = (pagination.page - 1) * pagination.pageSize;
+    const end = start + pagination.pageSize;
 
-    const start =
-      (this.paginationConfig.page - 1) *
-      this.paginationConfig.pageSize;
+    return rows.slice(start, end);
+  });
 
-    const end =
-      start +
-      this.paginationConfig.pageSize;
+  private buildFilters() {
+    return this.searchConfig()?.fields.filter((f: any) => {
+      const value = this.filterValues[f.field];
 
-    return this.rows.slice(start, end);
+      if (f.type === 'checkbox') {
+        return value === true;
+      }
+
+      return value !== null && value !== undefined && value !== '';
+    }).map((f: any) => ({
+      field: f.field,
+      operator: f.operator ?? 'equals',
+      value: this.filterValues[f.field],
+    })) ?? [];
   }
 
-  changePage(page: number) {
+  changePage(page: number): void {
+    const pagination = this.paginationConfig();
 
-    if (!this.paginationConfig) {
+    if (!pagination) {
       return;
     }
 
-    const updatedConfig = {
-      ...this.paginationConfig,
-
-      page,
+    const request: DataGridRequest = {
+      filters: this.buildFilters(),
+      sorting: this.currentSorting,
+      pagination: {
+        page,
+        pageSize: pagination.pageSize,
+      },
     };
 
-    this.paginationConfig = updatedConfig;
+    this.dataRequest.emit(request);
+  }
+
+  changePageSize(size: number): void {
+    const pagination = this.paginationConfig();
+
+    if (!pagination) {
+      return;
+    }
+
+    const request: DataGridRequest = {
+      filters: this.buildFilters(),
+      sorting: this.currentSorting,
+      pagination: {
+        page: 1,
+        pageSize: Number(size),
+      },
+    };
+
+    this.dataRequest.emit(request);
+  }
+
+  hasRows = computed(() => this.displayedRows().length > 0);
+
+  pageItemsCount = computed(
+    () => this.displayedRows().length
+  );
+
+  totalItems = computed(
+    () => this.paginationConfig()?.totalItems ?? this.rows().length
+  );
+
+  pageStart = computed(() => {
+
+    const pagination =
+      this.paginationConfig();
+
+    if (!pagination?.enabled) {
+      return 0;
+    }
+
+    return (
+      (pagination.page - 1)
+      * pagination.pageSize
+    ) + 1;
+  });
+
+  pageEnd = computed(() => {
+
+    const pagination = this.paginationConfig();
+
+    if (!pagination?.enabled) {
+      return this.displayedRows().length;
+    }
+
+    return Math.min(this.pageStart() + this.displayedRows().length - 1,
+      this.totalItems()
+    );
+  });
+
+  paginationPages = computed(() => {
+    const pagination = this.paginationConfig();
+
+    if (!pagination) {
+      return [];
+    }
+
+    const current = pagination.page;
+    const total = this.totalPages;
+
+    const pages: Array<number | 'ellipsis'> = [];
+
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+
+    if (start > 1) {
+      pages.push(1);
+
+      if (start > 2) {
+        pages.push('ellipsis');
+      }
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (end < total) {
+      if (end < total - 1) {
+        pages.push('ellipsis');
+      }
+
+      pages.push(total);
+    }
+
+    return pages;
+  });
+
+  sortingEnabled = computed(
+    () => this.sortingConfig()?.enabled === true
+  );
+
+  sort(
+    column: DataGridColumn<T>
+  ): void {
+
+    if (
+      !this.sortingConfig()?.enabled ||
+      !column.sortable
+    ) {
+      return;
+    }
+
+    // NEW COLUMN
+
+    if (
+      !this.currentSorting ||
+      this.currentSorting.field !==
+      column.field
+    ) {
+
+      this.currentSorting = {
+
+        field:
+          column.field.toString(),
+
+        direction: 'asc',
+      };
+    }
+
+    // ASC -> DESC
+
+    else if (
+      this.currentSorting.direction ===
+      'asc'
+    ) {
+
+      this.currentSorting = {
+
+        field:
+          column.field.toString(),
+
+        direction: 'desc',
+      };
+    }
+
+    // DESC -> NONE
+
+    else {
+
+      this.currentSorting = null;
+    }
 
     this.applyFilters();
   }
 
-  changePageSize(size: number) {
+  isSorted(
+    column: DataGridColumn<T>
+  ): boolean {
 
-    if (!this.paginationConfig) {
+    return (
+      this.currentSorting?.field ===
+      column.field
+    );
+  }
+
+  getSortIcon(column: DataGridColumn<T>): string {
+
+    if (
+      !this.isSorted(column)
+    ) {
+      return '↕';
+    }
+
+    return this.currentSorting?.direction === 'asc' ? '↑' : '↓';
+  }
+
+  onFilterKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.applyFilters();
+    }
+  }
+
+  saveState(): void {
+
+    const persist = this.persistConfig();
+
+    if (!persist?.enabled) {
       return;
     }
 
-    this.paginationConfig = {
-
-      ...this.paginationConfig,
-
-      page: 1,
-
-      pageSize: Number(size),
+    const state: DataGridState = {
+      filters: this.filterValues,
+      sorting: this.currentSorting,
     };
 
-    this.applyFilters();
+    localStorage.setItem(
+      persist.storageKey,
+      JSON.stringify(state)
+    );
+  }
+
+  restoreState(): void {
+
+    const persist =
+      this.persistConfig();
+
+    if (!persist?.enabled) {
+      return;
+    }
+
+    const savedState = localStorage.getItem(persist.storageKey);
+
+    if (!savedState) {
+      return;
+    }
+
+    const state: DataGridState = JSON.parse(savedState);
+
+    // FILTERS
+    Object.assign(
+      this.filterValues,
+      state.filters ?? {}
+    );
+
+    // SORTING
+
+    this.currentSorting = state.sorting ?? null;
   }
 
   // handleClick(

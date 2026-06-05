@@ -16,7 +16,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "prebuild": "ng test --watch=false",
-    "test": "ng test"
+    "test": "ng test",
+    "build:patch": "node scripts/bump-version.js patch && ng build",
+    "build:minor": "node scripts/bump-version.js minor && ng build",
+    "build:major": "node scripts/bump-version.js major && ng build"
   },
   "private": true,
   "dependencies": {

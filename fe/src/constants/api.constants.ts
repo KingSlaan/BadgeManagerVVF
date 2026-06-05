@@ -1,3 +1,4 @@
 export const API_CONSTANTS = {
-  BASE_URL: 'https://api.example.com'
+  BASE_URL: 'http://192.168.1.101:8080/ApplicativoBadgeVVF',
+  MOCK_LOGIN: true
 };

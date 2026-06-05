@@ -1,50 +1,73 @@
 <app-datagrid
   [columns]="columns"
-  [rows]="tessere"
+  [rows]="tessere()"
   [searchConfig]="searchConfig"
   [toolbarConfig]="toolbarConfig"
   [paginationConfig]="paginationConfig"
+  [sortingConfig]="sortingConfig"
+  [loadingConfig]="loadingConfig"
+  [persistConfig]="persistConfig"
+  [loading]="datagridLoading()"
+  [emptyStateConfig]="emptyStateConfig"
   (dataRequest)="loadData($event)"
 />
 
 <app-tessera-modal-cmp
   [(visible)]="isModalOpen"
   [mode]="mode"
+  [tesseraSelected]="tesseraSelected()"
+  [sediList]="sedi()"
+  (saved)="refresh()"
 ></app-tessera-modal-cmp>
-<app-tessera-aggiungi [(visible)]="isModalAggiungiOpen"></app-tessera-aggiungi>
 
-<app-tessera-history [(visible)]="isModalHistoryOpen"></app-tessera-history>
+<app-tessera-aggiungi
+  [(visible)]="isModalAggiungiOpen"
+  (saved)="refresh()"
+></app-tessera-aggiungi>
+
+<app-tessera-history
+  [(visible)]="isModalHistoryOpen"
+  [tesseraSelectedHistory]="tesseraHistory()"
+></app-tessera-history>
 
 <ng-template #actionTemplate let-row>
-  @if (!row.codiceFiscale) {
-    <button
-      cButton
-      color="info"
-      variant="ghost"
-      shape="rounded-pill"
-      (click)="openModal('assign')"
-    >
-      <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
-    </button>
-  }
+  <!-- @if (!row.codiceFiscale || utilsService.parseItalianDate(row.dataFineAssegnazione) >= today ) { -->
+  <button
+    cButton
+    color="info"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('assign', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+  </button>
+  <!-- } -->
+
+  <!-- <button
+    cButton
+    color="primary"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('edit', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
+  </button> -->
+  <button
+    cButton
+    color="danger"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal('disabled', row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilBan" title="Disabilita"></svg>
+  </button>
   @if (row.codiceFiscale) {
-    <button
-      cButton
-      color="primary"
-      variant="ghost"
-      shape="rounded-pill"
-      (click)="openModal('edit')"
-    >
-      <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
-    </button>
-  }
-  @if (!row.disuso) {
     <button
       cButton
       color="danger"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('remove')"
+      (click)="openModal('remove', row.idTessera)"
     >
       <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
     </button>
@@ -54,7 +77,7 @@
     color="secondary"
     variant="ghost"
     shape="rounded-pill"
-    (click)="openHistoryModal()"
+    (click)="openHistoryModal(row.idTessera)"
   >
     <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
   </button>

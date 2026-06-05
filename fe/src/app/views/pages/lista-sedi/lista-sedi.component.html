@@ -1,23 +1,9 @@
 <app-datagrid
   [columns]="columns"
-  [rows]="data"
+  [rows]="sedi()"
   [searchConfig]="searchConfig"
   [paginationConfig]="paginationConfig"
+  [sortingConfig]="sortingConfig"
+  [loading]="datagridLoading()"
   (dataRequest)="loadData($event)"
 />
-
-<hr />
-
-<form [formGroup]="form">
-  <c-row>
-    <c-col xs="12">
-      <app-datepicker
-        formControlName="birthDate"
-        placeholder="Choose a delivery date"
-        label="Birth date"
-        min="1900-01-01"
-        max="2100-12-31"
-      />
-    </c-col>
-  </c-row>
-</form>

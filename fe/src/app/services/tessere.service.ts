@@ -1,7 +1,9 @@
+import { API_CONSTANTS } from './../../constants/api.constants';
 import { HttpClient } from '@angular/common/http';
-import { Tessera } from './../interfaces/tessere';
+import { Tessera, Tessere } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { DataGridRequest } from './../../interfaces/datagrid';
 
 @Injectable({
   providedIn: 'root'
@@ -10,40 +12,44 @@ export class TessereService {
   private http = inject(HttpClient);
 
   // Example base API URL
-  private apiUrl = 'https://api.example.com';
+  private apiUrl = API_CONSTANTS.BASE_URL;
 
-  /**
-   * GET - Get all tessere
-   */
-  getTessere(): Observable<Tessera[]> {
-    return this.http.get<Tessera[]>(this.apiUrl);
+  getTessere(body: DataGridRequest): Observable<Tessera[]> {
+    return this.http.post<Tessera[]>(`${this.apiUrl}/getTessereListByFiltersServlet`, body);
   }
 
-  /**
-   * GET - Get single tessera by id
-   */
-  getTesseraById(id: number): Observable<Tessera> {
-    return this.http.get<Tessera>(`${this.apiUrl}/${id}`);
+  getTesseraById(id: string): Observable<Tessera> {
+    return this.http.get<Tessera>(`${this.apiUrl}/getTesseraByIdTesseraServlet?idTessera=${id}`);
   }
 
-  /**
-   * POST - Create new tessera
-   */
+  getTessereHistory(id: string): Observable<Tessera[]> {
+    return this.http.get<Tessera[]>(`${this.apiUrl}/tesseraCronology/${id}`);
+  }
+
   createTessere(tessere: Array<Tessera>) {
-    return this.http.post<Array<Tessera>>(this.apiUrl, tessere);
+    return this.http.post<Array<Tessera>>(`${this.apiUrl}/inserimentoTessereServlet`, tessere);
   }
 
-  /**
-   * PUT - Update tessera
-   */
-  updateTessera(id: number, tessera: Partial<Tessera>): Observable<Tessera> {
+  assegnaTessera(id: string,tessere: any) {
+    return this.http.post<Tessera>(`${this.apiUrl}/assegnaTesseraServlet`, tessere);
+  }
+
+  updateTessera(id: string, tessera: Partial<Tessera>): Observable<Tessera> {
     return this.http.put<Tessera>(`${this.apiUrl}/${id}`, tessera);
+  }
+
+  revocaTessera(id: string, tessera: any): any {
+    return this.http.put<Tessera>(`${this.apiUrl}/revocaTessera/${id}`, tessera);
+  }
+
+  invalidaTessera(id: string, tessera: any): any {
+    return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
   }
 
   /**
    * DELETE - Remove tessera
    */
-  deleteTessera(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
+  // deleteTessera(id: number): Observable<void> {
+  //   return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  // }
 }

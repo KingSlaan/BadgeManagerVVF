@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { AppToast } from '../interfaces/toast';
+import { AppToast } from '../../interfaces/toast';
 
 @Injectable({
   providedIn: 'root'
@@ -60,5 +60,59 @@ export class ToastService {
       message,
       color: 'info'
     });
+  }
+
+  httpError(status: number, message?: string) {
+
+    switch (status) {
+
+      case 0:
+        this.error(
+          'Cannot connect to server',
+          'Network Error'
+        );
+        break;
+
+      case 400:
+        this.error(
+          message || 'Bad request',
+          '400 Error'
+        );
+        break;
+
+      case 401:
+        this.error(
+          message || 'Unauthorized',
+          '401 Error'
+        );
+        break;
+
+      case 403:
+        this.error(
+          message || 'Access denied',
+          '403 Error'
+        );
+        break;
+
+      case 404:
+        this.error(
+          message || 'Resource not found',
+          '404 Error'
+        );
+        break;
+
+      case 500:
+        this.error(
+          message || 'Internal server error',
+          '500 Error'
+        );
+        break;
+
+      default:
+        this.error(
+          message || 'Unexpected error occurred',
+          `Error ${status}`
+        );
+    }
   }
 }

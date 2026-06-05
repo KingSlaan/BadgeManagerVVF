@@ -1,9 +1,9 @@
 <c-card class="my-4">
   <!-- HEADER -->
   <c-card-header>
-    @if (searchConfig?.enabled) {
+    @if (searchConfig()?.enabled) {
       <form [gutter]="3" cForm cRow>
-        @for (f of searchConfig?.fields; track f.field) {
+        @for (f of searchConfig()?.fields; track f.field) {
           <c-col [xs]="f.size || '2'">
             @if (!f.type || f.type === "text") {
               <input
@@ -12,6 +12,7 @@
                 [name]="f.field"
                 [(ngModel)]="filterValues[f.field]"
                 [placeholder]="f.label"
+                (keydown)="onFilterKeydown($event)"
               />
             }
             @if (f.type === "select") {
@@ -20,7 +21,7 @@
                 [name]="f.field"
                 [(ngModel)]="filterValues[f.field]"
               >
-                <option value="">All</option>
+                <option value="">-</option>
                 @for (o of f.options; track o.value) {
                   <option [value]="o.value">
                     {{ o.label }}
@@ -35,7 +36,22 @@
                 [placeholder]="f.label"
                 min="1900-01-01"
                 max="2100-12-31"
+                (keydown)="onFilterKeydown($event)"
               />
+            }
+            @if (f.type === "checkbox") {
+              <div class="form-check mt-2">
+                <input
+                  cFormCheckInput
+                  type="checkbox"
+                  [name]="f.field"
+                  [(ngModel)]="filterValues[f.field]"
+                />
+
+                <label class="form-check-label">
+                  {{ f.label }}
+                </label>
+              </div>
             }
           </c-col>
         }
@@ -63,10 +79,10 @@
         </c-col>
       </form>
     }
-    @if (toolbarConfig?.enabled) {
+    @if (toolbarConfig()?.enabled) {
       <hr />
       <div class="d-flex gap-2 mb-3 flex-wrap justify-content-end">
-        @for (action of toolbarConfig?.actions; track action.label) {
+        @for (action of toolbarConfig()?.actions; track action.label) {
           @if (!action.visible || action.visible()) {
             <button
               cButton
@@ -91,65 +107,109 @@
 
   <!-- BODY -->
   <c-card-body>
-    <table cTable>
-      <thead>
-        <tr>
-          @for (column of columns; track column.field) {
-            <th [style.width]="column.width" [class]="column.className">
-              {{ column.header }}
-            </th>
-          }
-        </tr>
-      </thead>
+    @if (!loading() && !hasRows()) {
+      <div class="datagrid-empty-state">
+        <!-- ICON -->
+        <svg
+          [cIcon]="icons.cilFrown"
+          title="Pulisci Filtri"
+          size="3xl"
+          class="mb-3 text-medium-emphasis"
+        ></svg>
 
-      <tbody>
-        @for (row of displayedRows; track $index) {
+        <!-- TITLE -->
+        <h5>
+          {{ emptyStateConfig()?.title || "No data found" }}
+        </h5>
+
+        <!-- DESCRIPTION -->
+        <p class="text-medium-emphasis">
+          {{ emptyStateConfig()?.description || "Try changing filters" }}
+        </p>
+      </div>
+    } @else {
+      <table cTable>
+        <thead>
           <tr>
-            @for (column of columns; track column.field) {
-              <td [class]="column.className">
-                <!-- TEMPLATE MODE -->
-                @if (column.template) {
-                  <ng-container
-                    *ngTemplateOutlet="
-                      column.template;
-                      context: {
-                        $implicit: row,
-                        row: row,
-                      }
-                    "
-                  />
-                }
-                <!-- STRING RENDER MODE -->
-                @else {
-                  <span [innerHTML]="renderCell(row, column)"></span>
-                }
-              </td>
+            @for (column of columns(); track column.field) {
+              <!-- <th [style.width]="column.width" [class]="column.className">
+                {{ column.header }}
+              </th> -->
+              <th
+                [style.width]="column.width"
+                (click)="sort(column)"
+                [class.sortable]="column.sortable"
+              >
+                <div class="d-flex align-items-center gap-2">
+                  {{ column.header }}
+
+                  @if (sortingEnabled() && column.sortable) {
+                    <span class="sort-icon">
+                      {{ getSortIcon(column) }}
+                    </span>
+                  }
+                </div>
+              </th>
             }
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+
+        <tbody>
+          @if (loading()) {
+            <div class="datagrid-loading-overlay">
+              <c-spinner size="sm"></c-spinner>
+
+              <span class="ms-2">
+                {{ loadingConfig()?.text || "Loading..." }}
+              </span>
+            </div>
+          }
+
+          @for (row of displayedRows(); track $index) {
+            <tr>
+              @for (column of columns(); track column.field) {
+                <td [class]="column.className">
+                  <!-- TEMPLATE MODE -->
+                  @if (column.template) {
+                    <ng-container
+                      *ngTemplateOutlet="
+                        column.template;
+                        context: {
+                          $implicit: row,
+                          row: row,
+                        }
+                      "
+                    />
+                  }
+                  <!-- STRING RENDER MODE -->
+                  @else {
+                    <span [innerHTML]="renderCell(row, column)"></span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   </c-card-body>
 
   <!-- FOOTER -->
   <c-card-footer>
-    @if (paginationConfig?.enabled) {
-      <div
-        class="d-flex justify-content-between align-items-center mt-3 flex-wrap"
-      >
-        <!-- PAGE SIZE -->
-
-        @if (paginationConfig?.showPageSizeSelector) {
-          <div class="d-flex gap-2 align-items-center">
-            <span style="width: 300px"> Rows per page </span>
+    @if (paginationConfig()?.enabled) {
+      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+        @if (paginationConfig()?.showPageSizeSelector) {
+          <div class="d-flex align-items-center gap-2">
+            <span>Rows per page</span>
 
             <select
               cSelect
-              [value]="paginationConfig?.pageSize"
+              style="width: 120px"
+              [value]="paginationConfig()?.pageSize"
               (change)="changePageSize($any($event.target).value)"
             >
               @for (
-                size of paginationConfig?.pageSizes ?? [5, 10, 25, 50];
+                size of paginationConfig()?.pageSizes ?? [5, 10, 25, 50];
                 track size
               ) {
                 <option [value]="size">
@@ -160,31 +220,40 @@
           </div>
         }
 
-        <!-- PAGE BUTTONS -->
+        <div class="d-flex gap-1 align-items-center text-body-secondary small">
+          Showing
+          <strong>{{ pageStart() }}</strong>
+          -
+          <strong>{{ pageEnd() }}</strong>
+          of
+          <strong>{{ totalItems() }}</strong>
+          items
+        </div>
 
-        <div class="d-flex gap-2 align-items-center">
-          <!-- PREVIOUS -->
+        <div class="d-flex gap-1 align-items-center">
 
           <button
             cButton
             color="secondary"
             size="sm"
             variant="ghost"
-            [disabled]="paginationConfig!.page === 1"
-            (click)="changePage(paginationConfig!.page - 1)"
+            [disabled]="paginationConfig()!.page === 1"
+            (click)="changePage(paginationConfig()!.page - 1)"
           >
             Previous
           </button>
 
-          <!-- PAGE NUMBERS -->
-
-          @if (paginationConfig!.showPageNumbers) {
-            @for (p of pages; track p) {
+          @for (p of paginationPages(); track $index) {
+            @if (p === "ellipsis") {
+              <span class="px-2 text-body-secondary">...</span>
+            } @else {
               <button
                 cButton
                 size="sm"
                 variant="ghost"
-                [color]="p === paginationConfig!.page ? 'primary' : 'secondary'"
+                [color]="
+                  p === paginationConfig()!.page ? 'primary' : 'secondary'
+                "
                 (click)="changePage(p)"
               >
                 {{ p }}
@@ -192,29 +261,17 @@
             }
           }
 
-          <!-- SIMPLE MODE -->
-
-          @else {
-            <span>
-              Page
-              {{ paginationConfig!.page }}
-              /
-              {{ totalPages }}
-            </span>
-          }
-
-          <!-- NEXT -->
-
           <button
             cButton
             color="secondary"
             size="sm"
             variant="ghost"
-            [disabled]="paginationConfig!.page === totalPages"
-            (click)="changePage(paginationConfig!.page + 1)"
+            [disabled]="paginationConfig()!.page === totalPages"
+            (click)="changePage(paginationConfig()!.page + 1)"
           >
             Next
           </button>
+
         </div>
       </div>
     }

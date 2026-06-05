@@ -1,95 +1,73 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { DataGridColumn, DataGridRequest, DataGridSearchConfig } from '../../../interfaces/datagrid';
+import { SediService } from './../../../services/sedi.service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig } from '../../../../interfaces/datagrid';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
-import { DATAGRID_CONSTANTS } from '../../../../constants/datagrid.constants';
-import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, ColComponent, RowComponent } from '@coreui/angular';
+import { DATAGRID_CONSTANTS_NO_PAGINATION } from '../../../../constants/datagrid.constants';
+import { createGridColumn, createSearchConfig, SEDI_PERSIST_CONFIG, SEDI_SORTING_CONFIG } from './lista-sedi.datagrid';
+import { Sede, Sedi } from 'src/interfaces/sedi';
 
 @Component({
   selector: 'app-lista-sedi',
   imports: [
-    DataGridComponent,
-    ReactiveFormsModule,
-     DatepickerComponent,
-     ColComponent,
-     RowComponent,
-     ButtonDirective
+    DataGridComponent
   ],
   templateUrl: './lista-sedi.component.html',
   styleUrl: './lista-sedi.component.scss',
 })
 export class ListaSediComponent implements OnInit {
 
-  form = new FormGroup({
-    birthDate: new FormControl('2026-05-20'),
-  });
+  private sediService = inject(SediService);
 
-  data: any = [
-    {
-      codSede: "RO",
-      descrizione: "Rovigo"
+  datagridLoading = signal(false);
+
+  searchConfig: DataGridSearchConfig = createSearchConfig();
+  paginationConfig = DATAGRID_CONSTANTS_NO_PAGINATION;
+  sortingConfig: DataGridSortingConfig = SEDI_SORTING_CONFIG;
+  persistConfig = SEDI_PERSIST_CONFIG;
+  sedi = signal<Sedi>([]);
+
+  initialRequest: DataGridRequest = {
+    filters: [],
+    pagination: {
+      page: 1,
+      pageSize: this.paginationConfig.pageSize,
     },
-    {
-      codSede: "00",
-      descrizione: "Uffici Centrali"
-    }
-  ];
-
-  columns: DataGridColumn<any>[] = [];
-
-  paginationConfig = DATAGRID_CONSTANTS;
-
-  searchConfig: DataGridSearchConfig = {
-    enabled: true,
-
-    fields: [
-      { field: 'codSede', label: 'Sede', type: 'text' },
-      {
-        field: 'descrizione',
-        label: 'Descrizione',
-        type: 'select',
-        operator: 'equals',
-        options: [
-          {
-            label: 'RO',
-            value: 'Rovigo',
-          },
-          {
-            label: '00',
-            value: 'Uffici Centrali',
-          },
-          {
-            label: 'Pending',
-            value: 'PENDING',
-          },
-        ],
-      },
-    ]
+    sorting: this.sortingConfig?.defaultSorting ?? null,
   };
 
-  ngOnInit(): void {
-  }
+columns: DataGridColumn<Sede>[] = createGridColumn();
 
-  ngAfterViewInit() {
-    this.columns = [
-      {
-        field: 'codSede',
-        header: 'Sede',
-      },
-      {
-        field: 'descrizione',
-        header: 'Descrizione',
-      },
-      {
-        field: 'actions',
-        header: 'Actions',
-        render: (row: any) => ``,
-      }
-    ];
+  ngOnInit(): void {
+    this.loadData(this.initialRequest);
   }
 
   loadData(request: DataGridRequest) {
-    console.log("SEARCH", request);
+    this.datagridLoading.set(true);
+
+    this.sediService.getSedi(request).subscribe({
+      next: (data: any) => {
+        this.sedi.set([...(data.data ?? [])]);
+
+        this.paginationConfig = {
+          ...this.paginationConfig,
+          ...data.pagination,
+        };
+
+        this.datagridLoading.set(false);
+      },
+      error: (err: any) => {
+        console.error('Error loading tessere', err);
+        this.datagridLoading.set(false);
+      },
+    });
   }
+
+  onPageChange(event: DataGridPageEvent) {
+    this.paginationConfig = {
+      ...this.paginationConfig,
+      page: event.page,
+      pageSize: event.pageSize,
+    };
+  }
+
 }

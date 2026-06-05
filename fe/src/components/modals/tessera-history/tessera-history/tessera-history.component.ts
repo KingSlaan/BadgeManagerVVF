@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective } from '@coreui/angular';
+import { ButtonDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, TableDirective } from '@coreui/angular';
 import { cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -9,10 +9,10 @@ import { IconDirective } from '@coreui/icons-angular';
     ButtonDirective,
     ModalBodyComponent,
     ModalComponent,
-    ModalFooterComponent,
     ModalHeaderComponent,
     ModalTitleDirective,
-    IconDirective
+    IconDirective,
+    TableDirective
   ],
   templateUrl: './tessera-history.component.html',
   styleUrl: './tessera-history.component.scss',
@@ -21,6 +21,7 @@ export class TesseraHistoryComponent {
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
+  @Input() tesseraSelectedHistory: any = [];
 
   icons = { cilX };
 

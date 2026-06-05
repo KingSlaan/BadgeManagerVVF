@@ -17,7 +17,7 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-    <form [gutter]="3" cForm cRow>
+    <form [formGroup]="formTessera" [gutter]="3" cForm cRow>
       <c-col xs="6">
         <label cLabel class="visually-hidden" for="idTessera">
           Id Tessera
@@ -25,9 +25,9 @@
         <input
           cFormControl
           id="idTessera"
+          formControlName="idTessera"
           placeholder="Id Tessera"
           type="text"
-          [disabled]="checkDisabled('idTessera', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -37,9 +37,9 @@
         <input
           cFormControl
           id="codiceInterno"
+          formControlName="codiceInterno"
           placeholder="Codice Interno"
           type="text"
-          [disabled]="checkDisabled('codiceInterno', mode)"
         />
       </c-col>
       <c-col xs="12">
@@ -49,9 +49,9 @@
         <input
           cFormControl
           id="codiceFiscale"
+          formControlName="codiceFiscale"
           placeholder="Codice Fiscale"
           type="text"
-          [disabled]="checkDisabled('codiceFiscale', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -59,9 +59,9 @@
         <input
           cFormControl
           id="nome"
+          formControlName="nome"
           placeholder="Nome"
           type="text"
-          [disabled]="checkDisabled('nome', mode)"
         />
       </c-col>
       <c-col xs="6">
@@ -69,72 +69,99 @@
         <input
           cFormControl
           id="cognome"
+          formControlName="cognome"
           placeholder="Cognome"
           type="text"
-          [disabled]="checkDisabled('cognome', mode)"
         />
       </c-col>
-      <c-col xs="6">
+      <c-col xs="12">
         <label cLabel class="visually-hidden" for="sede"> Sede </label>
-        <input
+        <!-- <input
           cFormControl
           id="sede"
+          formControlName="sede"
           placeholder="Sede"
           type="text"
-          [disabled]="checkDisabled('sede', mode)"
-        />
+        /> -->
+        <select cSelect formControlName="sede">
+          <option value="">-</option>
+          @for (item of sediList; track $index) {
+            <option [value]="item.codSede">
+              {{ item.descrizione }}
+            </option>
+          }
+        </select>
       </c-col>
-      <c-col xs="6">
+      <c-col xs="12">
         <label cLabel class="visually-hidden" for="tipoTessera">
           Tipo Tessera
         </label>
-        <input
+        <select
+          cSelect
           cFormControl
           id="tipoTessera"
           placeholder="Tipo Tessera"
-          type="text"
-          [disabled]="checkDisabled('tipoTessera', mode)"
-        />
+          formControlName="codTipoTessera"
+        >
+          <option value="">-</option>
+          <option value="S">Sostitutiva</option>
+          <option value="D">Dipendente</option>
+        </select>
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataInizioAssegnazione">
           Data Inizio Assegnazione
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataInizioAssegnazione"
+          formControlName="dataOraInizioAssegnazione"
           placeholder="Data Inizio Assegnazione"
-          type="text"
-          [disabled]="checkDisabled('dataInizioAssegnazione', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
+          [showTodayButton]="true"
+          todayButtonLabel="Oggi"
         />
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataFineAssegnazione">
           Data Fine Assegnazione
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataFineAssegnazione"
+          formControlName="dataOraFineAssegnazione"
           placeholder="Data Fine Assegnazione"
-          type="text"
-          [disabled]="checkDisabled('dataFineAssegnazione', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
+          [showTodayButton]="true"
+          [showSpecificDateButton]="true"
+          specificDateValue="31/12/9999 00:00:00"
+          todayButtonLabel="Oggi"
+          specificDateButtonLabel="Fine validità"
         />
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="dataInvalidità">
           Data Invalidità
         </label>
-        <input
+        <app-datepicker
           cFormControl
           id="dataInvalidita"
+          formControlName="dataOraIndisponibilita"
           placeholder="Data Invalidità"
-          type="text"
-          [disabled]="checkDisabled('dataInvalidita', mode)"
+          min="1900-01-01"
+          max="9999-12-31"
+          [showTodayButton]="true"
+          [showSpecificDateButton]="true"
+          specificDateValue="31/12/9999 00:00:00"
+          todayButtonLabel="Oggi"
+          specificDateButtonLabel="Fine validità"
         />
       </c-col>
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm()">Save</button>
+    <button cButton color="success" (click)="confirm(mode)">Salva</button>
   </c-modal-footer>
 </c-modal>
