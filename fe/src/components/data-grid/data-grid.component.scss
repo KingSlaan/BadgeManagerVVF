@@ -72,3 +72,14 @@ c-card-body {
 [data-coreui-theme="dark"] .sortable:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
+
+/* Dark theme action buttons */
+
+[data-coreui-theme="dark"] .btn-action {
+  color: #f8fafc !important;
+}
+
+[data-coreui-theme="dark"] .btn-action svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}

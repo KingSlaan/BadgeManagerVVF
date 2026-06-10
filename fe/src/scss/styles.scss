@@ -1,23 +1,435 @@
-/* You can add global styles to this file, and also import other style files */
-
-// Import styles with default layout.
 @use "@coreui/coreui/scss/coreui" as * with (
+  $primary: #b51610,
+  $secondary: #2a2a2a,
+  $success: #1f7a45,
+  $info: #2563eb,
+  $warning: #d97706,
+  $danger: #8e0e09,
   $enable-deprecation-messages: false
 );
 
-// Import Chart.js custom tooltips styles
 @use "@coreui/chartjs/scss/coreui-chartjs";
 
-// Custom styles for this theme
 @use "theme";
-
-// Some temp fixes
-//@use "fixes";
-
-// If you want to add custom CSS you can put it here.
 @use "custom";
-
-// Examples
-// We use those styles to show code examples, you should remove them in your application.
 @use "examples";
 
+/* =========================================================
+   LIGHT THEME
+   ========================================================= */
+
+:root,
+[data-coreui-theme="light"] {
+  --app-primary: #b51610;
+  --app-secondary: #2a2a2a;
+  --app-success: #1f7a45;
+  --app-info: #2563eb;
+  --app-warning: #d97706;
+  --app-danger: #8e0e09;
+
+  --app-bg: #f8fafc;
+  --app-surface: #ffffff;
+  --app-surface-2: #f3f4f6;
+  --app-text: #1f2937;
+  --app-text-muted: #6b7280;
+  --app-border: #e5e7eb;
+
+  --app-sidebar-bg: #ffffff;
+  --app-sidebar-text: #1f2937;
+  --app-header-bg: #ffffff;
+
+  --cui-primary: var(--app-primary);
+  --cui-secondary: var(--app-secondary);
+  --cui-success: var(--app-success);
+  --cui-info: var(--app-info);
+  --cui-warning: var(--app-warning);
+  --cui-danger: var(--app-danger);
+
+  --cui-primary-rgb: 181, 22, 16;
+
+  --cui-body-bg: var(--app-bg);
+  --cui-body-color: var(--app-text);
+  --cui-border-color: var(--app-border);
+
+  --cui-card-bg: var(--app-surface);
+  --cui-card-color: var(--app-text);
+  --cui-card-border-color: var(--app-border);
+
+  --cui-header-bg: var(--app-header-bg);
+  --cui-header-color: var(--app-text);
+  --cui-header-border-color: var(--app-border);
+
+  --cui-sidebar-bg: var(--app-sidebar-bg);
+  --cui-sidebar-color: var(--app-sidebar-text);
+  --cui-sidebar-brand-bg: var(--app-primary);
+  --cui-sidebar-nav-link-color: #1f2937;
+  --cui-sidebar-nav-link-hover-bg: rgba(181, 22, 16, 0.08);
+  --cui-sidebar-nav-link-hover-color: #b51610;
+  --cui-sidebar-nav-link-active-bg: #f3f4f6;
+  --cui-sidebar-nav-link-active-color: #b51610;
+
+  --cui-link-color: var(--app-primary);
+  --cui-link-hover-color: #8e0e09;
+
+  --cui-focus-ring-color: rgba(181, 22, 16, 0.25);
+}
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+[data-coreui-theme="dark"] {
+  color-scheme: dark;
+
+  --app-primary: #ff5a4f;
+  --app-secondary: #94a3b8;
+  --app-success: #3ddc84;
+  --app-info: #60a5fa;
+  --app-warning: #fbbf24;
+  --app-danger: #ff6b6b;
+
+  --app-bg: #0f172a;
+  --app-surface: #1e293b;
+  --app-surface-2: #111827;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
+  --app-border: #334155;
+
+  --app-sidebar-bg: #020617;
+  --app-sidebar-text: #ffffff;
+  --app-header-bg: #111827;
+
+  --cui-primary: var(--app-primary);
+  --cui-secondary: var(--app-secondary);
+  --cui-success: var(--app-success);
+  --cui-info: var(--app-info);
+  --cui-warning: var(--app-warning);
+  --cui-danger: var(--app-danger);
+
+  --cui-primary-rgb: 255, 90, 79;
+
+  --cui-body-bg: var(--app-bg);
+  --cui-body-color: var(--app-text);
+  --cui-border-color: var(--app-border);
+
+  --cui-card-bg: var(--app-surface);
+  --cui-card-color: var(--app-text);
+  --cui-card-border-color: var(--app-border);
+
+  --cui-header-bg: var(--app-header-bg);
+  --cui-header-color: var(--app-text);
+  --cui-header-border-color: var(--app-border);
+
+  --cui-sidebar-bg: var(--app-sidebar-bg);
+  --cui-sidebar-color: var(--app-sidebar-text);
+  --cui-sidebar-brand-bg: #b51610;
+  --cui-sidebar-nav-link-color: rgba(255, 255, 255, 0.85);
+  --cui-sidebar-nav-link-hover-bg: rgba(255, 90, 79, 0.22);
+  --cui-sidebar-nav-link-hover-color: #ffffff;
+  --cui-sidebar-nav-link-active-bg: var(--app-primary);
+  --cui-sidebar-nav-link-active-color: #ffffff;
+
+  --cui-link-color: var(--app-primary);
+  --cui-link-hover-color: #ff9a91;
+
+  --cui-focus-ring-color: rgba(255, 90, 79, 0.35);
+}
+
+/* =========================================================
+   GLOBAL THEME-AWARE FIXES
+   ========================================================= */
+
+html,
+body {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+.wrapper,
+.body,
+.main,
+.c-main,
+.container-fluid {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+/* Text */
+
+.text-primary {
+  color: var(--app-primary) !important;
+}
+
+.text-secondary {
+  color: var(--app-secondary) !important;
+}
+
+.text-muted {
+  color: var(--app-text-muted) !important;
+}
+
+a {
+  color: var(--cui-link-color);
+}
+
+a:hover {
+  color: var(--cui-link-hover-color);
+}
+
+/* Cards */
+
+.card {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+  border-radius: 12px;
+}
+
+.card-header,
+.card-footer {
+  background-color: var(--app-surface-2) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Header */
+
+.header,
+.header-sticky {
+  background-color: var(--app-header-bg) !important;
+  color: var(--app-text) !important;
+  border-bottom: 1px solid var(--app-border) !important;
+}
+
+/* Sidebar */
+
+.sidebar {
+  background-color: var(--app-sidebar-bg) !important;
+  color: var(--app-sidebar-text) !important;
+  border-right: 1px solid var(--app-border) !important;
+}
+
+.sidebar-brand {
+  background-color: var(--cui-sidebar-brand-bg) !important;
+  color: #ffffff !important;
+}
+
+.sidebar .nav-link,
+.sidebar .nav-link .nav-icon {
+  color: var(--cui-sidebar-nav-link-color) !important;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link:hover .nav-icon {
+  color: var(--cui-sidebar-nav-link-hover-color) !important;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link.active .nav-icon {
+  background-color: var(--cui-sidebar-nav-link-active-bg) !important;
+  color: var(--cui-sidebar-nav-link-active-color) !important;
+}
+
+/* Buttons */
+
+.btn-primary {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-secondary {
+  background-color: var(--app-secondary) !important;
+  border-color: var(--app-secondary) !important;
+}
+
+[data-coreui-theme="light"] .btn-secondary {
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-secondary {
+  color: #0f172a !important;
+}
+
+.btn-success {
+  background-color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
+}
+
+.btn-info {
+  background-color: var(--app-info) !important;
+  border-color: var(--app-info) !important;
+}
+
+.btn-warning {
+  background-color: var(--app-warning) !important;
+  border-color: var(--app-warning) !important;
+}
+
+.btn-danger {
+  background-color: var(--app-danger) !important;
+  border-color: var(--app-danger) !important;
+}
+
+/* Background utilities */
+
+.bg-primary {
+  background-color: var(--app-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--app-secondary) !important;
+}
+
+.bg-success {
+  background-color: var(--app-success) !important;
+}
+
+.bg-info {
+  background-color: var(--app-info) !important;
+}
+
+.bg-warning {
+  background-color: var(--app-warning) !important;
+}
+
+.bg-danger {
+  background-color: var(--app-danger) !important;
+}
+
+/* Borders */
+
+.border,
+.border-top,
+.border-end,
+.border-bottom,
+.border-start {
+  border-color: var(--app-border) !important;
+}
+
+/* Forms */
+
+.form-control,
+.form-select {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary) !important;
+  box-shadow: 0 0 0 0.25rem var(--cui-focus-ring-color) !important;
+}
+
+.form-control::placeholder {
+  color: var(--app-text-muted);
+}
+
+/* Tables */
+
+.table {
+  --cui-table-bg: var(--app-surface);
+  --cui-table-color: var(--app-text);
+  --cui-table-border-color: var(--app-border);
+
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(var(--cui-primary-rgb), 0.08) !important;
+}
+
+/* Dropdowns */
+
+.dropdown-menu {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.dropdown-item {
+  color: var(--app-text) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(var(--cui-primary-rgb), 0.1) !important;
+}
+
+/* Pagination */
+
+.page-link {
+  color: var(--app-primary) !important;
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #ffffff !important;
+}
+
+/* Modals */
+
+.modal-content {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--app-border) !important;
+}
+
+/* Smooth switch */
+
+body,
+.wrapper,
+.sidebar,
+.header,
+.card,
+.form-control,
+.form-select,
+.table,
+.dropdown-menu,
+.modal-content {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Header buttons/icons visibility */
+
+[data-coreui-theme="dark"] c-header-nav button,
+[data-coreui-theme="dark"] c-header-nav .btn,
+[data-coreui-theme="dark"] [cHeaderToggler],
+[data-coreui-theme="dark"] [cDropdownToggle] {
+  color: #f8fafc !important;
+}
+
+[data-coreui-theme="dark"] c-header-nav svg,
+[data-coreui-theme="dark"] [cHeaderToggler] svg,
+[data-coreui-theme="dark"] [cDropdownToggle] svg {
+  color: #f8fafc !important;
+  fill: currentColor !important;
+}
+
+[data-coreui-theme="dark"] c-header-nav button:hover,
+[data-coreui-theme="dark"] [cHeaderToggler]:hover,
+[data-coreui-theme="dark"] [cDropdownToggle]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .header-icon-btn {
+  color: #f8fafc !important;
+}
+
+[data-coreui-theme="light"] .header-icon-btn {
+  color: #1f2937 !important;
+}

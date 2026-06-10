@@ -23,7 +23,7 @@ import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
 import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
 import { TessereService } from 'src/app/services/tessere.service';
 import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
-import { Sedi } from 'src/interfaces/sedi';
+import { AutocompleteSelectComponent } from '@docs-components/autocomplete-select/autocomplete-select.component';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -45,7 +45,8 @@ import { Sedi } from 'src/interfaces/sedi';
     ReactiveFormsModule,
     FormsModule,
     DatepickerComponent,
-    FormSelectDirective
+    FormSelectDirective,
+    AutocompleteSelectComponent
   ],
   templateUrl: './tessera-modal-cmp.component.html',
   styleUrl: './tessera-modal-cmp.component.scss',

@@ -113,7 +113,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   getSedi() {
     this.sediService.getSediList().subscribe({
       next: (data: any) => {
-        this.sedi.set([...(data.data ?? [])])
+        const options = data.data.map((sede: any) => ({
+          label: sede.descrizione,
+          value: sede.codSede
+        }));
+        this.sedi.set([...(options ?? [])])
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);

@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
     datasets: [
       {
         label: '# Badge',
-        backgroundColor: '#3634a3',
+        backgroundColor: '#b51610',
         data: []
       }
     ],

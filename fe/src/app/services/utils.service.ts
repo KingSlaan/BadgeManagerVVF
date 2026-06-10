@@ -1,9 +1,20 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { API_CONSTANTS } from 'src/constants/api.constants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UtilsService {
+
+  private http = inject(HttpClient);
+
+  private apiUrl = API_CONSTANTS.BASE_URL;
+
+  getVersionBE(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/getVersion`);
+  }
 
   formatDateString(dateString: string): string {
     if (!dateString) {
