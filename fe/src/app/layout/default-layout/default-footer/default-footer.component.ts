@@ -1,7 +1,7 @@
 import { VersionService } from './../../../services/version.service';
-import { AfterViewInit, Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { FooterComponent } from '@coreui/angular';
-import { VersionInfo } from '../../../../interfaces/version-info';
+import { VersionInfo, VersionInfoBE } from '../../../../interfaces/version-info';
 import { DatePipe } from '@angular/common';
 
 @Component({
@@ -17,17 +17,33 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
 
   private versionService = inject(VersionService);
 
-  versionInfo: VersionInfo = {
+  versionInfo = signal<VersionInfo>({
     "version": "0.0.0-Catan",
     "environment": "development",
     "buildDate": ""
-  };
+  });
+
+  versionInfoBE = signal<VersionInfoBE>({
+    "appName": "Applicativo Badge VVF",
+    "version": "0.0.0",
+    "buildDate": ""
+  });
+
 
   ngAfterViewInit(): void {
     this.versionService.getVersion().subscribe(data => {
       setTimeout(() => {
-        this.versionInfo = data;
+        this.versionInfo.set((data ?? {}));
       });
+    });
+
+    this.versionService.getVersionBE().subscribe({
+      next: (data: any) => {
+        this.versionInfoBE.set((data.data ?? {}));
+      },
+      error: (err: any) => {
+        console.error('Error loading tessere', err);
+      },
     });
   }
 

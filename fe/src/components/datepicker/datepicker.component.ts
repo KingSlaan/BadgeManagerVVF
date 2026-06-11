@@ -44,6 +44,7 @@ export class DatepickerComponent implements ControlValueAccessor {
   @Input() specificDateValue = '31/12/9999 00:00:00';
   @Input() todayButtonLabel = 'Today';
   @Input() specificDateButtonLabel = 'No end date';
+  @Input() showTime = true;
 
   icons = {
     cilCalendar,
@@ -82,7 +83,14 @@ export class DatepickerComponent implements ControlValueAccessor {
       return '';
     }
 
-    return this.toDisplayFormat(this.value);
+    const [datePart, timePart] = this.value.split('T');
+    const [year, month, day] = datePart.split('-');
+
+    if (!this.showTime) {
+      return `${day}/${month}/${year}`;
+    }
+
+    return `${day}/${month}/${year} ${timePart}:00`;
   }
 
   openPicker(input: HTMLInputElement): void {
@@ -96,9 +104,14 @@ export class DatepickerComponent implements ControlValueAccessor {
 
     this.value = input.value;
 
-    const formatted = this.toDisplayFormat(this.value);
+    if (!this.showTime) {
+      const [year, month, day] = input.value.split('-');
 
-    this.onChange(formatted);
+      this.onChange(`${day}/${month}/${year}`);
+    } else {
+      this.onChange(this.toDisplayFormat(input.value));
+    }
+
     this.onTouched();
   }
 
@@ -139,7 +152,13 @@ export class DatepickerComponent implements ControlValueAccessor {
 
   private toNativeDateTime(value: string): string {
     const [datePart, timePart] = value.split(' ');
+
     const [day, month, year] = datePart.split('/');
+
+    if (!this.showTime) {
+      return `${year}-${month}-${day}`;
+    }
+
     const [hours, minutes] = timePart.split(':');
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
@@ -150,5 +169,11 @@ export class DatepickerComponent implements ControlValueAccessor {
     const [year, month, day] = datePart.split('-');
 
     return `${day}/${month}/${year} ${timePart}:00`;
+  }
+
+  get computedPlaceholder(): string {
+    return this.showTime
+      ? 'gg/mm/aaaa hh:mm:ss'
+      : 'gg/mm/aaaa';
   }
 }

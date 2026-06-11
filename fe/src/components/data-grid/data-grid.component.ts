@@ -5,6 +5,7 @@ import {
   DataGridToolbarConfig
 } from './../../interfaces/datagrid';
 import { DatepickerComponent } from './../datepicker/datepicker.component';
+import { AutocompleteSelectComponent } from '../autocomplete-select/autocomplete-select.component';
 
 import {
   ChangeDetectionStrategy,
@@ -64,7 +65,8 @@ import { IconDirective } from '@coreui/icons-angular';
     FormSelectDirective,
     DatepickerComponent,
     SpinnerComponent,
-    FormCheckInputDirective
+    FormCheckInputDirective,
+    AutocompleteSelectComponent
   ],
   templateUrl: './data-grid.component.html',
   styleUrls: ['./data-grid.component.scss'],
@@ -105,10 +107,16 @@ export class DataGridComponent<T = any> implements OnInit {
   ngOnInit() {
     // Init empty object keys first
     this.searchConfig()?.fields.forEach((f: any) => {
-      this.filterValues[f.field] ??=
-        f.type === 'checkbox'
-          ? false
-          : '';
+      if (f.type === 'checkbox') {
+
+        this.filterValues[f.field] ??= false;
+
+      } else if (f.type === 'autocomplete' && f.multiple) {
+
+        this.filterValues[f.field] ??= [];
+      } else {
+        this.filterValues[f.field] ??= '';
+      }
     });
 
     // Then restore persisted values
@@ -146,9 +154,15 @@ export class DataGridComponent<T = any> implements OnInit {
     this.saveState();
   }
 
-  clearFilters() {
-    Object.keys(this.filterValues).forEach(k => {
-      this.filterValues[k] = '';
+  clearFilters(): void {
+    this.searchConfig()?.fields.forEach((f: any) => {
+      if (f.type === 'checkbox') {
+        this.filterValues[f.field] = false;
+      } else if (f.type === 'autocomplete' && f.multiple) {
+        this.filterValues[f.field] = [];
+      } else {
+        this.filterValues[f.field] = '';
+      }
     });
 
     this.applyFilters();
@@ -207,6 +221,10 @@ export class DataGridComponent<T = any> implements OnInit {
 
       if (f.type === 'checkbox') {
         return value === true;
+      }
+
+      if (Array.isArray(value)) {
+        return value.length > 0;
       }
 
       return value !== null && value !== undefined && value !== '';

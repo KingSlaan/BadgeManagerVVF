@@ -9,41 +9,44 @@ import {
 } from '../../../../interfaces/datagrid';
 import { Tessera, Tessere } from '../../../../interfaces/tessere';
 import { cilCloudDownload, cilCloudUpload, cilPlus } from '@coreui/icons';
+import { AutocompleteOption } from '@docs-components/autocomplete-select/autocomplete-select.component';
 
-export const TESSERE_SEARCH_CONFIG: DataGridSearchConfig = {
-  enabled: true,
+export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGridSearchConfig {
+  return {
+    enabled: true,
 
-  fields: [
-    { field: 'idTessera', label: 'Id Tessera', type: 'text', size: '3' },
-    { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator:'contains' },
-    { field: 'nome', label: 'Nome', type: 'text', operator:'contains' },
-    { field: 'cognome', label: 'Cognome', type: 'text', operator:'contains' },
-    { field: 'sede', label: 'Sede Tessera', type: 'text', size: '2', operator:'contains' },
-    {
-      field: 'status',
-      label: 'Status',
-      type: 'select',
-      operator: 'equals',
-      options: [
-        {
-          label: 'Sostitutiva',
-          value: 'S',
-        },
-        {
-          label: 'Dipendente',
-          value: 'D',
-        },
+    fields: [
+      { field: 'idTessera', label: 'Id Tessera', type: 'text', size: '3', operator: 'contains' },
+      { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator: 'contains' },
+      { field: 'nome', label: 'Nome', type: 'text', operator: 'starts', size: '3' },
+      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'starts', size: '3' },
+      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'contains', options: sediList},
+      {
+        field: 'status',
+        label: 'Status',
+        type: 'select',
+        operator: 'equals',
+        options: [
+          {
+            label: 'Sostitutiva',
+            value: 'S',
+          },
+          {
+            label: 'Dipendente',
+            value: 'D',
+          },
 
-      ],
-    },
-    {
-      field: 'soloNonAssegnate', label: 'Solo non Assegnate', type: 'checkbox', operator: 'equals', size: '3'
-    }
-    // { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
-    // { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
-    // { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
+        ],
+      },
+      {
+        field: 'soloNonAssegnate', label: 'Solo non Assegnate', type: 'checkbox', operator: 'equals', size: '3'
+      }
+      // { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
+      // { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
+      // { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
 
-  ]
+    ]
+  }
 };
 
 export const TESSERE_SORTING_CONFIG: DataGridSortingConfig = {

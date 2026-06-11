@@ -3,18 +3,93 @@
   <c-col xs="12">
     <c-card>
       <c-card-body>
-        <form cForm [formGroup]="form" (ngSubmit)="save()">
-          <c-row>
-            <c-col xs="4" lg="4">1</c-col>
-            <c-col xs="4" lg="4">2</c-col>
-            <c-col xs="4" lg="4">3</c-col>
-          </c-row>
+        <form
+          cForm
+          [formGroup]="form"
+          (ngSubmit)="creaFileRisposta()"
+          [gutter]="3"
+          cRow
+        >
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="oggetto">
+              Oggetto
+            </label>
+            <input
+              cFormControl
+              id="oggetto"
+              formControlName="oggetto"
+              placeholder="Oggetto"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="onumProtocolloggetto">
+              # Protocollo
+            </label>
+            <input
+              cFormControl
+              id="numProtocollo"
+              formControlName="numProtocollo"
+              placeholder="# Protocollo"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="dataProtocollo">
+              Data Protocollo
+            </label>
+            <app-datepicker
+              cFormControl
+              id="dataProtocollo"
+              formControlName="dataProtocollo"
+              placeholder="Data Protocollo"
+              min="1900-01-01"
+              max="9999-12-31"
+              [showTodayButton]="true"
+              todayButtonLabel="Oggi"
+              [showTime]="false"
+            />
+          </c-col>
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="sede"> Sede </label>
+            <input
+              cFormControl
+              id="sede"
+              formControlName="sede"
+              placeholder="Sede"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="tipoTemplate">
+              Tipo Template
+            </label>
+            <input
+              cFormControl
+              id="tipoTemplate"
+              formControlName="tipoTemplate"
+              placeholder="Tipo Template"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="4" lg="4">
+            <label cLabel class="visually-hidden" for="qntBadge">
+              Quantità Badge
+            </label>
+            <input
+              cFormControl
+              id="qntBadge"
+              formControlName="qntBadge"
+              placeholder="Quantità Badge"
+              type="text"
+            />
+          </c-col>
         </form>
       </c-card-body>
       <c-card-footer>
         <div class="d-flex justify-content-end mt-3 flex-wrap">
           <button cButton color="success" type="submit" [disabled]="false">
-            Salva
+            Crea Risposta
           </button>
         </div>
       </c-card-footer>

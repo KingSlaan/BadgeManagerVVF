@@ -38,9 +38,11 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
   placeholder = input<string>('Select...');
   disabledInput = input<boolean>(false);
   clearable = input<boolean>(true);
+  multiple = input<boolean>(false);
 
   search = signal('');
   selectedValue = signal<any>(null);
+  selectedValues = signal<any[]>([]);
   isOpen = signal(false);
   disabled = signal(false);
 
@@ -56,16 +58,77 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
     );
   });
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef) { }
 
-  onChange: (value: any) => void = () => {};
-  onTouched: () => void = () => {};
+  onChange: (value: any) => void = () => { };
+  onTouched: () => void = () => { };
 
   writeValue(value: any): void {
+    if (this.multiple()) {
+      this.selectedValues.set(Array.isArray(value) ? value : []);
+      this.search.set('');
+      return;
+    }
+
     this.selectedValue.set(value);
 
     const selected = this.options().find(opt => opt.value === value);
     this.search.set(selected?.label ?? '');
+  }
+
+  isSelected(option: AutocompleteOption): boolean {
+    return this.multiple()
+      ? this.selectedValues().includes(option.value)
+      : option.value === this.selectedValue();
+  }
+
+  selectOption(option: AutocompleteOption): void {
+    if (this.multiple()) {
+      const current = this.selectedValues();
+
+      const next = current.includes(option.value)
+        ? current.filter(v => v !== option.value)
+        : [...current, option.value];
+
+      this.selectedValues.set(next);
+      this.onChange(next);
+      this.search.set('');
+      this.isOpen.set(true);
+      return;
+    }
+
+    this.selectedValue.set(option.value);
+    this.search.set(option.label);
+    this.onChange(option.value);
+    this.onTouched();
+    this.isOpen.set(false);
+  }
+
+  removeSelected(value: any): void {
+    const next = this.selectedValues().filter(v => v !== value);
+    this.selectedValues.set(next);
+    this.onChange(next);
+  }
+
+  getSelectedOptions(): AutocompleteOption[] {
+    return this.options().filter(opt =>
+      this.selectedValues().includes(opt.value)
+    );
+  }
+
+  clear(): void {
+    if (this.multiple()) {
+      this.selectedValues.set([]);
+      this.search.set('');
+      this.onChange([]);
+    } else {
+      this.selectedValue.set(null);
+      this.search.set('');
+      this.onChange(null);
+    }
+
+    this.onTouched();
+    this.isOpen.set(false);
   }
 
   registerOnChange(fn: any): void {
@@ -87,25 +150,13 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
 
   onSearchChange(value: string): void {
     this.search.set(value);
-    this.selectedValue.set(null);
-    this.onChange(null);
+
+    if (!this.multiple()) {
+      this.selectedValue.set(null);
+      this.onChange(null);
+    }
+
     this.isOpen.set(true);
-  }
-
-  selectOption(option: AutocompleteOption): void {
-    this.selectedValue.set(option.value);
-    this.search.set(option.label);
-    this.onChange(option.value);
-    this.onTouched();
-    this.isOpen.set(false);
-  }
-
-  clear(): void {
-    this.selectedValue.set(null);
-    this.search.set('');
-    this.onChange(null);
-    this.onTouched();
-    this.isOpen.set(false);
   }
 
   @HostListener('document:click', ['$event'])

@@ -3,3 +3,8 @@ export interface VersionInfo {
   environment: string;
   buildDate: string;
 }
+export interface VersionInfoBE {
+  version: string;
+  appName: string;
+  buildDate: string;
+}
