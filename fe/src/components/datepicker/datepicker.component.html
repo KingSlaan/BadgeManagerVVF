@@ -6,7 +6,7 @@
   >
     <input
       #dateInput
-      type="datetime-local"
+      [type]="showTime ? 'datetime-local' : 'date'"
       class="native-date-input"
       [value]="value || ''"
       [min]="min"
@@ -19,7 +19,7 @@
       type="text"
       class="cui-input custom-datepicker-input"
       [value]="displayValue"
-      [placeholder]="placeholder"
+      [placeholder]="placeholder || computedPlaceholder"
       [disabled]="disabled"
       readonly
       (click)="openPicker(dateInput)"

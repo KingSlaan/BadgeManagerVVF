@@ -13,7 +13,7 @@ import { TesseraHistoryComponent } from './../../../../components/modals/tessera
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
-import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_MOCK, TESSERE_PERSIST_CONFIG, TESSERE_SEARCH_CONFIG } from './lista-tessere.datagrid';
+import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig } from './lista-tessere.datagrid';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
 import { Sedi } from 'src/interfaces/sedi';
@@ -56,7 +56,10 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   })
   actionTemplate!: TemplateRef<any>;
 
-  searchConfig: DataGridSearchConfig = TESSERE_SEARCH_CONFIG;
+  searchConfig: DataGridSearchConfig = {
+    enabled: true,
+    fields: [],
+  };;
 
   paginationConfig = DATAGRID_CONSTANTS;
 
@@ -107,7 +110,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadData(this.initialRequest);
+    this.loadData(this.getInitialRequest());
     this.getSedi();
   }
 
@@ -118,7 +121,9 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
           label: sede.descrizione,
           value: sede.codSede
         }));
-        this.sedi.set([...(options ?? [])])
+        this.sedi.set([...(options ?? [])]);
+
+        this.searchConfig = createTesseraSearchConfig(options);
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
@@ -212,6 +217,34 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     if (!visible) {
       this.loadData(this.initialRequest);
     }
+  }
+
+  private getInitialRequest(): DataGridRequest {
+    const saved = localStorage.getItem(this.persistConfig.storageKey);
+
+    if (!saved) {
+      return this.initialRequest;
+    }
+
+    const state = JSON.parse(saved);
+
+    return {
+      filters: Object.entries(state.filters ?? {})
+        .filter(([_, value]) =>
+          value !== null &&
+          value !== undefined &&
+          value !== ''
+        )
+        .map(([field, value]) => ({
+          field,
+          operator: 'contains' as const,
+          value: String(value),
+        })),
+
+      pagination: this.initialRequest.pagination,
+
+      sorting: state.sorting ?? this.initialRequest.sorting,
+    };
   }
 
 }

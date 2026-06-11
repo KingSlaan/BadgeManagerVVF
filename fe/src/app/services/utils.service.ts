@@ -12,9 +12,6 @@ export class UtilsService {
 
   private apiUrl = API_CONSTANTS.BASE_URL;
 
-  getVersionBE(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/getVersion`);
-  }
 
   formatDateString(dateString: string): string {
     if (!dateString) {

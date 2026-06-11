@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, RowComponent } from '@coreui/angular';
-import { AutocompleteSelectComponent } from '@docs-components/autocomplete-select/autocomplete-select.component';
-
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, RowComponent, RowDirective } from '@coreui/angular';
+import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
 @Component({
   selector: 'app-stampa-documenti',
   imports: [
@@ -12,26 +11,30 @@ import { AutocompleteSelectComponent } from '@docs-components/autocomplete-selec
     CardComponent,
     CardBodyComponent,
     CardFooterComponent,
-    FormDirective,
     FormControlDirective,
-    ButtonDirective
+    FormDirective,
+    FormLabelDirective,
+    ButtonDirective,
+    GutterDirective,
+    RowDirective,
+    FormsModule,
+    DatepickerComponent
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
 })
 export class StampaDocumentiComponent {
 
-  sediOptions = [
-    { label: 'Roma', value: 'RM' },
-    { label: 'Milano', value: 'MI' },
-    { label: 'Napoli', value: 'NA' }
-  ];
-
   form = new FormGroup({
-    sede: new FormControl(null)
+    oggetto: new FormControl(''),
+    numProtocollo: new FormControl(''),
+    dataProtocollo: new FormControl(''),
+    sede: new FormControl(''),
+    tipoTemplate: new FormControl(''),
+    qntBadge: new FormControl(0),
   });
 
-  save() {
+  creaFileRisposta() {
 
   }
 

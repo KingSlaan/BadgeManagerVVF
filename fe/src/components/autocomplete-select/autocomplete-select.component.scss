@@ -66,7 +66,7 @@
   color: var(--cui-secondary-color);
 }
 
-:host-context([data-coreui-theme='dark']) {
+:host-context([data-coreui-theme="dark"]) {
   .autocomplete-dropdown {
     background-color: var(--cui-dark-bg-subtle);
     border-color: var(--cui-border-color);
@@ -75,4 +75,42 @@
   .autocomplete-option:hover {
     background-color: rgba(255, 255, 255, 0.08);
   }
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-height: 38px;
+  padding: 0.25rem 2.25rem 0.25rem 0.5rem;
+  border: 1px solid var(--cui-border-color);
+  border-radius: var(--cui-border-radius);
+  background-color: var(--cui-body-bg);
+  color: var(--cui-body-color);
+}
+
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--cui-tertiary-bg);
+  color: var(--cui-body-color);
+}
+
+.tag-remove {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tag-input {
+  flex: 1;
+  min-width: 120px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--cui-body-color);
 }

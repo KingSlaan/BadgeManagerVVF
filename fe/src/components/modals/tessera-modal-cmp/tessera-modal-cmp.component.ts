@@ -64,7 +64,6 @@ export class TesseraModalCmpComponent {
   @Output() saved = new EventEmitter<void>();
 
   formTessera = new FormGroup({
-    tipoCompetenza: new FormControl('territorio'),
     idTessera: new FormControl(''),
     codiceInterno: new FormControl(''),
     codiceFiscale: new FormControl(''),

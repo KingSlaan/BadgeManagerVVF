@@ -1,21 +1,54 @@
 <div class="autocomplete-select">
-  <div class="autocomplete-input-wrapper">
-    <input
-      type="text"
-      class="form-control autocomplete-input"
-      [placeholder]="placeholder()"
-      [ngModel]="search()"
-      [disabled]="disabled() || disabledInput()"
-      (ngModelChange)="onSearchChange($event)"
-      (focus)="open()"
-    />
+  <div class="autocomplete-input-wrapper" (click)="open()">
+    @if (multiple()) {
+      <div class="selected-tags">
+        @for (option of getSelectedOptions(); track option.value) {
+          <span class="selected-tag">
+            {{ option.label }}
 
-    @if (clearable() && search() && !disabled() && !disabledInput()) {
+            <button
+              type="button"
+              class="tag-remove"
+              (click)="removeSelected(option.value); $event.stopPropagation()"
+            >
+              ×
+            </button>
+          </span>
+        }
+
+        <input
+          type="text"
+          class="tag-input"
+          [placeholder]="selectedValues().length === 0 ? placeholder() : ''"
+          [ngModel]="search()"
+          [disabled]="disabled() || disabledInput()"
+          (ngModelChange)="onSearchChange($event)"
+          (focus)="open()"
+        />
+      </div>
+    } @else {
+      <input
+        type="text"
+        class="form-control autocomplete-input"
+        [placeholder]="placeholder()"
+        [ngModel]="search()"
+        [disabled]="disabled() || disabledInput()"
+        (ngModelChange)="onSearchChange($event)"
+        (focus)="open()"
+      />
+    }
+
+    @if (
+      clearable() &&
+      (search() || selectedValues().length > 0) &&
+      !disabled() &&
+      !disabledInput()
+    ) {
       <button
         type="button"
         class="clear-btn"
         title="Clear"
-        (click)="clear()"
+        (click)="clear(); $event.stopPropagation()"
       >
         ×
       </button>
@@ -28,7 +61,7 @@
         <button
           type="button"
           class="autocomplete-option"
-          [class.selected]="option.value === selectedValue()"
+          [class.selected]="isSelected(option)"
           (click)="selectOption(option)"
         >
           {{ option.label }}
@@ -36,9 +69,7 @@
       }
 
       @if (filteredOptions().length === 0) {
-        <div class="autocomplete-empty">
-          No results found
-        </div>
+        <div class="autocomplete-empty">No results found</div>
       }
     </div>
   }

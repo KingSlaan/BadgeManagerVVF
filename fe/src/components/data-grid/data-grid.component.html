@@ -53,6 +53,15 @@
                 </label>
               </div>
             }
+            @if (f.type === "autocomplete") {
+              <app-autocomplete-select
+                [name]="f.field"
+                [(ngModel)]="filterValues[f.field]"
+                [placeholder]="f.label"
+                [options]="f.options ?? []"
+                [multiple]="f.multiple ?? false"
+              />
+            }
           </c-col>
         }
         <c-col xs="2">

@@ -1,3 +1,49 @@
-.version-info-box {
-  font-size: 10px;
+.version-card {
+  min-width: 180px;
+  padding: 0.5rem 1rem;
+
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+
+  background-color: var(--app-surface);
+
+  text-align: center;
+}
+
+.version-title {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  color: var(--app-text-muted);
+}
+
+.version-number {
+  font-size: 0.65rem;
+  font-weight: 700;
+
+  color: var(--app-text);
+}
+
+.version-date {
+  font-size: 0.65rem;
+
+  color: var(--app-text-muted);
+}
+
+.footer-container {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+}
+
+.footer-version-section {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Push authors completely to the right */
+.footer-container > .version-card:last-child {
+  margin-left: auto;
 }
