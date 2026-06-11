@@ -37,9 +37,18 @@
     color="info"
     variant="ghost"
     shape="rounded-pill"
-    (click)="openModal('assign', row.idTessera)"
+    (click)="openModal(action_const.ASSIGN, row.idTessera)"
   >
     <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+  </button>
+  <button
+    cButton
+    color="info"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="openModal(action_const.ASSIGN_SEDE, row.idTessera)"
+  >
+    <svg [cIcon]="icons.cilBuilding" title="Cambia Sede"></svg>
   </button>
   <!-- } -->
 
@@ -57,7 +66,7 @@
     color="danger"
     variant="ghost"
     shape="rounded-pill"
-    (click)="openModal('disabled', row.idTessera)"
+    (click)="openModal(action_const.DISABLED, row.idTessera)"
   >
     <svg [cIcon]="icons.cilBan" title="Disabilita"></svg>
   </button>
@@ -67,13 +76,14 @@
       color="danger"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal('remove', row.idTessera)"
+      (click)="openModal(action_const.REMOVE, row.idTessera)"
     >
       <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
     </button>
   }
   <button
     cButton
+    class="btn-action btn btn-link"
     color="secondary"
     variant="ghost"
     shape="rounded-pill"

@@ -76,21 +76,19 @@
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="sede"> Sede </label>
-        <!-- <input
-          cFormControl
-          id="sede"
-          formControlName="sede"
-          placeholder="Sede"
-          type="text"
-        /> -->
-        <select cSelect formControlName="sede">
+        <!-- <select cSelect formControlName="sede">
           <option value="">-</option>
           @for (item of sediList; track $index) {
             <option [value]="item.codSede">
               {{ item.descrizione }}
             </option>
           }
-        </select>
+        </select> -->
+        <app-autocomplete-select
+          formControlName="sede"
+          [options]="sediList"
+          placeholder="Select sede"
+        />
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="tipoTessera">
@@ -103,7 +101,6 @@
           placeholder="Tipo Tessera"
           formControlName="codTipoTessera"
         >
-          <option value="">-</option>
           <option value="S">Sostitutiva</option>
           <option value="D">Dipendente</option>
         </select>
@@ -162,6 +159,6 @@
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm(mode)">Salva</button>
+    <button cButton color="success" (click)="confirm(mode)">{{getConfirmText(mode)}}</button>
   </c-modal-footer>
 </c-modal>

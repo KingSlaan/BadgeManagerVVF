@@ -23,7 +23,7 @@ import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
 import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
 import { TessereService } from 'src/app/services/tessere.service';
 import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
-import { Sedi } from 'src/interfaces/sedi';
+import { AutocompleteSelectComponent } from '@docs-components/autocomplete-select/autocomplete-select.component';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -45,7 +45,8 @@ import { Sedi } from 'src/interfaces/sedi';
     ReactiveFormsModule,
     FormsModule,
     DatepickerComponent,
-    FormSelectDirective
+    FormSelectDirective,
+    AutocompleteSelectComponent
   ],
   templateUrl: './tessera-modal-cmp.component.html',
   styleUrl: './tessera-modal-cmp.component.scss',
@@ -63,6 +64,7 @@ export class TesseraModalCmpComponent {
   @Output() saved = new EventEmitter<void>();
 
   formTessera = new FormGroup({
+    tipoCompetenza: new FormControl('territorio'),
     idTessera: new FormControl(''),
     codiceInterno: new FormControl(''),
     codiceFiscale: new FormControl(''),
@@ -123,6 +125,16 @@ export class TesseraModalCmpComponent {
         // 'sede',
         'dataOraIndisponibilita'
       ],
+      assign_sede: [
+        'idTessera',
+        'codiceInterno',
+        'codiceFiscale',
+        'nome',
+        'cognome',
+        'dataOraInizioAssegnazione',
+        'dataOraFineAssegnazione',
+        'dataOraIndisponibilita'
+      ],
       add: [],
     };
 
@@ -137,6 +149,9 @@ export class TesseraModalCmpComponent {
 
   getTitle(mode: string) {
     switch (mode) {
+      case ACTION_CONSTANTS.ASSIGN_SEDE:
+        return "Cambia Sede"
+        break;
       case ACTION_CONSTANTS.ASSIGN:
         return "Assegna Tessera"
         break;
@@ -152,6 +167,30 @@ export class TesseraModalCmpComponent {
 
       default:
         return "Modifica Tessera"
+        break;
+    }
+  }
+
+  getConfirmText(mode: string) {
+    switch (mode) {
+      case ACTION_CONSTANTS.ASSIGN_SEDE:
+        return "Cambia Sede"
+        break;
+      case ACTION_CONSTANTS.ASSIGN:
+        return "Assegna"
+        break;
+      case ACTION_CONSTANTS.EDIT:
+        return "Salva"
+        break;
+      case ACTION_CONSTANTS.REMOVE:
+        return "Revoca"
+        break;
+      case ACTION_CONSTANTS.DISABLED:
+        return "Invalida"
+        break;
+
+      default:
+        return "Salva"
         break;
     }
   }
@@ -179,6 +218,25 @@ export class TesseraModalCmpComponent {
     let request = {};
 
     switch (mode) {
+      case ACTION_CONSTANTS.ASSIGN_SEDE:
+        request = {
+          sede: this.formTessera.controls.sede.value,
+          codTipoTessera: this.formTessera.controls.codTipoTessera.value,
+        }
+
+        this.tessereService.cambiaSedeTessera(this.tesseraSelected.idTessera, request).subscribe({
+          next: (data: any) => {
+            this.saved.emit();
+            this.toast.success(MESSAGES_CONSTANTS.SUCCESSO_CAMBIO_SEDE_TESSERA);
+
+            this.visibleChange.emit(false);
+          },
+          error: (err: any) => {
+            console.error('Error loading tessere', err);
+          },
+        });
+        break;
+
       case ACTION_CONSTANTS.ASSIGN:
         request = {
           idTessera: this.tesseraSelected.idTessera,

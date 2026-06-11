@@ -18,7 +18,7 @@ export const TESSERE_SEARCH_CONFIG: DataGridSearchConfig = {
     { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator:'contains' },
     { field: 'nome', label: 'Nome', type: 'text', operator:'contains' },
     { field: 'cognome', label: 'Cognome', type: 'text', operator:'contains' },
-    { field: 'sede', label: 'Sede', type: 'text', size: '2', operator:'contains' },
+    { field: 'sede', label: 'Sede Tessera', type: 'text', size: '2', operator:'contains' },
     {
       field: 'status',
       label: 'Status',
@@ -126,7 +126,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
     },
     {
       field: 'sede',
-      header: 'Sede',
+      header: 'Sede Tessera',
     },
     {
       field: 'persona',

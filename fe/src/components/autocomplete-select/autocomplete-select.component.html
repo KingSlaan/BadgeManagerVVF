@@ -1,0 +1,45 @@
+<div class="autocomplete-select">
+  <div class="autocomplete-input-wrapper">
+    <input
+      type="text"
+      class="form-control autocomplete-input"
+      [placeholder]="placeholder()"
+      [ngModel]="search()"
+      [disabled]="disabled() || disabledInput()"
+      (ngModelChange)="onSearchChange($event)"
+      (focus)="open()"
+    />
+
+    @if (clearable() && search() && !disabled() && !disabledInput()) {
+      <button
+        type="button"
+        class="clear-btn"
+        title="Clear"
+        (click)="clear()"
+      >
+        ×
+      </button>
+    }
+  </div>
+
+  @if (isOpen()) {
+    <div class="autocomplete-dropdown">
+      @for (option of filteredOptions(); track option.value) {
+        <button
+          type="button"
+          class="autocomplete-option"
+          [class.selected]="option.value === selectedValue()"
+          (click)="selectOption(option)"
+        >
+          {{ option.label }}
+        </button>
+      }
+
+      @if (filteredOptions().length === 0) {
+        <div class="autocomplete-empty">
+          No results found
+        </div>
+      }
+    </div>
+  }
+</div>

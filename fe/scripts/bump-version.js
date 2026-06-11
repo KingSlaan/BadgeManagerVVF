@@ -26,6 +26,10 @@ const boardGames = [
   'SpiritIsland',
   'Civolution',
   'Dixit',
+  'ResArcana',
+  'MachiKoro',
+  'GreatWesternTrail',
+  'PuertoRico',
 ];
 
 const bumpType = process.argv[2] || 'patch';

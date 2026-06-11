@@ -1,23 +1,615 @@
-/* You can add global styles to this file, and also import other style files */
-
-// Import styles with default layout.
 @use "@coreui/coreui/scss/coreui" as * with (
+  $primary: #7C2D12,
+  $secondary: #475569,
+  $success: #15803D,
+  $info: #2563EB,
+  $warning: #D97706,
+  $danger: #B91C1C,
   $enable-deprecation-messages: false
 );
 
-// Import Chart.js custom tooltips styles
 @use "@coreui/chartjs/scss/coreui-chartjs";
 
-// Custom styles for this theme
 @use "theme";
-
-// Some temp fixes
-//@use "fixes";
-
-// If you want to add custom CSS you can put it here.
 @use "custom";
-
-// Examples
-// We use those styles to show code examples, you should remove them in your application.
 @use "examples";
 
+/* =========================================================
+   LIGHT THEME - WARM CORPORATE
+   ========================================================= */
+
+:root,
+[data-coreui-theme="light"] {
+  --app-primary: #7C2D12;
+  --app-secondary: #475569;
+  --app-success: #15803D;
+  --app-info: #2563EB;
+  --app-warning: #D97706;
+  --app-danger: #B91C1C;
+
+  --app-bg: #F8FAFC;
+  --app-surface: #FFFFFF;
+  --app-surface-2: #F1F5F9;
+  --app-text: #0F172A;
+  --app-text-muted: #64748B;
+  --app-border: #CBD5E1;
+
+  --app-sidebar-bg: #FFFFFF;
+  --app-sidebar-text: #0F172A;
+  --app-header-bg: #FFFFFF;
+
+  --cui-primary: var(--app-primary);
+  --cui-primary-rgb: 124, 45, 18;
+
+  --cui-secondary: var(--app-secondary);
+  --cui-success: var(--app-success);
+  --cui-info: var(--app-info);
+  --cui-warning: var(--app-warning);
+  --cui-danger: var(--app-danger);
+
+  --cui-body-bg: var(--app-bg);
+  --cui-body-color: var(--app-text);
+  --cui-border-color: var(--app-border);
+
+  --cui-card-bg: var(--app-surface);
+  --cui-card-color: var(--app-text);
+  --cui-card-border-color: var(--app-border);
+
+  --cui-header-bg: var(--app-header-bg);
+  --cui-header-color: var(--app-text);
+  --cui-header-border-color: var(--app-border);
+
+  --cui-sidebar-bg: var(--app-sidebar-bg);
+  --cui-sidebar-color: var(--app-sidebar-text);
+  --cui-sidebar-brand-bg: #FFFFFF;
+  --cui-sidebar-brand-color: var(--app-primary);
+
+  --cui-sidebar-nav-link-color: #334155;
+  --cui-sidebar-nav-link-hover-bg: #F1F5F9;
+  --cui-sidebar-nav-link-hover-color: var(--app-primary);
+  --cui-sidebar-nav-link-active-bg: #FEE2E2;
+  --cui-sidebar-nav-link-active-color: var(--app-primary);
+
+  --cui-link-color: var(--app-primary);
+  --cui-link-hover-color: #991B1B;
+
+  --cui-focus-ring-color: rgba(124, 45, 18, .25);
+}
+
+/* =========================================================
+   DARK THEME - SLATE PREMIUM
+   ========================================================= */
+
+[data-coreui-theme="dark"] {
+  color-scheme: dark;
+
+  --app-primary: #F97316;
+  --app-secondary: #94A3B8;
+  --app-success: #22C55E;
+  --app-info: #38BDF8;
+  --app-warning: #FACC15;
+  --app-danger: #F87171;
+
+  --app-bg: #020617;
+  --app-surface: #0F172A;
+  --app-surface-2: #1E293B;
+  --app-text: #F8FAFC;
+  --app-text-muted: #CBD5E1;
+  --app-border: #334155;
+
+  --app-sidebar-bg: #0F172A;
+  --app-sidebar-text: #F8FAFC;
+  --app-header-bg: #0F172A;
+
+  --cui-primary: var(--app-primary);
+  --cui-primary-rgb: 249, 115, 22;
+
+  --cui-secondary: var(--app-secondary);
+  --cui-success: var(--app-success);
+  --cui-info: var(--app-info);
+  --cui-warning: var(--app-warning);
+  --cui-danger: var(--app-danger);
+
+  --cui-body-bg: var(--app-bg);
+  --cui-body-color: var(--app-text);
+  --cui-border-color: var(--app-border);
+
+  --cui-card-bg: var(--app-surface);
+  --cui-card-color: var(--app-text);
+  --cui-card-border-color: var(--app-border);
+
+  --cui-header-bg: var(--app-header-bg);
+  --cui-header-color: var(--app-text);
+  --cui-header-border-color: var(--app-border);
+
+  --cui-sidebar-bg: var(--app-sidebar-bg);
+  --cui-sidebar-color: var(--app-sidebar-text);
+  --cui-sidebar-brand-bg: #020617;
+  --cui-sidebar-brand-color: var(--app-primary);
+
+  --cui-sidebar-nav-link-color: #CBD5E1;
+  --cui-sidebar-nav-link-hover-bg: rgba(249, 115, 22, .14);
+  --cui-sidebar-nav-link-hover-color: #FFFFFF;
+  --cui-sidebar-nav-link-active-bg: rgba(249, 115, 22, .22);
+  --cui-sidebar-nav-link-active-color: #FDBA74;
+
+  --cui-link-color: #FDBA74;
+  --cui-link-hover-color: #FED7AA;
+
+  --cui-focus-ring-color: rgba(249, 115, 22, .35);
+}
+
+/* =========================================================
+   GLOBAL THEME-AWARE FIXES
+   ========================================================= */
+
+html,
+body {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+.wrapper,
+.body,
+.main,
+.c-main,
+.container-fluid {
+  background-color: var(--app-bg) !important;
+  color: var(--app-text) !important;
+}
+
+.text-primary {
+  color: var(--app-primary) !important;
+}
+
+.text-secondary {
+  color: var(--app-secondary) !important;
+}
+
+.text-muted {
+  color: var(--app-text-muted) !important;
+}
+
+a {
+  color: var(--cui-link-color);
+}
+
+a:hover {
+  color: var(--cui-link-hover-color);
+}
+
+/* Cards */
+
+.card {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+  border-radius: 12px;
+}
+
+.card-header,
+.card-footer {
+  background-color: var(--app-surface-2) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Header */
+
+.header,
+.header-sticky,
+c-header,
+c-container.border-bottom,
+.border-bottom {
+  background-color: var(--app-header-bg) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Header icons/buttons */
+
+[cHeaderToggler],
+[cDropdownToggle],
+.header .btn,
+c-header-nav button {
+  color: var(--app-text) !important;
+}
+
+[cHeaderToggler] svg,
+[cDropdownToggle] svg,
+.header .btn svg,
+c-header-nav button svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Sidebar */
+
+.sidebar,
+c-sidebar {
+  background-color: var(--app-sidebar-bg) !important;
+  color: var(--app-sidebar-text) !important;
+  border-right: 1px solid var(--app-border) !important;
+}
+
+.sidebar-brand,
+c-sidebar-brand {
+  background-color: var(--cui-sidebar-brand-bg) !important;
+  color: var(--cui-sidebar-brand-color) !important;
+}
+
+.sidebar .nav-link,
+c-sidebar-nav a,
+.sidebar .nav-link .nav-icon,
+c-sidebar-nav svg {
+  color: var(--cui-sidebar-nav-link-color) !important;
+}
+
+.sidebar .nav-link:hover,
+c-sidebar-nav a:hover {
+  background-color: var(--cui-sidebar-nav-link-hover-bg) !important;
+  color: var(--cui-sidebar-nav-link-hover-color) !important;
+}
+
+.sidebar .nav-link:hover svg,
+c-sidebar-nav a:hover svg {
+  color: var(--cui-sidebar-nav-link-hover-color) !important;
+}
+
+.sidebar .nav-link.active,
+c-sidebar-nav a.active {
+  background-color: var(--cui-sidebar-nav-link-active-bg) !important;
+  color: var(--cui-sidebar-nav-link-active-color) !important;
+}
+
+.sidebar .nav-link.active svg,
+c-sidebar-nav a.active svg {
+  color: var(--cui-sidebar-nav-link-active-color) !important;
+}
+
+/* =========================================================
+   BUTTONS - FIX GHOST / OUTLINE / HOVER
+   ========================================================= */
+
+/* Solid buttons */
+
+.btn-primary {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-secondary {
+  background-color: var(--app-secondary) !important;
+  border-color: var(--app-secondary) !important;
+}
+
+[data-coreui-theme="light"] .btn-secondary {
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-secondary {
+  color: #020617 !important;
+}
+
+.btn-success {
+  background-color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
+  color: #ffffff !important;
+}
+
+.btn-info {
+  background-color: var(--app-info) !important;
+  border-color: var(--app-info) !important;
+  color: #ffffff !important;
+}
+
+.btn-warning {
+  background-color: var(--app-warning) !important;
+  border-color: var(--app-warning) !important;
+  color: #111827 !important;
+}
+
+.btn-danger {
+  background-color: var(--app-danger) !important;
+  border-color: var(--app-danger) !important;
+  color: #ffffff !important;
+}
+
+/* Ghost buttons: NO border, transparent background */
+
+.btn-ghost-primary,
+.btn-ghost-secondary,
+.btn-ghost-success,
+.btn-ghost-info,
+.btn-ghost-warning,
+.btn-ghost-danger {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-ghost-primary {
+  color: var(--app-primary) !important;
+}
+
+.btn-ghost-secondary {
+  color: var(--app-secondary) !important;
+}
+
+.btn-ghost-success {
+  color: var(--app-success) !important;
+}
+
+.btn-ghost-info {
+  color: var(--app-info) !important;
+}
+
+.btn-ghost-warning {
+  color: var(--app-warning) !important;
+}
+
+.btn-ghost-danger {
+  color: var(--app-danger) !important;
+}
+
+/* Ghost hover: visible text/icon */
+
+.btn-ghost-primary:hover,
+.btn-ghost-primary:focus {
+  background-color: rgba(var(--cui-primary-rgb), 0.12) !important;
+  color: var(--app-primary) !important;
+}
+
+.btn-ghost-secondary:hover,
+.btn-ghost-secondary:focus {
+  background-color: rgba(148, 163, 184, 0.16) !important;
+  color: var(--app-secondary) !important;
+}
+
+.btn-ghost-success:hover,
+.btn-ghost-success:focus {
+  background-color: rgba(34, 197, 94, 0.14) !important;
+  color: var(--app-success) !important;
+}
+
+.btn-ghost-info:hover,
+.btn-ghost-info:focus {
+  background-color: rgba(56, 189, 248, 0.14) !important;
+  color: var(--app-info) !important;
+}
+
+.btn-ghost-warning:hover,
+.btn-ghost-warning:focus {
+  background-color: rgba(250, 204, 21, 0.16) !important;
+  color: var(--app-warning) !important;
+}
+
+.btn-ghost-danger:hover,
+.btn-ghost-danger:focus {
+  background-color: rgba(248, 113, 113, 0.14) !important;
+  color: var(--app-danger) !important;
+}
+
+/* Outline buttons keep border */
+
+.btn-outline-primary {
+  color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--app-secondary) !important;
+  border-color: var(--app-secondary) !important;
+}
+
+.btn-outline-success {
+  color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
+}
+
+.btn-outline-info {
+  color: var(--app-info) !important;
+  border-color: var(--app-info) !important;
+}
+
+.btn-outline-warning {
+  color: var(--app-warning) !important;
+  border-color: var(--app-warning) !important;
+}
+
+.btn-outline-danger {
+  color: var(--app-danger) !important;
+  border-color: var(--app-danger) !important;
+}
+
+/* Icon inheritance */
+
+.btn svg,
+.btn c-icon,
+.btn .icon {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Small icon buttons */
+
+.btn svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Background utilities */
+
+.bg-primary {
+  background-color: var(--app-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--app-secondary) !important;
+}
+
+.bg-success {
+  background-color: var(--app-success) !important;
+}
+
+.bg-info {
+  background-color: var(--app-info) !important;
+}
+
+.bg-warning {
+  background-color: var(--app-warning) !important;
+}
+
+.bg-danger {
+  background-color: var(--app-danger) !important;
+}
+
+/* Borders */
+
+.border,
+.border-top,
+.border-end,
+.border-bottom,
+.border-start {
+  border-color: var(--app-border) !important;
+}
+
+/* Forms */
+
+.form-control,
+.form-select {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--app-primary) !important;
+  box-shadow: 0 0 0 .25rem var(--cui-focus-ring-color) !important;
+}
+
+.form-control::placeholder {
+  color: var(--app-text-muted) !important;
+}
+
+/* Tables */
+
+.table {
+  --cui-table-bg: var(--app-surface);
+  --cui-table-color: var(--app-text);
+  --cui-table-border-color: var(--app-border);
+
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table > :not(caption) > * > * {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table-hover tbody tr:hover > * {
+  background-color: rgba(var(--cui-primary-rgb), .08) !important;
+}
+
+/* Dropdowns */
+
+.dropdown-menu {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.dropdown-item {
+  color: var(--app-text) !important;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(var(--cui-primary-rgb), .10) !important;
+}
+
+/* Pagination */
+
+.page-link {
+  color: var(--app-primary) !important;
+  background-color: var(--app-surface) !important;
+  border-color: var(--app-border) !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #FFFFFF !important;
+}
+
+/* Modals */
+
+.modal-content {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--app-border) !important;
+}
+
+/* Smooth theme switch */
+
+body,
+.wrapper,
+.sidebar,
+.header,
+.card,
+.form-control,
+.form-select,
+.table,
+.dropdown-menu,
+.modal-content {
+  transition:
+    background-color .2s ease,
+    color .2s ease,
+    border-color .2s ease;
+}
+
+.sidebar-brand {
+  background-color: transparent !important;
+}
+
+.sidebar-brand img {
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   DISABLED FORM CONTROLS
+   EXCEPT CUSTOM DATEPICKER
+   ========================================================= */
+
+[data-coreui-theme="light"]
+.form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="light"]
+.form-select:disabled,
+[data-coreui-theme="light"]
+textarea.form-control:disabled {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  border-color: #ced4da !important;
+  opacity: 1 !important;
+}
+
+[data-coreui-theme="dark"]
+.form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="dark"]
+.form-select:disabled,
+[data-coreui-theme="dark"]
+textarea.form-control:disabled {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+  opacity: 1 !important;
+}

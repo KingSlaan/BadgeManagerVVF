@@ -5,7 +5,7 @@ import {
   ButtonDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilCloudUpload, cilCloudDownload, cilHistory, cilInbox, cilBan, cilOptions } from '@coreui/icons';
+import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding } from '@coreui/icons';
 import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
@@ -40,13 +40,14 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   private sediService = inject(SediService);
   public utilsService = inject(UtilsService);
 
-  icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions };
+  icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
 
   isModalOpen = false;
   isModalAggiungiOpen = false;
   isModalHistoryOpen = false;
   mode = ACTION_CONSTANTS.ADD;
   datagridLoading = signal(false);
+  action_const = ACTION_CONSTANTS;
 
   today: Date = new Date();
 
@@ -113,7 +114,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   getSedi() {
     this.sediService.getSediList().subscribe({
       next: (data: any) => {
-        this.sedi.set([...(data.data ?? [])])
+        const options = data.data.map((sede: any) => ({
+          label: sede.descrizione,
+          value: sede.codSede
+        }));
+        this.sedi.set([...(options ?? [])])
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
