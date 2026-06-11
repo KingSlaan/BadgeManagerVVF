@@ -166,7 +166,10 @@
           }
 
           @for (row of displayedRows(); track $index) {
-            <tr>
+            <tr
+              [class.datagrid-row-even]="$even"
+              [class.datagrid-row-odd]="$odd"
+            >
               @for (column of columns(); track column.field) {
                 <td [class]="column.className">
                   <!-- TEMPLATE MODE -->

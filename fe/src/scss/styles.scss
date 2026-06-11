@@ -1,10 +1,10 @@
 @use "@coreui/coreui/scss/coreui" as * with (
-  $primary: #b51610,
-  $secondary: #2a2a2a,
-  $success: #1f7a45,
-  $info: #2563eb,
-  $warning: #d97706,
-  $danger: #8e0e09,
+  $primary: #7C2D12,
+  $secondary: #475569,
+  $success: #15803D,
+  $info: #2563EB,
+  $warning: #D97706,
+  $danger: #B91C1C,
   $enable-deprecation-messages: false
 );
 
@@ -15,37 +15,37 @@
 @use "examples";
 
 /* =========================================================
-   LIGHT THEME
+   LIGHT THEME - WARM CORPORATE
    ========================================================= */
 
 :root,
 [data-coreui-theme="light"] {
-  --app-primary: #b51610;
-  --app-secondary: #2a2a2a;
-  --app-success: #1f7a45;
-  --app-info: #2563eb;
-  --app-warning: #d97706;
-  --app-danger: #8e0e09;
+  --app-primary: #7C2D12;
+  --app-secondary: #475569;
+  --app-success: #15803D;
+  --app-info: #2563EB;
+  --app-warning: #D97706;
+  --app-danger: #B91C1C;
 
-  --app-bg: #f8fafc;
-  --app-surface: #ffffff;
-  --app-surface-2: #f3f4f6;
-  --app-text: #1f2937;
-  --app-text-muted: #6b7280;
-  --app-border: #e5e7eb;
+  --app-bg: #F8FAFC;
+  --app-surface: #FFFFFF;
+  --app-surface-2: #F1F5F9;
+  --app-text: #0F172A;
+  --app-text-muted: #64748B;
+  --app-border: #CBD5E1;
 
-  --app-sidebar-bg: #ffffff;
-  --app-sidebar-text: #1f2937;
-  --app-header-bg: #ffffff;
+  --app-sidebar-bg: #FFFFFF;
+  --app-sidebar-text: #0F172A;
+  --app-header-bg: #FFFFFF;
 
   --cui-primary: var(--app-primary);
+  --cui-primary-rgb: 124, 45, 18;
+
   --cui-secondary: var(--app-secondary);
   --cui-success: var(--app-success);
   --cui-info: var(--app-info);
   --cui-warning: var(--app-warning);
   --cui-danger: var(--app-danger);
-
-  --cui-primary-rgb: 181, 22, 16;
 
   --cui-body-bg: var(--app-bg);
   --cui-body-color: var(--app-text);
@@ -61,52 +61,54 @@
 
   --cui-sidebar-bg: var(--app-sidebar-bg);
   --cui-sidebar-color: var(--app-sidebar-text);
-  --cui-sidebar-brand-bg: var(--app-primary);
-  --cui-sidebar-nav-link-color: #1f2937;
-  --cui-sidebar-nav-link-hover-bg: rgba(181, 22, 16, 0.08);
-  --cui-sidebar-nav-link-hover-color: #b51610;
-  --cui-sidebar-nav-link-active-bg: #f3f4f6;
-  --cui-sidebar-nav-link-active-color: #b51610;
+  --cui-sidebar-brand-bg: #FFFFFF;
+  --cui-sidebar-brand-color: var(--app-primary);
+
+  --cui-sidebar-nav-link-color: #334155;
+  --cui-sidebar-nav-link-hover-bg: #F1F5F9;
+  --cui-sidebar-nav-link-hover-color: var(--app-primary);
+  --cui-sidebar-nav-link-active-bg: #FEE2E2;
+  --cui-sidebar-nav-link-active-color: var(--app-primary);
 
   --cui-link-color: var(--app-primary);
-  --cui-link-hover-color: #8e0e09;
+  --cui-link-hover-color: #991B1B;
 
-  --cui-focus-ring-color: rgba(181, 22, 16, 0.25);
+  --cui-focus-ring-color: rgba(124, 45, 18, .25);
 }
 
 /* =========================================================
-   DARK THEME
+   DARK THEME - SLATE PREMIUM
    ========================================================= */
 
 [data-coreui-theme="dark"] {
   color-scheme: dark;
 
-  --app-primary: #ff5a4f;
-  --app-secondary: #94a3b8;
-  --app-success: #3ddc84;
-  --app-info: #60a5fa;
-  --app-warning: #fbbf24;
-  --app-danger: #ff6b6b;
+  --app-primary: #F97316;
+  --app-secondary: #94A3B8;
+  --app-success: #22C55E;
+  --app-info: #38BDF8;
+  --app-warning: #FACC15;
+  --app-danger: #F87171;
 
-  --app-bg: #0f172a;
-  --app-surface: #1e293b;
-  --app-surface-2: #111827;
-  --app-text: #f8fafc;
-  --app-text-muted: #cbd5e1;
+  --app-bg: #020617;
+  --app-surface: #0F172A;
+  --app-surface-2: #1E293B;
+  --app-text: #F8FAFC;
+  --app-text-muted: #CBD5E1;
   --app-border: #334155;
 
-  --app-sidebar-bg: #020617;
-  --app-sidebar-text: #ffffff;
-  --app-header-bg: #111827;
+  --app-sidebar-bg: #0F172A;
+  --app-sidebar-text: #F8FAFC;
+  --app-header-bg: #0F172A;
 
   --cui-primary: var(--app-primary);
+  --cui-primary-rgb: 249, 115, 22;
+
   --cui-secondary: var(--app-secondary);
   --cui-success: var(--app-success);
   --cui-info: var(--app-info);
   --cui-warning: var(--app-warning);
   --cui-danger: var(--app-danger);
-
-  --cui-primary-rgb: 255, 90, 79;
 
   --cui-body-bg: var(--app-bg);
   --cui-body-color: var(--app-text);
@@ -122,17 +124,19 @@
 
   --cui-sidebar-bg: var(--app-sidebar-bg);
   --cui-sidebar-color: var(--app-sidebar-text);
-  --cui-sidebar-brand-bg: #b51610;
-  --cui-sidebar-nav-link-color: rgba(255, 255, 255, 0.85);
-  --cui-sidebar-nav-link-hover-bg: rgba(255, 90, 79, 0.22);
-  --cui-sidebar-nav-link-hover-color: #ffffff;
-  --cui-sidebar-nav-link-active-bg: var(--app-primary);
-  --cui-sidebar-nav-link-active-color: #ffffff;
+  --cui-sidebar-brand-bg: #020617;
+  --cui-sidebar-brand-color: var(--app-primary);
 
-  --cui-link-color: var(--app-primary);
-  --cui-link-hover-color: #ff9a91;
+  --cui-sidebar-nav-link-color: #CBD5E1;
+  --cui-sidebar-nav-link-hover-bg: rgba(249, 115, 22, .14);
+  --cui-sidebar-nav-link-hover-color: #FFFFFF;
+  --cui-sidebar-nav-link-active-bg: rgba(249, 115, 22, .22);
+  --cui-sidebar-nav-link-active-color: #FDBA74;
 
-  --cui-focus-ring-color: rgba(255, 90, 79, 0.35);
+  --cui-link-color: #FDBA74;
+  --cui-link-hover-color: #FED7AA;
+
+  --cui-focus-ring-color: rgba(249, 115, 22, .35);
 }
 
 /* =========================================================
@@ -153,8 +157,6 @@ body {
   background-color: var(--app-bg) !important;
   color: var(--app-text) !important;
 }
-
-/* Text */
 
 .text-primary {
   color: var(--app-primary) !important;
@@ -195,42 +197,81 @@ a:hover {
 /* Header */
 
 .header,
-.header-sticky {
+.header-sticky,
+c-header,
+c-container.border-bottom,
+.border-bottom {
   background-color: var(--app-header-bg) !important;
   color: var(--app-text) !important;
-  border-bottom: 1px solid var(--app-border) !important;
+  border-color: var(--app-border) !important;
+}
+
+/* Header icons/buttons */
+
+[cHeaderToggler],
+[cDropdownToggle],
+.header .btn,
+c-header-nav button {
+  color: var(--app-text) !important;
+}
+
+[cHeaderToggler] svg,
+[cDropdownToggle] svg,
+.header .btn svg,
+c-header-nav button svg {
+  color: inherit !important;
+  fill: currentColor !important;
 }
 
 /* Sidebar */
 
-.sidebar {
+.sidebar,
+c-sidebar {
   background-color: var(--app-sidebar-bg) !important;
   color: var(--app-sidebar-text) !important;
   border-right: 1px solid var(--app-border) !important;
 }
 
-.sidebar-brand {
+.sidebar-brand,
+c-sidebar-brand {
   background-color: var(--cui-sidebar-brand-bg) !important;
-  color: #ffffff !important;
+  color: var(--cui-sidebar-brand-color) !important;
 }
 
 .sidebar .nav-link,
-.sidebar .nav-link .nav-icon {
+c-sidebar-nav a,
+.sidebar .nav-link .nav-icon,
+c-sidebar-nav svg {
   color: var(--cui-sidebar-nav-link-color) !important;
 }
 
 .sidebar .nav-link:hover,
-.sidebar .nav-link:hover .nav-icon {
+c-sidebar-nav a:hover {
+  background-color: var(--cui-sidebar-nav-link-hover-bg) !important;
+  color: var(--cui-sidebar-nav-link-hover-color) !important;
+}
+
+.sidebar .nav-link:hover svg,
+c-sidebar-nav a:hover svg {
   color: var(--cui-sidebar-nav-link-hover-color) !important;
 }
 
 .sidebar .nav-link.active,
-.sidebar .nav-link.active .nav-icon {
+c-sidebar-nav a.active {
   background-color: var(--cui-sidebar-nav-link-active-bg) !important;
   color: var(--cui-sidebar-nav-link-active-color) !important;
 }
 
-/* Buttons */
+.sidebar .nav-link.active svg,
+c-sidebar-nav a.active svg {
+  color: var(--cui-sidebar-nav-link-active-color) !important;
+}
+
+/* =========================================================
+   BUTTONS - FIX GHOST / OUTLINE / HOVER
+   ========================================================= */
+
+/* Solid buttons */
 
 .btn-primary {
   background-color: var(--app-primary) !important;
@@ -248,27 +289,154 @@ a:hover {
 }
 
 [data-coreui-theme="dark"] .btn-secondary {
-  color: #0f172a !important;
+  color: #020617 !important;
 }
 
 .btn-success {
   background-color: var(--app-success) !important;
   border-color: var(--app-success) !important;
+  color: #ffffff !important;
 }
 
 .btn-info {
   background-color: var(--app-info) !important;
   border-color: var(--app-info) !important;
+  color: #ffffff !important;
 }
 
 .btn-warning {
   background-color: var(--app-warning) !important;
   border-color: var(--app-warning) !important;
+  color: #111827 !important;
 }
 
 .btn-danger {
   background-color: var(--app-danger) !important;
   border-color: var(--app-danger) !important;
+  color: #ffffff !important;
+}
+
+/* Ghost buttons: NO border, transparent background */
+
+.btn-ghost-primary,
+.btn-ghost-secondary,
+.btn-ghost-success,
+.btn-ghost-info,
+.btn-ghost-warning,
+.btn-ghost-danger {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.btn-ghost-primary {
+  color: var(--app-primary) !important;
+}
+
+.btn-ghost-secondary {
+  color: var(--app-secondary) !important;
+}
+
+.btn-ghost-success {
+  color: var(--app-success) !important;
+}
+
+.btn-ghost-info {
+  color: var(--app-info) !important;
+}
+
+.btn-ghost-warning {
+  color: var(--app-warning) !important;
+}
+
+.btn-ghost-danger {
+  color: var(--app-danger) !important;
+}
+
+/* Ghost hover: visible text/icon */
+
+.btn-ghost-primary:hover,
+.btn-ghost-primary:focus {
+  background-color: rgba(var(--cui-primary-rgb), 0.12) !important;
+  color: var(--app-primary) !important;
+}
+
+.btn-ghost-secondary:hover,
+.btn-ghost-secondary:focus {
+  background-color: rgba(148, 163, 184, 0.16) !important;
+  color: var(--app-secondary) !important;
+}
+
+.btn-ghost-success:hover,
+.btn-ghost-success:focus {
+  background-color: rgba(34, 197, 94, 0.14) !important;
+  color: var(--app-success) !important;
+}
+
+.btn-ghost-info:hover,
+.btn-ghost-info:focus {
+  background-color: rgba(56, 189, 248, 0.14) !important;
+  color: var(--app-info) !important;
+}
+
+.btn-ghost-warning:hover,
+.btn-ghost-warning:focus {
+  background-color: rgba(250, 204, 21, 0.16) !important;
+  color: var(--app-warning) !important;
+}
+
+.btn-ghost-danger:hover,
+.btn-ghost-danger:focus {
+  background-color: rgba(248, 113, 113, 0.14) !important;
+  color: var(--app-danger) !important;
+}
+
+/* Outline buttons keep border */
+
+.btn-outline-primary {
+  color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--app-secondary) !important;
+  border-color: var(--app-secondary) !important;
+}
+
+.btn-outline-success {
+  color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
+}
+
+.btn-outline-info {
+  color: var(--app-info) !important;
+  border-color: var(--app-info) !important;
+}
+
+.btn-outline-warning {
+  color: var(--app-warning) !important;
+  border-color: var(--app-warning) !important;
+}
+
+.btn-outline-danger {
+  color: var(--app-danger) !important;
+  border-color: var(--app-danger) !important;
+}
+
+/* Icon inheritance */
+
+.btn svg,
+.btn c-icon,
+.btn .icon {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Small icon buttons */
+
+.btn svg {
+  color: inherit !important;
+  fill: currentColor !important;
 }
 
 /* Background utilities */
@@ -319,11 +487,11 @@ a:hover {
 .form-control:focus,
 .form-select:focus {
   border-color: var(--app-primary) !important;
-  box-shadow: 0 0 0 0.25rem var(--cui-focus-ring-color) !important;
+  box-shadow: 0 0 0 .25rem var(--cui-focus-ring-color) !important;
 }
 
 .form-control::placeholder {
-  color: var(--app-text-muted);
+  color: var(--app-text-muted) !important;
 }
 
 /* Tables */
@@ -337,8 +505,14 @@ a:hover {
   border-color: var(--app-border) !important;
 }
 
-.table-hover tbody tr:hover {
-  background-color: rgba(var(--cui-primary-rgb), 0.08) !important;
+.table > :not(caption) > * > * {
+  background-color: var(--app-surface) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border) !important;
+}
+
+.table-hover tbody tr:hover > * {
+  background-color: rgba(var(--cui-primary-rgb), .08) !important;
 }
 
 /* Dropdowns */
@@ -355,7 +529,7 @@ a:hover {
 
 .dropdown-item:hover,
 .dropdown-item:focus {
-  background-color: rgba(var(--cui-primary-rgb), 0.1) !important;
+  background-color: rgba(var(--cui-primary-rgb), .10) !important;
 }
 
 /* Pagination */
@@ -369,7 +543,7 @@ a:hover {
 .page-item.active .page-link {
   background-color: var(--app-primary) !important;
   border-color: var(--app-primary) !important;
-  color: #ffffff !important;
+  color: #FFFFFF !important;
 }
 
 /* Modals */
@@ -385,7 +559,7 @@ a:hover {
   border-color: var(--app-border) !important;
 }
 
-/* Smooth switch */
+/* Smooth theme switch */
 
 body,
 .wrapper,
@@ -398,38 +572,44 @@ body,
 .dropdown-menu,
 .modal-content {
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+    background-color .2s ease,
+    color .2s ease,
+    border-color .2s ease;
 }
 
-/* Header buttons/icons visibility */
-
-[data-coreui-theme="dark"] c-header-nav button,
-[data-coreui-theme="dark"] c-header-nav .btn,
-[data-coreui-theme="dark"] [cHeaderToggler],
-[data-coreui-theme="dark"] [cDropdownToggle] {
-  color: #f8fafc !important;
+.sidebar-brand {
+  background-color: transparent !important;
 }
 
-[data-coreui-theme="dark"] c-header-nav svg,
-[data-coreui-theme="dark"] [cHeaderToggler] svg,
-[data-coreui-theme="dark"] [cDropdownToggle] svg {
-  color: #f8fafc !important;
-  fill: currentColor !important;
+.sidebar-brand img {
+  background-color: transparent !important;
 }
 
-[data-coreui-theme="dark"] c-header-nav button:hover,
-[data-coreui-theme="dark"] [cHeaderToggler]:hover,
-[data-coreui-theme="dark"] [cDropdownToggle]:hover {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
+/* =========================================================
+   DISABLED FORM CONTROLS
+   EXCEPT CUSTOM DATEPICKER
+   ========================================================= */
+
+[data-coreui-theme="light"]
+.form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="light"]
+.form-select:disabled,
+[data-coreui-theme="light"]
+textarea.form-control:disabled {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  border-color: #ced4da !important;
+  opacity: 1 !important;
 }
 
-[data-coreui-theme="dark"] .header-icon-btn {
-  color: #f8fafc !important;
-}
-
-[data-coreui-theme="light"] .header-icon-btn {
-  color: #1f2937 !important;
+[data-coreui-theme="dark"]
+.form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="dark"]
+.form-select:disabled,
+[data-coreui-theme="dark"]
+textarea.form-control:disabled {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #334155 !important;
+  opacity: 1 !important;
 }

@@ -5,6 +5,11 @@ export const navItems: INavData[] = [
     name: 'Home',
     url: '/',
     iconComponent: { name: 'cil-home' },
+    linkProps: {
+      routerLinkActiveOptions: {
+        exact: true
+      }
+    }
   },
   {
     name: 'Gestione Tessere',

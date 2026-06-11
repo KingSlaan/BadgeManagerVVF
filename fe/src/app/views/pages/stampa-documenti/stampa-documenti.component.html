@@ -1,1 +1,24 @@
-<p>stampa-documenti works!</p>
+<!-- <c-container> -->
+<c-row>
+  <c-col xs="12">
+    <c-card>
+      <c-card-body>
+        <form cForm [formGroup]="form" (ngSubmit)="save()">
+          <c-row>
+            <c-col xs="4" lg="4">1</c-col>
+            <c-col xs="4" lg="4">2</c-col>
+            <c-col xs="4" lg="4">3</c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+      <c-card-footer>
+        <div class="d-flex justify-content-end mt-3 flex-wrap">
+          <button cButton color="success" type="submit" [disabled]="false">
+            Salva
+          </button>
+        </div>
+      </c-card-footer>
+    </c-card>
+  </c-col>
+</c-row>
+<!-- </c-container> -->

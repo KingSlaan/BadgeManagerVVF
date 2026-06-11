@@ -101,7 +101,6 @@
           placeholder="Tipo Tessera"
           formControlName="codTipoTessera"
         >
-          <option value="">-</option>
           <option value="S">Sostitutiva</option>
           <option value="D">Dipendente</option>
         </select>
@@ -160,6 +159,6 @@
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm(mode)">Salva</button>
+    <button cButton color="success" (click)="confirm(mode)">{{getConfirmText(mode)}}</button>
   </c-modal-footer>
 </c-modal>

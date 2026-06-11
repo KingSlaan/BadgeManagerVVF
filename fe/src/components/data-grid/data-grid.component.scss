@@ -73,13 +73,59 @@ c-card-body {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Dark theme action buttons */
+table[cTable] {
 
-[data-coreui-theme="dark"] .btn-action {
-  color: #f8fafc !important;
+  tbody {
+
+    td {
+
+      border-right: 1px dotted
+        color-mix(
+          in srgb,
+          var(--cui-border-color) 20%,
+          transparent
+        );
+    }
+
+    td:last-child {
+
+      border-right: none;
+    }
+  }
 }
 
-[data-coreui-theme="dark"] .btn-action svg {
-  color: inherit !important;
-  fill: currentColor !important;
+table[cTable] tbody tr.datagrid-row-even {
+  --cui-table-bg:
+    color-mix(
+      in srgb,
+      var(--cui-secondary) 12%,
+      var(--cui-body-bg)
+    );
+}
+
+table[cTable] tbody tr:hover {
+  --cui-table-bg:
+    color-mix(
+      in srgb,
+      var(--cui-secondary) 18%,
+      var(--cui-body-bg)
+    );
+}
+
+:host ::ng-deep table.table tbody tr.datagrid-row-even > td {
+  background-color:
+    color-mix(
+      in srgb,
+      var(--cui-secondary) 12%,
+      var(--app-surface)
+    ) !important;
+}
+
+:host ::ng-deep table.table tbody tr:hover > td {
+  background-color:
+    color-mix(
+      in srgb,
+      var(--cui-secondary) 18%,
+      var(--app-surface)
+    ) !important;
 }

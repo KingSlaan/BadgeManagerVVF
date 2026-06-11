@@ -178,3 +178,15 @@
     height: 16px;
   }
 }
+
+:host-context([data-coreui-theme="light"]) .custom-datepicker-input:disabled {
+  background-color: #f8fafc !important;
+  color: #6c757d !important;
+  border-color: transparent !important;
+}
+
+:host-context([data-coreui-theme="dark"]) .custom-datepicker-input:disabled {
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+  border-color: transparent !important;
+}
