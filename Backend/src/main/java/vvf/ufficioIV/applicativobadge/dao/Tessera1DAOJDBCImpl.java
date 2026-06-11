@@ -150,6 +150,18 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
             return ps.executeUpdate() == 1;
         }
     }
+    
+    @Override
+    public boolean updateSedeECodTipo(String idTessera, String nuovaSede, String codTipoTessera) throws SQLException {
+        // Unica query di UPDATE per modificare entrambi i campi contemporaneamente
+        String sql = "UPDATE TESSERA1 SET SEDE = ?, CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nuovaSede);
+            ps.setString(2, codTipoTessera);
+            ps.setString(3, idTessera);
+            return ps.executeUpdate() == 1;
+        }
+    }
 
     @Override
     public void closeConnection() {
