@@ -28,8 +28,8 @@ import java.util.Properties;
  * METODO HTTP  : POST
  * DESCRIZIONE  : Restituisce una lista di tessere applicando filtri di ricerca dinamici 
  * e supportando la paginazione dei risultati. 
- * NOTA: Il campo "sede" restituito rappresenta ora la DESCRIZIONE del dipartimento, 
- * e i filtri su "sede" agiscono in modo testuale (LIKE) su tale descrizione.
+ * NOTA: Il campo "sede" restituito rappresenta il CODICE UNIVOCO del dipartimento.
+ * Le conversioni in descrizione sono delegate al Frontend.
  * ==========================================================================================
  * * 📥 REQUEST (Cosa deve inviare il Frontend)
  * ------------------------------------------------------------------------------------------

@@ -28,7 +28,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
     }
 
     
-    // Metodo helper per costruire la clausola WHERE in base ai filtri
+ // Metodo helper per costruire la clausola WHERE in base ai filtri
     private String buildWhereClause(JsonArray filters, List<Object> params) {
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
         if (filters != null) {
@@ -65,7 +65,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "nome": dbColumn = "a.NOME"; break;
                     case "cognome": dbColumn = "a.COGNOME"; break;
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
-                    case "sede": dbColumn = "d.DESCRIZIONE"; break;
+                    case "sede": dbColumn = "t.SEDE"; break; // <-- MODIFICA: Ricerca sul CODICE sede univoco
                     default: continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
@@ -107,7 +107,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         return where.toString();
     }
 
-    // 1. Aggiorno la FROM clause aggiungendo la JOIN con DIPARTIMENTO1
+    // 1. Ripristinata la FROM clause senza la JOIN con DIPARTIMENTO1 (non più necessaria)
     private String getFromClause() {
         return "FROM TESSERA1 t " +
                "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
@@ -116,13 +116,12 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
                "    FROM TESSERADIPEND1" +
                ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
-               "LEFT JOIN DIPARTIMENTO1 d ON t.SEDE = d.CODSEDE "; // <-- NUOVA JOIN
+               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE "; 
     }
 
-    // 2. Aggiorno la getBaseQuery per estrarre la DESCRIZIONE aliasandola come SEDE
+    // 2. Ripristinata la getBaseQuery per estrarre direttamente il codice SEDE
     private String getBaseQuery() {
-        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, d.DESCRIZIONE AS SEDE, t.DATAORAINDISPONIBILITA, " + // <-- MODIFICA QUI
+        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " + // <-- MODIFICA QUI: t.SEDE
                "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                "a.NOME, a.COGNOME " +
                getFromClause();
