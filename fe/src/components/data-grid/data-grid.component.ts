@@ -1,5 +1,5 @@
 import {
-  DataGridColumn, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridPageEvent,
+  DataGridColumn, DataGridContextMenuConfig, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridPageEvent,
   DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSorting, DataGridSortingConfig,
   DataGridState,
   DataGridToolbarConfig
@@ -16,6 +16,7 @@ import {
   input,
   computed,
   signal,
+  HostListener,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -86,6 +87,20 @@ export class DataGridComponent<T = any> implements OnInit {
   emptyStateConfig = input<DataGridEmptyStateConfig>();
   toolbarConfig = input<DataGridToolbarConfig<T>>();
   persistConfig = input<DataGridPersistConfig>();
+
+  // CONTEXT MENU
+  contextMenuConfig = input<DataGridContextMenuConfig<T>>();
+
+  contextMenuRow = signal<T | null>(null);
+  contextMenuOpen = signal(false);
+  contextMenuX = signal(0);
+  contextMenuY = signal(0);
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeContextMenu();
+  }
+  // END CONTEXT MENU
 
   @Output()
   dataRequest = new EventEmitter<DataGridRequest>();
@@ -353,46 +368,28 @@ export class DataGridComponent<T = any> implements OnInit {
     () => this.sortingConfig()?.enabled === true
   );
 
-  sort(
-    column: DataGridColumn<T>
-  ): void {
+  sort(column: DataGridColumn<T>): void {
 
-    if (
-      !this.sortingConfig()?.enabled ||
-      !column.sortable
-    ) {
+    if (!this.sortingConfig()?.enabled || !column.sortable) {
       return;
     }
 
     // NEW COLUMN
 
-    if (
-      !this.currentSorting ||
-      this.currentSorting.field !==
-      column.field
-    ) {
+    if (!this.currentSorting || this.currentSorting.field !== column.field) {
 
       this.currentSorting = {
-
-        field:
-          column.field.toString(),
-
+        field: column.field.toString(),
         direction: 'asc',
       };
     }
 
     // ASC -> DESC
 
-    else if (
-      this.currentSorting.direction ===
-      'asc'
-    ) {
+    else if (this.currentSorting.direction === 'asc') {
 
       this.currentSorting = {
-
-        field:
-          column.field.toString(),
-
+        field: column.field.toString(),
         direction: 'desc',
       };
     }
@@ -400,16 +397,13 @@ export class DataGridComponent<T = any> implements OnInit {
     // DESC -> NONE
 
     else {
-
       this.currentSorting = null;
     }
 
     this.applyFilters();
   }
 
-  isSorted(
-    column: DataGridColumn<T>
-  ): boolean {
+  isSorted(column: DataGridColumn<T>): boolean {
 
     return (
       this.currentSorting?.field ===
@@ -419,9 +413,7 @@ export class DataGridComponent<T = any> implements OnInit {
 
   getSortIcon(column: DataGridColumn<T>): string {
 
-    if (
-      !this.isSorted(column)
-    ) {
+    if (!this.isSorted(column)) {
       return '↕';
     }
 
@@ -482,10 +474,24 @@ export class DataGridComponent<T = any> implements OnInit {
     this.currentSorting = state.sorting ?? null;
   }
 
-  // handleClick(
-  //   column: DataGridColumn<T>,
-  //   row: T
-  // ): void {
-  //   column.onClick?.(row);
-  // }
+  openContextMenu(event: MouseEvent, row: T): void {
+    const config = this.contextMenuConfig();
+
+    if (!config?.enabled) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.contextMenuRow.set(row);
+    this.contextMenuX.set(event.clientX);
+    this.contextMenuY.set(event.clientY);
+    this.contextMenuOpen.set(true);
+  }
+
+  closeContextMenu(): void {
+    this.contextMenuOpen.set(false);
+    this.contextMenuRow.set(null);
+  }
 }

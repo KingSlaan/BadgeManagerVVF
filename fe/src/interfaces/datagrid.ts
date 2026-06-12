@@ -1,6 +1,11 @@
 import { TemplateRef } from '@angular/core';
 import { AutocompleteOption } from '@docs-components/autocomplete-select/autocomplete-select.component';
 
+export interface DataGridContextMenuConfig<T = any> {
+  enabled: boolean;
+  template: TemplateRef<any>;
+}
+
 export interface DataGridPersistConfig {
   enabled: boolean;
   storageKey: string;

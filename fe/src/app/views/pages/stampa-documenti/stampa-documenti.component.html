@@ -10,7 +10,7 @@
           [gutter]="3"
           cRow
         >
-          <c-col xs="4" lg="4">
+          <c-col xs="6" lg="6">
             <label cLabel class="visually-hidden" for="oggetto">
               Oggetto
             </label>
@@ -22,7 +22,7 @@
               type="text"
             />
           </c-col>
-          <c-col xs="4" lg="4">
+          <c-col xs="6" lg="6">
             <label cLabel class="visually-hidden" for="onumProtocolloggetto">
               # Protocollo
             </label>
@@ -50,7 +50,7 @@
               [showTime]="false"
             />
           </c-col>
-          <c-col xs="4" lg="4">
+          <c-col xs="8" lg="8">
             <label cLabel class="visually-hidden" for="sede"> Sede </label>
             <input
               cFormControl
@@ -64,26 +64,31 @@
             <label cLabel class="visually-hidden" for="tipoTemplate">
               Tipo Template
             </label>
-            <input
+            <select
+              cSelect
               cFormControl
               id="tipoTemplate"
-              formControlName="tipoTemplate"
               placeholder="Tipo Template"
-              type="text"
-            />
+              formControlName="tipoTemplate"
+            >
+              <option value="singolo">Singolo</option>
+              <option value="multiplo">Multiplo</option>
+            </select>
           </c-col>
-          <c-col xs="4" lg="4">
-            <label cLabel class="visually-hidden" for="qntBadge">
-              Quantità Badge
-            </label>
-            <input
-              cFormControl
-              id="qntBadge"
-              formControlName="qntBadge"
-              placeholder="Quantità Badge"
-              type="text"
-            />
-          </c-col>
+          @if (form.controls.tipoTemplate.value === "multiplo") {
+            <c-col xs="4" lg="4">
+              <label cLabel class="visually-hidden" for="qntBadge">
+                Quantità Badge
+              </label>
+              <input
+                cFormControl
+                id="qntBadge"
+                formControlName="qntBadge"
+                placeholder="Quantità Badge"
+                type="text"
+              />
+            </c-col>
+          }
         </form>
       </c-card-body>
       <c-card-footer>

@@ -35,7 +35,7 @@ export class TessereService {
   }
 
   cambiaSedeTessera(id: string,tessere: any) {
-    return this.http.post<Tessera>(`${this.apiUrl}/assegnaTesseraServlet`, tessere);
+    return this.http.post<Tessera>(`${this.apiUrl}/cambiaSedeServlet`, tessere);
   }
 
   updateTessera(id: string, tessera: Partial<Tessera>): Observable<Tessera> {

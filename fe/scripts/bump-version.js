@@ -30,6 +30,7 @@ const boardGames = [
   'MachiKoro',
   'GreatWesternTrail',
   'PuertoRico',
+  'Unmatched',
 ];
 
 const bumpType = process.argv[2] || 'patch';
