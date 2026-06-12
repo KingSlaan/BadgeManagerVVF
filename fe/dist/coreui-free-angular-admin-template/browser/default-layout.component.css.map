@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/layout/default-layout/default-layout.component.scss"],
-  "sourcesContent": [":host::ng-deep {\r\n  .ng-scrollbar {\r\n    --scrollbar-padding: 1px;\r\n    --scrollbar-size: 5px;\r\n    --scrollbar-thumb-color: var(--cui-gray-500, #aab3c5);\r\n    --scrollbar-thumb-hover-color: var(--cui-gray-400, #cfd4de);\r\n    --scrollbar-hover-size: calc(var(--scrollbar-size) * 1.5);\r\n    --scrollbar-border-radius: 5px;\r\n  }\r\n\r\n  .ng-scroll-content {\r\n    display: flex;\r\n    min-height: 100%;\r\n  }\r\n\r\n  //.sidebar-nav {\r\n  //  scrollbar-color: var(--cui-gray-500, #444) transparent;\r\n  //}\r\n}\r\n\r\n// ng-scrollbar css variables\r\n//.cui-scrollbar {\r\n//  --scrollbar-border-radius: 7px;\r\n//  --scrollbar-padding: 1px;\r\n//  --scrollbar-viewport-margin: 0;\r\n//  --scrollbar-track-color: transparent;\r\n//  --scrollbar-wrapper-color: transparent;\r\n//  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);\r\n//  --scrollbar-thumb-hover-color: var(--scrollbar-thumb-color);\r\n//  --scrollbar-size: 5px;\r\n//  --scrollbar-hover-size: var(--scrollbar-size);\r\n//  --scrollbar-thumb-transition: height ease-out 150ms, width ease-out 150ms;\r\n//  --scrollbar-track-transition: height ease-out 150ms, width ease-out 150ms;\r\n//}\r\n"],
-  "mappings": ";AACE,KAAA,UAAA,CAAA;AACE,uBAAA;AACA,oBAAA;AACA,2BAAA,IAAA,cAAA,EAAA;AACA,iCAAA,IAAA,cAAA,EAAA;AACA,0BAAA,KAAA,IAAA,kBAAA,EAAA;AACA,6BAAA;;AAGF,KAAA,UAAA,CAAA;AACE,WAAA;AACA,cAAA;;",
-  "names": []
-}
