@@ -1,6 +1,6 @@
 import { DashboardService } from './../../services/dashboard.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ContainerComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -16,7 +16,6 @@ import { Statistiche, StatisticheSedeChart } from '../../../interfaces/statistic
     WidgetStatCComponent,
     TemplateIdDirective,
     IconDirective,
-    ContainerComponent,
     ProgressComponent,
     CardComponent,
     CardHeaderComponent,

@@ -65,11 +65,24 @@ const newVersion = `${major}.${minor}.${patch}-${randomGame}`;
 file.version = newVersion;
 file.buildDate = new Date().toISOString();
 
-const angularEnv =
-  process.env.NODE_ENV || 'production';
+const envArg = process.argv[3];
+const angularEnv = envArg || process.env.NODE_ENV || 'dev';
+
+const allowedEnvs = ['dev', 'test', 'prod'];
+
+if (!allowedEnvs.includes(angularEnv)) {
+  console.error(`Invalid environment: ${angularEnv}`);
+  console.error(`Allowed values: ${allowedEnvs.join(', ')}`);
+  process.exit(1);
+}
 
 file.environment = angularEnv;
 
+
 fs.writeFileSync(versionFile, JSON.stringify(file, null, 2));
 
-console.log(`Updated version to ${newVersion}`);
+console.log('--------------------------------');
+console.log(`Version     : ${newVersion}`);
+console.log(`Environment : ${angularEnv.toUpperCase()}`);
+console.log(`Build date  : ${file.buildDate}`);
+console.log('--------------------------------');

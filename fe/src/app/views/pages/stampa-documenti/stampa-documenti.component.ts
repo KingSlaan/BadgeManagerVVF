@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowComponent, RowDirective } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowDirective } from '@coreui/angular';
 import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
 import { SediStateService } from '../../../../states/sedi-state.service';
 import { AutocompleteSelectComponent } from '../../../../components/autocomplete-select/autocomplete-select.component';
@@ -8,7 +8,6 @@ import { AutocompleteSelectComponent } from '../../../../components/autocomplete
   selector: 'app-stampa-documenti',
   imports: [
     ReactiveFormsModule,
-    RowComponent,
     ColComponent,
     CardComponent,
     CardBodyComponent,
