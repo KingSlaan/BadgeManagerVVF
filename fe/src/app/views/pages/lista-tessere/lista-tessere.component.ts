@@ -11,7 +11,7 @@ import {
   ListGroupItemDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding } from '@coreui/icons';
+import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint } from '@coreui/icons';
 import { DataGridColumn, DataGridContextMenuConfig, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
@@ -52,7 +52,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   private sediService = inject(SediService);
   public utilsService = inject(UtilsService);
 
-  icons = { cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
+  icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
 
   isModalOpen = false;
   isModalAggiungiOpen = false;
@@ -120,6 +120,69 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   };
 
   requestSearch = signal(this.initialRequest);
+
+  actionsArray = [
+    {
+      name: "assegna-dipendente",
+      do: (row: any) => {
+        this.openModal(this.action_const.ASSIGN, row.idTessera)
+      },
+      color: "text-info",
+      icon: this.icons.cilActionUndo,
+      title: "Assegna Dipendente",
+      visibility: () => true
+    },
+    {
+      name: "cambia-sede",
+      do: (row: any) => {
+        this.openModal(this.action_const.ASSIGN_SEDE, row.idTessera)
+      },
+      color: "text-info",
+      icon: this.icons.cilBuilding,
+      title: "Cambia Sede",
+      visibility: () => true
+    },
+    {
+      name: "cambia-validità",
+      do: (row: any) => {
+        this.openModal(this.action_const.DISABLED, row.idTessera)
+      },
+      color: "text-danger",
+      icon: this.icons.cilBan,
+      title: "Cambia Validità",
+      visibility: () => true
+    },
+    {
+      name: "disuso",
+      do: (row: any) => {
+        this.openModal(this.action_const.REMOVE, row.idTessera)
+      },
+      color: "text-danger",
+      icon: this.icons.cilDelete,
+      title: "Disuso",
+      visibility: (row:any) => !!row.codiceFiscale
+    },
+    {
+      name: "cronologia",
+      do: (row: any) => {
+        this.openHistoryModal(row.idTessera)
+      },
+      color: "text-secondary",
+      icon: this.icons.cilHistory,
+      title: "Cronologia",
+      visibility: () => true
+    },
+    {
+      name: "stampa-tessera",
+      do: (row: any) => {
+        this.openHistoryModal(row.idTessera)
+      },
+      color: "text-secondary",
+      icon: this.icons.cilPrint,
+      title: "Stampa Tessera",
+      visibility: (row:any) => !!row.codiceFiscale
+    },
+  ];
 
   exportCsv() {
     return console.log("exportCsv")
