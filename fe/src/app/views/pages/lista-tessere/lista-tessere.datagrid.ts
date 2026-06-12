@@ -9,7 +9,7 @@ import {
 } from '../../../../interfaces/datagrid';
 import { Tessera, Tessere } from '../../../../interfaces/tessere';
 import { cilCloudDownload, cilCloudUpload, cilPlus } from '@coreui/icons';
-import { AutocompleteOption } from '@docs-components/autocomplete-select/autocomplete-select.component';
+import { AutocompleteOption } from '../../../../components/autocomplete-select/autocomplete-select.component';
 
 export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGridSearchConfig {
   return {
@@ -18,8 +18,8 @@ export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGr
     fields: [
       { field: 'idTessera', label: 'Id Tessera', type: 'text', size: '3', operator: 'contains' },
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator: 'contains' },
-      { field: 'nome', label: 'Nome', type: 'text', operator: 'starts', size: '3' },
-      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'starts', size: '3' },
+      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
+      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
       { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'contains', options: sediList},
       {
         field: 'status',
@@ -172,7 +172,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
     },
     {
       field: 'actions',
-      header: 'Azioni',
+      header: '',
       template: actionTemplate,
     }
   ];

@@ -1,10 +1,10 @@
 @use "@coreui/coreui/scss/coreui" as * with (
-  $primary: #7C2D12,
+  $primary: #7c2d12,
   $secondary: #475569,
-  $success: #15803D,
-  $info: #2563EB,
-  $warning: #D97706,
-  $danger: #B91C1C,
+  $success: #15803d,
+  $info: #2563eb,
+  $warning: #d97706,
+  $danger: #b91c1c,
   $enable-deprecation-messages: false
 );
 
@@ -20,23 +20,23 @@
 
 :root,
 [data-coreui-theme="light"] {
-  --app-primary: #7C2D12;
+  --app-primary: #7c2d12;
   --app-secondary: #475569;
-  --app-success: #15803D;
-  --app-info: #2563EB;
-  --app-warning: #D97706;
-  --app-danger: #B91C1C;
+  --app-success: #15803d;
+  --app-info: #2563eb;
+  --app-warning: #d97706;
+  --app-danger: #b91c1c;
 
-  --app-bg: #F8FAFC;
-  --app-surface: #FFFFFF;
-  --app-surface-2: #F1F5F9;
-  --app-text: #0F172A;
-  --app-text-muted: #64748B;
-  --app-border: #CBD5E1;
+  --app-bg: #f8fafc;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f5f9;
+  --app-text: #0f172a;
+  --app-text-muted: #64748b;
+  --app-border: #cbd5e1;
 
-  --app-sidebar-bg: #FFFFFF;
-  --app-sidebar-text: #0F172A;
-  --app-header-bg: #FFFFFF;
+  --app-sidebar-bg: #ffffff;
+  --app-sidebar-text: #0f172a;
+  --app-header-bg: #ffffff;
 
   --cui-primary: var(--app-primary);
   --cui-primary-rgb: 124, 45, 18;
@@ -61,19 +61,19 @@
 
   --cui-sidebar-bg: var(--app-sidebar-bg);
   --cui-sidebar-color: var(--app-sidebar-text);
-  --cui-sidebar-brand-bg: #FFFFFF;
+  --cui-sidebar-brand-bg: #ffffff;
   --cui-sidebar-brand-color: var(--app-primary);
 
   --cui-sidebar-nav-link-color: #334155;
-  --cui-sidebar-nav-link-hover-bg: #F1F5F9;
+  --cui-sidebar-nav-link-hover-bg: #f1f5f9;
   --cui-sidebar-nav-link-hover-color: var(--app-primary);
-  --cui-sidebar-nav-link-active-bg: #FEE2E2;
+  --cui-sidebar-nav-link-active-bg: #fee2e2;
   --cui-sidebar-nav-link-active-color: var(--app-primary);
 
   --cui-link-color: var(--app-primary);
-  --cui-link-hover-color: #991B1B;
+  --cui-link-hover-color: #991b1b;
 
-  --cui-focus-ring-color: rgba(124, 45, 18, .25);
+  --cui-focus-ring-color: rgba(124, 45, 18, 0.25);
 }
 
 /* =========================================================
@@ -83,23 +83,23 @@
 [data-coreui-theme="dark"] {
   color-scheme: dark;
 
-  --app-primary: #F97316;
-  --app-secondary: #94A3B8;
-  --app-success: #22C55E;
-  --app-info: #38BDF8;
-  --app-warning: #FACC15;
-  --app-danger: #F87171;
+  --app-primary: #f97316;
+  --app-secondary: #94a3b8;
+  --app-success: #22c55e;
+  --app-info: #38bdf8;
+  --app-warning: #facc15;
+  --app-danger: #f87171;
 
   --app-bg: #020617;
-  --app-surface: #0F172A;
-  --app-surface-2: #1E293B;
-  --app-text: #F8FAFC;
-  --app-text-muted: #CBD5E1;
+  --app-surface: #0f172a;
+  --app-surface-2: #1e293b;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
   --app-border: #334155;
 
-  --app-sidebar-bg: #0F172A;
-  --app-sidebar-text: #F8FAFC;
-  --app-header-bg: #0F172A;
+  --app-sidebar-bg: #0f172a;
+  --app-sidebar-text: #f8fafc;
+  --app-header-bg: #0f172a;
 
   --cui-primary: var(--app-primary);
   --cui-primary-rgb: 249, 115, 22;
@@ -127,16 +127,16 @@
   --cui-sidebar-brand-bg: #020617;
   --cui-sidebar-brand-color: var(--app-primary);
 
-  --cui-sidebar-nav-link-color: #CBD5E1;
-  --cui-sidebar-nav-link-hover-bg: rgba(249, 115, 22, .14);
-  --cui-sidebar-nav-link-hover-color: #FFFFFF;
-  --cui-sidebar-nav-link-active-bg: rgba(249, 115, 22, .22);
-  --cui-sidebar-nav-link-active-color: #FDBA74;
+  --cui-sidebar-nav-link-color: #cbd5e1;
+  --cui-sidebar-nav-link-hover-bg: rgba(249, 115, 22, 0.14);
+  --cui-sidebar-nav-link-hover-color: #ffffff;
+  --cui-sidebar-nav-link-active-bg: rgba(249, 115, 22, 0.22);
+  --cui-sidebar-nav-link-active-color: #fdba74;
 
-  --cui-link-color: #FDBA74;
-  --cui-link-hover-color: #FED7AA;
+  --cui-link-color: #fdba74;
+  --cui-link-hover-color: #fed7aa;
 
-  --cui-focus-ring-color: rgba(249, 115, 22, .35);
+  --cui-focus-ring-color: rgba(249, 115, 22, 0.35);
 }
 
 /* =========================================================
@@ -487,7 +487,7 @@ c-sidebar-nav a.active svg {
 .form-control:focus,
 .form-select:focus {
   border-color: var(--app-primary) !important;
-  box-shadow: 0 0 0 .25rem var(--cui-focus-ring-color) !important;
+  box-shadow: 0 0 0 0.25rem var(--cui-focus-ring-color) !important;
 }
 
 .form-control::placeholder {
@@ -512,7 +512,7 @@ c-sidebar-nav a.active svg {
 }
 
 .table-hover tbody tr:hover > * {
-  background-color: rgba(var(--cui-primary-rgb), .08) !important;
+  background-color: rgba(var(--cui-primary-rgb), 0.08) !important;
 }
 
 /* Dropdowns */
@@ -529,7 +529,7 @@ c-sidebar-nav a.active svg {
 
 .dropdown-item:hover,
 .dropdown-item:focus {
-  background-color: rgba(var(--cui-primary-rgb), .10) !important;
+  background-color: rgba(var(--cui-primary-rgb), 0.1) !important;
 }
 
 /* Pagination */
@@ -543,7 +543,7 @@ c-sidebar-nav a.active svg {
 .page-item.active .page-link {
   background-color: var(--app-primary) !important;
   border-color: var(--app-primary) !important;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 }
 
 /* Modals */
@@ -572,9 +572,9 @@ body,
 .dropdown-menu,
 .modal-content {
   transition:
-    background-color .2s ease,
-    color .2s ease,
-    border-color .2s ease;
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .sidebar-brand {
@@ -591,25 +591,70 @@ body,
    ========================================================= */
 
 [data-coreui-theme="light"]
-.form-control:disabled:not(.custom-datepicker-input),
-[data-coreui-theme="light"]
-.form-select:disabled,
-[data-coreui-theme="light"]
-textarea.form-control:disabled {
+  .form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="light"] .form-select:disabled,
+[data-coreui-theme="light"] textarea.form-control:disabled {
   background-color: #e9ecef !important;
   color: #6c757d !important;
   border-color: #ced4da !important;
   opacity: 1 !important;
 }
 
-[data-coreui-theme="dark"]
-.form-control:disabled:not(.custom-datepicker-input),
-[data-coreui-theme="dark"]
-.form-select:disabled,
-[data-coreui-theme="dark"]
-textarea.form-control:disabled {
+[data-coreui-theme="dark"] .form-control:disabled:not(.custom-datepicker-input),
+[data-coreui-theme="dark"] .form-select:disabled,
+[data-coreui-theme="dark"] textarea.form-control:disabled {
   background-color: #1e293b !important;
   color: #94a3b8 !important;
   border-color: #334155 !important;
   opacity: 1 !important;
+}
+
+.list-group-item.list-group-item-action:hover,
+.list-group-item-action:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--cui-primary) 14%,
+    var(--cui-body-bg)
+  ) !important;
+
+  color: var(--cui-body-color) !important;
+  cursor: pointer;
+}
+
+.context-menu-item {
+  cursor: pointer !important;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.context-menu-item:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--cui-primary) 18%,
+    var(--cui-body-bg)
+  ) !important;
+
+  color: var(--cui-body-color) !important;
+}
+
+.context-menu-list {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.context-menu-list .list-group-item {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
+.context-menu-list .list-group-item:first-child {
+  border-top: none !important;
+}
+
+.context-menu-list .list-group-item:last-child {
+  border-bottom: none !important;
 }

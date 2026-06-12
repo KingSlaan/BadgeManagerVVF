@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, RowComponent, RowDirective } from '@coreui/angular';
-import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowComponent, RowDirective } from '@coreui/angular';
+import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
 @Component({
   selector: 'app-stampa-documenti',
   imports: [
@@ -18,7 +18,8 @@ import { DatepickerComponent } from '@docs-components/datepicker/datepicker.comp
     GutterDirective,
     RowDirective,
     FormsModule,
-    DatepickerComponent
+    DatepickerComponent,
+    FormSelectDirective,
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
@@ -31,7 +32,7 @@ export class StampaDocumentiComponent {
     dataProtocollo: new FormControl(''),
     sede: new FormControl(''),
     tipoTemplate: new FormControl(''),
-    qntBadge: new FormControl(0),
+    qntBadge: new FormControl(null),
   });
 
   creaFileRisposta() {

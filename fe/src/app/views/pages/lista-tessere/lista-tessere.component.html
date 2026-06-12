@@ -10,6 +10,7 @@
   [loading]="datagridLoading()"
   [emptyStateConfig]="emptyStateConfig"
   (dataRequest)="loadData($event)"
+  [contextMenuConfig]="contextMenuConfig"
 />
 
 <app-tessera-modal-cmp
@@ -31,64 +32,122 @@
 ></app-tessera-history>
 
 <ng-template #actionTemplate let-row>
-  <!-- @if (!row.codiceFiscale || utilsService.parseItalianDate(row.dataFineAssegnazione) >= today ) { -->
-  <button
-    cButton
-    color="info"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="openModal(action_const.ASSIGN, row.idTessera)"
-  >
-    <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
-  </button>
-  <button
-    cButton
-    color="info"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="openModal(action_const.ASSIGN_SEDE, row.idTessera)"
-  >
-    <svg [cIcon]="icons.cilBuilding" title="Cambia Sede"></svg>
-  </button>
-  <!-- } -->
-
-  <!-- <button
-    cButton
-    color="primary"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="openModal('edit', row.idTessera)"
-  >
-    <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
-  </button> -->
-  <button
-    cButton
-    color="danger"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="openModal(action_const.DISABLED, row.idTessera)"
-  >
-    <svg [cIcon]="icons.cilBan" title="Disabilita"></svg>
-  </button>
-  @if (row.codiceFiscale) {
+  <c-dropdown>
     <button
       cButton
-      color="danger"
+      color="secondary"
       variant="ghost"
       shape="rounded-pill"
-      (click)="openModal(action_const.REMOVE, row.idTessera)"
+      cDropdownToggle
+      direction="dropend"
     >
-      <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
+      <svg [cIcon]="icons.cilOptions" title="Assegna Dipendente"></svg>
     </button>
-  }
-  <button
-    cButton
-    class="btn-action btn btn-link"
-    color="secondary"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="openHistoryModal(row.idTessera)"
-  >
-    <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
-  </button>
+
+    <ul cDropdownMenu>
+      <li cDropdownItem (click)="openModal(action_const.ASSIGN, row.idTessera)">
+        <span class="text-info">
+          <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+          Assegna Dipendente
+        </span>
+      </li>
+      <li
+        cDropdownItem
+        (click)="openModal(action_const.ASSIGN_SEDE, row.idTessera)"
+      >
+        <span class="text-info">
+          <svg [cIcon]="icons.cilBuilding" title="Cambia Sede"></svg>
+          Cambia Sede
+        </span>
+      </li>
+      <li
+        cDropdownItem
+        (click)="openModal(action_const.DISABLED, row.idTessera)"
+      >
+        <span class="text-danger">
+          <svg [cIcon]="icons.cilBan" title="Cambia Validità"></svg>
+          Cambia Validità
+        </span>
+      </li>
+      @if (row.codiceFiscale) {
+        <li
+          cDropdownItem
+          (click)="openModal(action_const.REMOVE, row.idTessera)"
+        >
+          <span class="text-danger">
+            <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
+            Disuso
+          </span>
+        </li>
+      }
+      <li cDropdownItem (click)="openHistoryModal(row.idTessera)">
+        <span class="text-secondary">
+          <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
+          Cronologia
+        </span>
+      </li>
+    </ul>
+  </c-dropdown>
+</ng-template>
+
+<ng-template #contextActionTemplate let-row>
+  <ul cListGroup class="context-menu-list">
+    <li
+      cListGroupItem
+      action
+      (click)="openModal(action_const.ASSIGN, row.idTessera)"
+      class="context-menu-item"
+    >
+      <span class="text-info">
+        <svg [cIcon]="icons.cilActionUndo" title="Assegna Dipendente"></svg>
+        Assegna Dipendente
+      </span>
+    </li>
+    <li
+      cListGroupItem
+      action
+      (click)="openModal(action_const.ASSIGN_SEDE, row.idTessera)"
+      class="context-menu-item"
+    >
+      <span class="text-info">
+        <svg [cIcon]="icons.cilBuilding" title="Cambia Sede"></svg>
+        Cambia Sede
+      </span>
+    </li>
+    <li
+      cListGroupItem
+      action
+      (click)="openModal(action_const.DISABLED, row.idTessera)"
+      class="context-menu-item"
+    >
+      <span class="text-danger">
+        <svg [cIcon]="icons.cilBan" title="Cambia Validità"></svg>
+        Cambia Validità
+      </span>
+    </li>
+    @if (row.codiceFiscale) {
+      <li
+        cListGroupItem
+        action
+        (click)="openModal(action_const.REMOVE, row.idTessera)"
+        class="context-menu-item"
+      >
+        <span class="text-danger">
+          <svg [cIcon]="icons.cilDelete" title="Disuso"></svg>
+          Disuso
+        </span>
+      </li>
+    }
+    <li
+      cListGroupItem
+      action
+      (click)="openHistoryModal(row.idTessera)"
+      class="context-menu-item"
+    >
+      <span class="text-secondary">
+        <svg [cIcon]="icons.cilHistory" title="Cronologia"></svg>
+        Cronologia
+      </span>
+    </li>
+  </ul>
 </ng-template>

@@ -2,11 +2,17 @@ import { DATAGRID_CONSTANTS } from './../../../../constants/datagrid.constants';
 import { Component, inject, OnInit, AfterViewInit, TemplateRef, ViewChild, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
-  ButtonDirective
+  ButtonDirective,
+  DropdownComponent,
+  DropdownItemDirective,
+  DropdownMenuDirective,
+  DropdownToggleDirective,
+  ListGroupDirective,
+  ListGroupItemDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding } from '@coreui/icons';
-import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridContextMenuConfig, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
@@ -16,8 +22,8 @@ import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
 import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig } from './lista-tessere.datagrid';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
-import { Sedi } from 'src/interfaces/sedi';
-import { SediService } from 'src/app/services/sedi.service';
+import { Sedi } from './../../../../interfaces/sedi';
+import { SediService } from '../../../services/sedi.service';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -28,7 +34,13 @@ import { SediService } from 'src/app/services/sedi.service';
     TesseraModalCmpComponent,
     TesseraAggiungiComponent,
     DataGridComponent,
-    TesseraHistoryComponent
+    TesseraHistoryComponent,
+    DropdownComponent,
+    DropdownItemDirective,
+    DropdownMenuDirective,
+    DropdownToggleDirective,
+    ListGroupDirective,
+    ListGroupItemDirective
   ],
   templateUrl: './lista-tessere.component.html',
   styleUrl: './lista-tessere.component.scss',
@@ -56,6 +68,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   })
   actionTemplate!: TemplateRef<any>;
 
+  @ViewChild('contextActionTemplate', {
+    static: true,
+  })
+  contextActionTemplate!: TemplateRef<any>;
+
   searchConfig: DataGridSearchConfig = {
     enabled: true,
     fields: [],
@@ -64,6 +81,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   paginationConfig = DATAGRID_CONSTANTS;
 
   columns: DataGridColumn<Tessera>[] = [];
+
+  contextMenuConfig!: DataGridContextMenuConfig<any>;
 
   toolbarConfig: DataGridToolbarConfig = createGridToolbar(
     () => this.openModalAggiungi(),
@@ -137,7 +156,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.columns = createGridColumn(this.actionTemplate)
+    this.columns = createGridColumn(this.actionTemplate);
+    this.contextMenuConfig = {
+      enabled: true,
+      template: this.contextActionTemplate,
+    };
   }
 
   onPageChange(event: DataGridPageEvent) {

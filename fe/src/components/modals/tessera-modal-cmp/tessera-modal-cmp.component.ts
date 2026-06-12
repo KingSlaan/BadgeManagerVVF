@@ -1,4 +1,4 @@
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from './../../../app/services/toast.service';
 import { UtilsService } from './../../../app/services/utils.service';
 import { ACTION_CONSTANTS } from './../../../constants/action.constants';
 import { Component, EventEmitter, inject, Input, OnInit, Output, SimpleChanges } from '@angular/core';
@@ -19,11 +19,11 @@ import {
 } from '@coreui/angular';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { cilX } from '@coreui/icons';
-import { Tessera, tesseraEmpty } from 'src/interfaces/tessere';
-import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
-import { TessereService } from 'src/app/services/tessere.service';
+import { Tessera, tesseraEmpty } from './../../../interfaces/tessere';
+import { DatepickerComponent } from '../../datepicker/datepicker.component';
+import { TessereService } from './../../../app/services/tessere.service';
 import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
-import { AutocompleteSelectComponent } from '@docs-components/autocomplete-select/autocomplete-select.component';
+import { AutocompleteSelectComponent } from '../../autocomplete-select/autocomplete-select.component';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -219,6 +219,7 @@ export class TesseraModalCmpComponent {
     switch (mode) {
       case ACTION_CONSTANTS.ASSIGN_SEDE:
         request = {
+          idTessera: this.tesseraSelected.idTessera,
           sede: this.formTessera.controls.sede.value,
           codTipoTessera: this.formTessera.controls.codTipoTessera.value,
         }

@@ -74,58 +74,67 @@ c-card-body {
 }
 
 table[cTable] {
-
   tbody {
-
     td {
-
       border-right: 1px dotted
-        color-mix(
-          in srgb,
-          var(--cui-border-color) 20%,
-          transparent
-        );
+        color-mix(in srgb, var(--cui-border-color) 20%, transparent);
     }
 
     td:last-child {
-
       border-right: none;
     }
   }
 }
 
 table[cTable] tbody tr.datagrid-row-even {
-  --cui-table-bg:
-    color-mix(
-      in srgb,
-      var(--cui-secondary) 12%,
-      var(--cui-body-bg)
-    );
+  --cui-table-bg: color-mix(
+    in srgb,
+    var(--cui-secondary) 12%,
+    var(--cui-body-bg)
+  );
 }
 
 table[cTable] tbody tr:hover {
-  --cui-table-bg:
-    color-mix(
-      in srgb,
-      var(--cui-secondary) 18%,
-      var(--cui-body-bg)
-    );
+  --cui-table-bg: color-mix(
+    in srgb,
+    var(--cui-secondary) 18%,
+    var(--cui-body-bg)
+  );
 }
 
 :host ::ng-deep table.table tbody tr.datagrid-row-even > td {
-  background-color:
-    color-mix(
-      in srgb,
-      var(--cui-secondary) 12%,
-      var(--app-surface)
-    ) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--cui-secondary) 12%,
+    var(--app-surface)
+  ) !important;
 }
 
 :host ::ng-deep table.table tbody tr:hover > td {
-  background-color:
-    color-mix(
-      in srgb,
-      var(--cui-secondary) 18%,
-      var(--app-surface)
-    ) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--cui-secondary) 18%,
+    var(--app-surface)
+  ) !important;
+}
+
+.datagrid-context-menu {
+  position: fixed;
+  z-index: 1050;
+  min-width: 180px;
+  padding: 0.5rem;
+  border: 1px solid var(--cui-border-color);
+  border-radius: 0.5rem;
+  background: var(--cui-body-bg);
+  color: var(--cui-body-color);
+  box-shadow: var(--cui-box-shadow-lg);
+}
+
+.datagrid-context-menu {
+  background: var(--cui-body-bg);
+  box-shadow: var(--cui-box-shadow-lg);
+
+  border: none;
+  border-radius: 0;
+  padding: 0;
 }

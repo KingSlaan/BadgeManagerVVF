@@ -178,6 +178,8 @@
             <tr
               [class.datagrid-row-even]="$even"
               [class.datagrid-row-odd]="$odd"
+              (contextmenu)="openContextMenu($event, row)"
+              (click)="closeContextMenu()"
             >
               @for (column of columns(); track column.field) {
                 <td [class]="column.className">
@@ -288,4 +290,23 @@
       </div>
     }
   </c-card-footer>
+  @if (contextMenuOpen() && contextMenuRow()) {
+    <div
+      class="datagrid-context-menu"
+      [style.left.px]="contextMenuX()"
+      [style.top.px]="contextMenuY()"
+      (click)="$event.stopPropagation()"
+    >
+      <ng-container
+        *ngTemplateOutlet="
+          contextMenuConfig()!.template;
+          context: {
+            $implicit: contextMenuRow(),
+            row: contextMenuRow(),
+            close: closeContextMenu.bind(this),
+          }
+        "
+      />
+    </div>
+  }
 </c-card>
