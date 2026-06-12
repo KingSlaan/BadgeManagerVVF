@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowComponent, RowDirective } from '@coreui/angular';
 import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
+import { SediStateService } from '../../../../states/sedi-state.service';
+import { AutocompleteSelectComponent } from '../../../../components/autocomplete-select/autocomplete-select.component';
 @Component({
   selector: 'app-stampa-documenti',
   imports: [
@@ -20,11 +22,16 @@ import { DatepickerComponent } from '../../../../components/datepicker/datepicke
     FormsModule,
     DatepickerComponent,
     FormSelectDirective,
+    AutocompleteSelectComponent
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
 })
-export class StampaDocumentiComponent {
+export class StampaDocumentiComponent implements OnInit {
+
+  private sediState = inject(SediStateService);
+
+  sediOptions = this.sediState.sediOptions;
 
   form = new FormGroup({
     oggetto: new FormControl(''),
@@ -34,6 +41,10 @@ export class StampaDocumentiComponent {
     tipoTemplate: new FormControl(''),
     qntBadge: new FormControl(null),
   });
+
+  ngOnInit(): void {
+    this.sediState.loadSedi();
+  }
 
   creaFileRisposta() {
 

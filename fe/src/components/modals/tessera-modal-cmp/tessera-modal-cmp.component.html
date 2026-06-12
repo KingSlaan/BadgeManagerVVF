@@ -76,14 +76,6 @@
       </c-col>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="sede"> Sede </label>
-        <!-- <select cSelect formControlName="sede">
-          <option value="">-</option>
-          @for (item of sediList; track $index) {
-            <option [value]="item.codSede">
-              {{ item.descrizione }}
-            </option>
-          }
-        </select> -->
         <app-autocomplete-select
           formControlName="sede"
           [options]="sediList"

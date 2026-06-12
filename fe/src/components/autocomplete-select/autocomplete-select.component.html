@@ -57,7 +57,7 @@
 
   @if (isOpen()) {
     <div class="autocomplete-dropdown">
-      @for (option of filteredOptions(); track option.value) {
+      @for (option of filteredOptions(); track option.value+ '-' + $index) {
         <button
           type="button"
           class="autocomplete-option"

@@ -52,12 +52,10 @@
           </c-col>
           <c-col xs="8" lg="8">
             <label cLabel class="visually-hidden" for="sede"> Sede </label>
-            <input
-              cFormControl
-              id="sede"
+            <app-autocomplete-select
               formControlName="sede"
-              placeholder="Sede"
-              type="text"
+              [options]="sediOptions()"
+              placeholder="Select sede"
             />
           </c-col>
           <c-col xs="4" lg="4">
