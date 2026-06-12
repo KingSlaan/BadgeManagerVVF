@@ -35,19 +35,27 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
             for (JsonElement el : filters) {
                 JsonObject filter = el.getAsJsonObject();
                 
-                // Evitiamo NullPointerException se mancano chiavi per filtri custom
+                // Estraiamo field e operator in modo sicuro
                 String field = filter.has("field") ? filter.get("field").getAsString() : "";
                 String operator = filter.has("operator") ? filter.get("operator").getAsString() : "";
-                String value = filter.has("value") ? filter.get("value").getAsString() : "";
+                
+                // Estraiamo il value come JsonElement generico (potrebbe essere stringa o array)
+                JsonElement valueElement = filter.has("value") ? filter.get("value") : null;
 
                 // --- INIZIO GESTIONE FILTRI SPECIALI ---
                 if ("soloNonAssegnate".equals(field)) {
-                    if ("true".equalsIgnoreCase(value)) {
+                    // Controlliamo che sia una primitiva prima di estrarre come stringa
+                    if (valueElement != null && valueElement.isJsonPrimitive() && "true".equalsIgnoreCase(valueElement.getAsString())) {
                         where.append(" AND tp.CODFISDIP IS NULL ");
                     }
                     continue; // Gestito, passa al prossimo filtro
                 }
                 // --- FINE GESTIONE FILTRI SPECIALI ---
+
+                // Se manca il valore, ignoriamo il filtro
+                if (valueElement == null || valueElement.isJsonNull()) {
+                    continue;
+                }
 
                 // Mappatura campi JSON sulle colonne DB reali per i filtri standard
                 String dbColumn = "";
@@ -57,19 +65,42 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "nome": dbColumn = "a.NOME"; break;
                     case "cognome": dbColumn = "a.COGNOME"; break;
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
-                    
-                    // ---> AGGIUNGI QUESTA RIGA PER SOSTITUZIONE CODICE SEDE CON DESCRIZIONE SEDE<---
                     case "sede": dbColumn = "d.DESCRIZIONE"; break;
-                    
                     default: continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
-                if ("contains".equalsIgnoreCase(operator)) {
-                    where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
-                    params.add("%" + value.toUpperCase() + "%");
-                } else if ("equals".equalsIgnoreCase(operator)) {
-                    where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
-                    params.add(value.toUpperCase());
+                // --- GESTIONE NUOVO OPERATORE "in" (Valore Array) ---
+                if ("in".equalsIgnoreCase(operator) && valueElement.isJsonArray()) {
+                    JsonArray valueArray = valueElement.getAsJsonArray();
+                    if (valueArray.size() > 0) {
+                        where.append(" AND UPPER(").append(dbColumn).append(") IN (");
+                        for (int i = 0; i < valueArray.size(); i++) {
+                            where.append("?"); // Aggiunge i placeholder
+                            if (i < valueArray.size() - 1) {
+                                where.append(", ");
+                            }
+                            params.add(valueArray.get(i).getAsString().toUpperCase());
+                        }
+                        where.append(") ");
+                    }
+                } 
+                // --- GESTIONE OPERATORI CLASSICI (Valore Stringa/Primitiva) ---
+                else if (valueElement.isJsonPrimitive()) {
+                    String stringValue = valueElement.getAsString();
+                    
+                    if ("contains".equalsIgnoreCase(operator)) {
+                        where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
+                        
+                        // Gestione ottimizzata "inizia per" su NOME e COGNOME inserita in precedenza
+                        if ("nome".equals(field) || "cognome".equals(field)) {
+                            params.add(stringValue.toUpperCase() + "%"); 
+                        } else {
+                            params.add("%" + stringValue.toUpperCase() + "%");
+                        }
+                    } else if ("equals".equalsIgnoreCase(operator)) {
+                        where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
+                        params.add(stringValue.toUpperCase());
+                    }
                 }
             }
         }
