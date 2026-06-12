@@ -20,7 +20,7 @@ export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGr
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator: 'contains' },
       { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
-      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'contains', options: sediList},
+      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'in', options: sediList, multiple:true},
       {
         field: 'status',
         label: 'Status',
@@ -89,12 +89,14 @@ export function createGridToolbar(
         icon: cilCloudDownload,
         color: 'primary',
         action: exportCsv,
+        disabled: () => true
       },
       {
         label: 'Import CSV',
         icon: cilCloudUpload,
         color: 'primary',
-        action: importCsv
+        action: importCsv,
+        disabled: () => true
       },
       // {
       //   label: 'Delete Selected',

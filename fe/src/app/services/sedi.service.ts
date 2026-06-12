@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Sede } from '../../interfaces/sedi';
 import { DataGridRequest } from '../../interfaces/datagrid';
+import { ApiResponse } from '../../interfaces/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +22,8 @@ export class SediService {
     return this.http.post<Sede[]>(`${this.apiUrl}/getDipartimentiServlet`,body);
   }
 
-  getSediList(): Observable<Sede[]> {
-    return this.http.get<Sede[]>(`${this.apiUrl}/getDipartimentiServlet`);
+  getSediList(): Observable<ApiResponse<Sede[]>> {
+    return this.http.get<ApiResponse<Sede[]>>(`${this.apiUrl}/getDipartimentiServlet`);
   }
 
 }

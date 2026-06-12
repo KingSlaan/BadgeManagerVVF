@@ -658,3 +658,61 @@ body,
 .context-menu-list .list-group-item:last-child {
   border-bottom: none !important;
 }
+
+.env-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 28px;
+  min-width: 56px;
+
+  padding: 0 12px;
+
+  border-radius: 999px;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+
+  line-height: 1;
+  user-select: none;
+}
+
+.env-dev,
+.env-development {
+  background: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.env-test {
+  background: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffecb5;
+}
+
+.env-prod,
+.env-production {
+  background: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.header-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  padding: 0.3rem 0.65rem;
+
+  border-radius: 999px;
+
+  background: var(--cui-tertiary-bg);
+  border: 1px solid var(--cui-border-color);
+
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  font-variant-numeric: tabular-nums;
+}
