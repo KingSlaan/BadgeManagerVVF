@@ -25,4 +25,6 @@ public interface Tessera1DAO {
     boolean updateSede(String idTessera, String nuovaSede) throws SQLException;
     
     boolean updateCodTipoTessera(String idTessera, String codTipoTessera) throws Exception;
+    
+    boolean updateSedeECodTipo(String idTessera, String nuovaSede, String codTipoTessera) throws SQLException;
 } 
