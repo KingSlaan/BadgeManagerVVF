@@ -24,10 +24,11 @@ Memorizza le credenziali d'accesso e le informazioni principali del profilo dell
 | :--- | :--- | :--- | :--- |
 | `ID_UTENTE` | `NUMBER` | `PK` | Identificativo univoco dell'utente (Auto-incrementale tramite trigger). |
 | `EMAIL` | `VARCHAR2(100 BYTE)` | `NOT NULL`, `UNIQUE` | Indirizzo email istituzionale, utilizzato come login. |
-| `PASSWORD_HASH` | `VARCHAR2(255 BYTE)` | `NOT NULL` | Hash sicuro della password (es. bcrypt, Argon2). **Mai salvare in chiaro**. |
+| `PASSWORD_HASH` | `VARCHAR2(255 BYTE)` | `NOT NULL` | Hash sicuro della password (es. bcrypt, Argon2). |
 | `DATA_CREAZIONE` | `DATE` | `NOT NULL`, `DEFAULT SYSDATE` | Data di registrazione dell'account. |
 | `ULTIMO_LOGIN` | `DATE` | `NULL` | Timestamp dell'ultimo accesso effettuato con successo. |
 | `FOTO_PATH` | `VARCHAR2(500 BYTE)` | `NULL` | Percorso locale o URL della foto profilo dell'utente. |
+| `ATTIVO` | `CHAR(1 BYTE)` | `NOT NULL`, `DEFAULT 'Y'` | Stato dell'account. Valori ammessi via CHECK constraint: `'Y'` (Attivo), `'N'` (Disabilitato/Sospeso). |
 
 ### 2. Tabella: `RUOLO1`
 Contiene il dizionario dei ruoli applicativi censiti nel sistema.

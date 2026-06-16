@@ -2,7 +2,7 @@
 -- CREAZIONE TABELLE
 -- ====================================================================
 
--- 1. UTENTE1
+-- 1. UTENTE1 (Aggiornata con colonna ATTIVO)
 CREATE TABLE UTENTE1 (
     ID_UTENTE              NUMBER NOT NULL,
     EMAIL                  VARCHAR2(100 BYTE) NOT NULL,
@@ -10,8 +10,11 @@ CREATE TABLE UTENTE1 (
     DATA_CREAZIONE         DATE DEFAULT SYSDATE NOT NULL,
     ULTIMO_LOGIN           DATE,
     FOTO_PATH              VARCHAR2(500 BYTE),
+    ATTIVO                 CHAR(1 BYTE) DEFAULT 'Y' NOT NULL, -- 'Y' = Attivo, 'N' = Disabilitato
+    
     CONSTRAINT UTENTE1_PK PRIMARY KEY (ID_UTENTE),
-    CONSTRAINT UTENTE1_EMAIL_U01 UNIQUE (EMAIL)
+    CONSTRAINT UTENTE1_EMAIL_U01 UNIQUE (EMAIL),
+    CONSTRAINT UTENTE1_ATTIVO_CHK CHECK (ATTIVO IN ('Y', 'N'))
 );
 
 -- 2. RUOLO1
