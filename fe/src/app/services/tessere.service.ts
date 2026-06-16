@@ -4,6 +4,7 @@ import { Tessera, Tessere } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DataGridRequest } from './../../interfaces/datagrid';
+import { ApiResponse } from 'src/interfaces/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ export class TessereService {
   // Example base API URL
   private apiUrl = API_CONSTANTS.BASE_URL;
 
-  getTessere(body: DataGridRequest): Observable<Tessera[]> {
-    return this.http.post<Tessera[]>(`${this.apiUrl}/getTessereListByFiltersServlet`, body);
+  getTessere(body: DataGridRequest): Observable<ApiResponse<Tessera[]>> {
+    return this.http.post<ApiResponse<Tessera[]>>(`${this.apiUrl}/getTessereListByFiltersServlet`, body);
   }
 
   getTesseraById(id: string): Observable<Tessera> {

@@ -5,24 +5,29 @@ import {
   input,
   signal,
   computed,
-  forwardRef
+  forwardRef,
+  OnInit,
+  OnDestroy,
+  TemplateRef
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import {
   ControlValueAccessor,
   FormsModule,
   NG_VALUE_ACCESSOR
 } from '@angular/forms';
+import { Observable, Subject, switchMap, debounceTime, distinctUntilChanged, of, tap, catchError } from 'rxjs';
 
 export interface AutocompleteOption<T = any> {
   label: string;
   value: T;
+  data?: any;
 }
 
 @Component({
   selector: 'app-autocomplete-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgTemplateOutlet],
   templateUrl: './autocomplete-select.component.html',
   styleUrl: './autocomplete-select.component.scss',
   providers: [
@@ -33,9 +38,14 @@ export interface AutocompleteOption<T = any> {
     }
   ]
 })
-export class AutocompleteSelectComponent implements ControlValueAccessor {
+export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit, OnDestroy {
   options = input<AutocompleteOption[]>([]);
-  placeholder = input<string>('Select...');
+
+  itemTemplate = input<TemplateRef<any> | null>(null);
+  selectedItemTemplate = input<TemplateRef<any> | null>(null);
+  emptyTemplate = input<TemplateRef<any> | null>(null);
+
+  placeholder = input('Select...');
   disabledInput = input<boolean>(false);
   clearable = input<boolean>(true);
   multiple = input<boolean>(false);
@@ -46,14 +56,34 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
   isOpen = signal(false);
   disabled = signal(false);
 
+  serverSearchFn = input<((term: string) => Observable<AutocompleteOption[]>) | null>(null);
+  debounceMs = input<number>(300);
+  minSearchLength = input<number>(0);
+
+  loadOnOpen = input<boolean>(false);
+
+  serverOptions = signal<AutocompleteOption[]>([]);
+  loading = signal(false);
+
+  private searchSubject = new Subject<string>();
+
+
   filteredOptions = computed(() => {
+    const sourceOptions = this.serverSearchFn()
+      ? this.serverOptions()
+      : this.options();
+
     const term = this.search().toLowerCase().trim();
 
-    if (!term) {
-      return this.options();
+    if (this.serverSearchFn()) {
+      return sourceOptions;
     }
 
-    return this.options().filter(option =>
+    if (!term) {
+      return sourceOptions;
+    }
+
+    return sourceOptions.filter(option =>
       option.label.toLowerCase().includes(term)
     );
   });
@@ -72,7 +102,7 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
 
     this.selectedValue.set(value);
 
-    const selected = this.options().find(opt => opt.value === value);
+    const selected = this.getAllOptions().find(opt => opt.value === value);
     this.search.set(selected?.label ?? '');
   }
 
@@ -110,8 +140,14 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
     this.onChange(next);
   }
 
+  getAllOptions(): AutocompleteOption[] {
+    return this.serverSearchFn()
+      ? this.serverOptions()
+      : this.options();
+  }
+
   getSelectedOptions(): AutocompleteOption[] {
-    return this.options().filter(opt =>
+    return this.getAllOptions().filter(opt =>
       this.selectedValues().includes(opt.value)
     );
   }
@@ -145,7 +181,41 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
 
   open(): void {
     if (this.disabled() || this.disabledInput()) return;
+
     this.isOpen.set(true);
+
+    if (
+      this.serverSearchFn() &&
+      this.loadOnOpen() &&
+      this.serverOptions().length === 0
+    ) {
+      this.loadServerOptions('');
+    }
+  }
+
+  private loadServerOptions(term: string): void {
+    const fn = this.serverSearchFn();
+
+    if (!fn) return;
+
+    if (term.trim().length < this.minSearchLength()) {
+      this.serverOptions.set([]);
+      return;
+    }
+
+    this.loading.set(true);
+
+    fn(term)
+      .pipe(
+        catchError(error => {
+          console.error('AUTOCOMPLETE LOAD ERROR:', error);
+          return of([]);
+        }),
+        tap(() => this.loading.set(false))
+      )
+      .subscribe(options => {
+        this.serverOptions.set(options);
+      });
   }
 
   onSearchChange(value: string): void {
@@ -156,7 +226,45 @@ export class AutocompleteSelectComponent implements ControlValueAccessor {
       this.onChange(null);
     }
 
+    if (this.serverSearchFn()) {
+      this.searchSubject.next(value);
+    }
+
     this.isOpen.set(true);
+  }
+
+  ngOnInit(): void {
+    this.searchSubject
+      .pipe(
+        debounceTime(this.debounceMs()),
+        distinctUntilChanged(),
+        switchMap(term => {
+          const fn = this.serverSearchFn();
+
+          if (!fn) {
+            return of([]);
+          }
+
+          if (term.trim().length < this.minSearchLength()) {
+            this.serverOptions.set([]);
+            return of([]);
+          }
+
+          this.loading.set(true);
+
+          return fn(term).pipe(
+            catchError(() => of([])),
+            tap(() => this.loading.set(false))
+          );
+        })
+      )
+      .subscribe(options => {
+        this.serverOptions.set(options);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubject.complete();
   }
 
   @HostListener('document:click', ['$event'])

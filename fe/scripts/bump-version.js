@@ -31,6 +31,8 @@ const boardGames = [
   'GreatWesternTrail',
   'PuertoRico',
   'Unmatched',
+  'Voidfall',
+  'TwilightImperium',
 ];
 
 const bumpType = process.argv[2] || 'patch';

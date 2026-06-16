@@ -4,7 +4,19 @@
       <div class="selected-tags">
         @for (option of getSelectedOptions(); track option.value) {
           <span class="selected-tag">
-            {{ option.label }}
+            @if (selectedItemTemplate()) {
+              <ng-container
+                *ngTemplateOutlet="
+                  selectedItemTemplate();
+                  context: {
+                    $implicit: option,
+                    option: option,
+                  }
+                "
+              />
+            } @else {
+              {{ option.label }}
+            }
 
             <button
               type="button"
@@ -57,19 +69,41 @@
 
   @if (isOpen()) {
     <div class="autocomplete-dropdown">
-      @for (option of filteredOptions(); track option.value+ '-' + $index) {
+      @if (loading()) {
+        <div class="autocomplete-empty">Loading...</div>
+      }
+      @for (option of filteredOptions(); track option.value + "-" + $index) {
         <button
           type="button"
           class="autocomplete-option"
           [class.selected]="isSelected(option)"
           (click)="selectOption(option)"
         >
-          {{ option.label }}
+          @if (itemTemplate()) {
+            <ng-container
+              *ngTemplateOutlet="
+                itemTemplate();
+                context: {
+                  $implicit: option,
+                  option: option,
+                  selected: isSelected(option),
+                }
+              "
+            />
+          } @else {
+            {{ option.label }}
+          }
         </button>
       }
 
-      @if (filteredOptions().length === 0) {
-        <div class="autocomplete-empty">No results found</div>
+      @if (!loading() && filteredOptions().length === 0) {
+        <div class="autocomplete-empty">
+          @if (emptyTemplate()) {
+            <ng-container *ngTemplateOutlet="emptyTemplate()" />
+          } @else {
+            No results found
+          }
+        </div>
       }
     </div>
   }

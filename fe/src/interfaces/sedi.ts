@@ -1,5 +1,5 @@
 export interface Sede {
-  codice: string;
+  codSede: string;
   descrizione: string;
 }
 

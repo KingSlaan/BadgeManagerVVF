@@ -716,3 +716,21 @@ body,
 
   font-variant-numeric: tabular-nums;
 }
+
+.selected-tags {
+  align-items: center;
+}
+
+.selected-tag {
+  position: relative;
+  z-index: 2;
+  background-color: var(--cui-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  max-width: 100%;
+}
+
+.selected-tag .tag-remove {
+  color: #fff;
+}

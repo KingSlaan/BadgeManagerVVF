@@ -18,8 +18,8 @@ export class SediService {
   /**
    * GET - Get all tessere
    */
-  getSedi(body: DataGridRequest): Observable<Sede[]> {
-    return this.http.post<Sede[]>(`${this.apiUrl}/getDipartimentiServlet`,body);
+  getSedi(body: DataGridRequest): Observable<ApiResponse<Sede[]>> {
+    return this.http.post<ApiResponse<Sede[]>>(`${this.apiUrl}/getDipartimentiServlet`,body);
   }
 
   getSediList(): Observable<ApiResponse<Sede[]>> {

@@ -42,11 +42,11 @@ export const SEDI_PERSIST_CONFIG = {
 
 export const SEDI_MOCK: Sedi = [
   {
-    codice: "RO",
+    codSede: "RO",
     descrizione: "Rovigo"
   },
   {
-    codice: "00",
+    codSede: "00",
     descrizione: "Uffici Centrali"
   }
 
