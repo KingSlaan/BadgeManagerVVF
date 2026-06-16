@@ -13,6 +13,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * ==========================================================================================
+ * API ENDPOINT : /getVersion
+ * METODO HTTP  : GET
+ * DESCRIZIONE  : Recupera le informazioni di versione dell'applicazione (Nome, Versione, Data Build)
+ * lette dinamicamente dal file version.properties autocompilato da Maven.
+ * ==========================================================================================
+ */
 @WebServlet("/getVersion")
 public class GetVersionServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -21,26 +29,26 @@ public class GetVersionServlet extends HttpServlet {
         
         Properties props = new Properties();
         
-        // Carichiamo il file version.properties
-        try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/version.properties")) {
+        // MODIFICA MAVEN: Carichiamo il file dal Classpath (risolve i file dentro src/main/resources)
+        try (InputStream is = GetVersionServlet.class.getResourceAsStream("/version.properties")) {
             if (is != null) {
                 props.load(is);
             } else {
-                System.err.println("[GetVersionServlet] Attenzione: file /WEB-INF/version.properties non trovato.");
+                System.err.println("[GetVersionServlet] Attenzione: file version.properties non trovato nel classpath.");
             }
         } catch (Exception e) {
             System.err.println("[GetVersionServlet] Errore lettura properties: " + e.getMessage());
         }
 
-        // Estraiamo i dati, fornendo dei valori di default (fallback) nel caso in cui il file manchi o le chiavi siano vuote
+        // Estraiamo i dati, fornendo dei valori di default (fallback) nel caso in cui le chiavi siano vuote
         String appName = props.getProperty("app.name", "Applicativo Badge VVF");
         String version = props.getProperty("app.version", "N/D");
         String buildDate = props.getProperty("app.build.date", "N/D");
 
-        // Popoliamo il DTO
+        // Popoliamo il DTO esistente
         AppVersionDTO versionDTO = new AppVersionDTO(appName, version, buildDate);
 
-        // Rispondiamo al frontend sfruttando l'utility standard
+        // Rispondiamo al frontend sfruttando la tua utility standard JSON
         ResponseUtil.sendOk(response, "Informazioni di versione recuperate con successo.", versionDTO);
     }
 

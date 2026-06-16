@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ApplicativoBadgeVVF</groupId>
+  <artifactId>ApplicativoBadgeVVF</artifactId>
+  <version>2.0.1</version>
+  <packaging>war</packaging>
+  <properties>
+    <maven.build.timestamp.format>dd/MM/yyyy HH:mm:ss</maven.build.timestamp.format>
+   </properties>
+  
+  <dependencies>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>4.1.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>fr.opensagres.xdocreport</groupId>
+        <artifactId>fr.opensagres.poi.xwpf.converter.pdf</artifactId>
+        <version>2.0.2</version>
+    </dependency>
+
+    <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>5.0.0</version>
+        <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>resources</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+      <resource>
+         <directory>src/main/resources</directory>
+         <filtering>true</filtering> 
+       </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
