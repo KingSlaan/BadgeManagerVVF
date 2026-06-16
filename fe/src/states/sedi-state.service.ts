@@ -25,11 +25,39 @@ export class SediStateService {
   readonly sediOptions = computed<SelectOption[]>(() =>
     this._sedi().map(sede => ({
       label: sede.descrizione,
-      value: sede.codice,
+      value: sede.codSede,
+    }))
+  );
+
+  readonly sediOptionsValue = computed<SelectOption[]>(() =>
+    this._sedi().map(sede => ({
+      label: sede.descrizione,
+      value: sede.descrizione,
     }))
   );
 
   loadSedi(forceReload = false): void {
+    if (this._loaded() && !forceReload) {
+      return;
+    }
+
+    this._loading.set(true);
+
+    this.sediService.getSediList()
+      .pipe(finalize(() => this._loading.set(false)))
+      .subscribe({
+        next: response => {
+          this._sedi.set(response.data ?? []);
+          this._loaded.set(true);
+        },
+        error: () => {
+          this._sedi.set([]);
+          this._loaded.set(false);
+        },
+      });
+  }
+
+  loadSediDescValue(forceReload = false): void {
     if (this._loaded() && !forceReload) {
       return;
     }

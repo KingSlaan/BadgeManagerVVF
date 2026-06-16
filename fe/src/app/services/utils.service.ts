@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONSTANTS } from 'src/constants/api.constants';
@@ -12,6 +12,27 @@ export class UtilsService {
 
   private apiUrl = API_CONSTANTS.BASE_URL;
 
+  getStampaWord(body: any): Observable<HttpResponse<Blob>> {
+    return this.http.post(
+      `${this.apiUrl}/generaDocumentoBadgeServlet`,
+      body,
+      {
+        observe: 'response',
+        responseType: 'blob'
+      }
+    );
+  }
+
+  getStampaPDF(body: any): Observable<HttpResponse<Blob>> {
+    return this.http.post(
+      `${this.apiUrl}/generaPdfBadgeServlet`,
+      body,
+      {
+        observe: 'response',
+        responseType: 'blob'
+      }
+    );
+  }
 
   formatDateString(dateString: string): string {
     if (!dateString) {
