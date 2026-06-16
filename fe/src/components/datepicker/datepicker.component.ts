@@ -129,7 +129,7 @@ export class DatepickerComponent implements ControlValueAccessor {
     const hours = this.pad(now.getHours());
     const minutes = this.pad(now.getMinutes());
 
-    const displayValue = `${day}/${month}/${year} ${hours}:${minutes}:00`;
+    const displayValue = this.showTime ? `${day}/${month}/${year} ${hours}:${minutes}:00` : `${day}/${month}/${year}`;
 
     this.value = this.toNativeDateTime(displayValue);
     this.onChange(displayValue);

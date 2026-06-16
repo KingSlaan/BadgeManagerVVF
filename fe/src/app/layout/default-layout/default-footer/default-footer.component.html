@@ -1,45 +1,61 @@
 <div class="footer-container">
-  <div class="footer-container">
-    <div class="footer-version-section">
-      <div class="version-card">
-        <div class="version-title">Frontend</div>
+  <div class="footer-version-section">
+    <div class="version-card">
+      <div class="version-title">Frontend</div>
 
-        @if (versionInfo()) {
-          <div class="version-number">
-            {{ versionInfo().version }}
-          </div>
+      @if (versionInfo()) {
+        <div class="version-number">
+          {{ versionInfo().version }}
+        </div>
 
-          <div class="version-date">
-            {{ versionInfo().buildDate | date: "d MMM y" }}
-          </div>
-        }
-      </div>
-
-      <div class="version-card">
-        <div class="version-title">Backend</div>
-
-        @if (versionInfoBE()) {
-          <div class="version-number">
-            {{ versionInfoBE().version }}
-          </div>
-
-          <div class="version-date">
-            {{ versionInfoBE().buildDate | date: "d MMM y" }}
-          </div>
-        }
-      </div>
+        <div class="version-date">
+          {{ versionInfo().buildDate | date: "d MMM y" }}
+        </div>
+      }
     </div>
 
     <div class="version-card">
-      <div class="version-title">Authors</div>
+      <div class="version-title">Backend</div>
 
-      <div class="version-number">
-        Powered by
-        <a href="https://bloob.io/yatch" target="_blank">
-          <span> SN, LG, MT</span>
-        </a>
-      </div>
+      @if (versionInfoBE()) {
+        <div class="version-number">
+          {{ versionInfoBE().version }}
+        </div>
+
+        <div class="version-date">
+          {{ versionInfoBE().buildDate | date: "d MMM y" }}
+        </div>
+      }
+    </div>
+
+    <div class="version-card">
+      <div class="version-title">Weather</div>
+
+      @if (weatherInfo()) {
+        <div class="version-number">
+          {{ weatherIcon(weatherInfo()!.weatherCode) }}
+          {{ weatherInfo()!.temperature }}°C
+        </div>
+
+        <div class="version-date">
+          {{ weatherInfo()!.city }}
+        </div>
+      } @else {
+        <div class="version-number">--</div>
+
+        <div class="version-date">Loading...</div>
+      }
     </div>
   </div>
 
+  <div class="version-card">
+    <div class="version-title">Authors</div>
+
+    <div class="version-number">
+      Powered by
+      <a href="https://bloob.io/yatch" target="_blank">
+        <span> SN, LG, MT</span>
+      </a>
+    </div>
+  </div>
 </div>

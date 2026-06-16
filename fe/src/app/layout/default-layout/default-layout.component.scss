@@ -39,3 +39,27 @@
   object-fit: contain;
   transition: all 0.2s ease;
 }
+
+.sidebar-logo {
+  cursor: pointer;
+  user-select: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.sidebar-logo:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.sidebar-logo:active {
+  transform: scale(0.98);
+}
+
+.sidebar-logo:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.15));
+}
