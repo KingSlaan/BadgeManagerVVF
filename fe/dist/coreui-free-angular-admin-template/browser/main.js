@@ -1001,7 +1001,7 @@ var authGuard = () => {
 var routes = [
   {
     path: "",
-    loadComponent: () => import("./chunk-CAMYGPX6.js").then((m) => m.DefaultLayoutComponent),
+    loadComponent: () => import("./chunk-UW7VTRAK.js").then((m) => m.DefaultLayoutComponent),
     canActivate: [authGuard],
     data: {
       title: "Home"

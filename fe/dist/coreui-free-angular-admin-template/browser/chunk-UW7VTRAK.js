@@ -296,9 +296,9 @@ var DefaultFooterComponent = class _DefaultFooterComponent extends FooterCompone
 
 // src/assets/version.json
 var version_default = {
-  version: "1.3.1-Civolution",
+  version: "2.0.0-Civolution",
   environment: "dev",
-  buildDate: "2026-06-16T06:15:25.193Z"
+  buildDate: "2026-06-16T06:52:31.580Z"
 };
 
 // src/app/layout/default-layout/default-header/default-header.component.ts
@@ -3526,4 +3526,4 @@ export {
   DefaultHeaderComponent,
   DefaultLayoutComponent
 };
-//# sourceMappingURL=chunk-CAMYGPX6.js.map
+//# sourceMappingURL=chunk-UW7VTRAK.js.map
