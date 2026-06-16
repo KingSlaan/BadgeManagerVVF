@@ -45,6 +45,13 @@ public class GetVersionServlet extends HttpServlet {
         String version = props.getProperty("app.version", "N/D");
         String buildDate = props.getProperty("app.build.date", "N/D");
 
+        // --- MIGLIORIA PER ECLIPSE (DEV MODE) ---
+        // Se leggiamo il placeholder letterale, significa che Eclipse ha bypassato Maven
+        if (version.startsWith("${")) {
+            version = "(Dev Mode locale)";
+            buildDate = "Sviluppo in corso";
+        }
+        
         // Popoliamo il DTO esistente
         AppVersionDTO versionDTO = new AppVersionDTO(appName, version, buildDate);
 
