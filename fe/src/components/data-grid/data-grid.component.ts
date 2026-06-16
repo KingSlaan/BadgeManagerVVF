@@ -170,7 +170,7 @@ export class DataGridComponent<T = any> implements OnInit {
 
     if (pagination?.enabled && pagination.serverSide) {
       request.pagination = {
-        page: pagination.page,
+        page: 1,
         pageSize: pagination.pageSize,
       };
     }

@@ -21,6 +21,10 @@ export function createSearchConfig(): DataGridSearchConfig {
             value: 'admin',
           },
           {
+            label: 'Operatore',
+            value: 'operatore',
+          },
+          {
             label: 'Visualizzatore',
             value: 'visualizzatore',
           },

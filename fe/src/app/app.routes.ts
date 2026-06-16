@@ -35,6 +35,11 @@ export const routes: Routes = [
         path: 'stampa-documenti',
         canActivate: [authGuard],
         loadComponent: () => import('./views/pages/stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent)
+      },
+      {
+        path: 'logs',
+        canActivate: [authGuard],
+        loadComponent: () => import('./views/pages/stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent)
       }
     ]
   },

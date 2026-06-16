@@ -29,6 +29,13 @@ export const routes: Routes = [
       title: $localize`Utenti`
     }
   },
+  {
+    path: 'logs',
+    loadComponent: () => import('./stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent),
+    data: {
+      title: $localize`Logs`
+    }
+  },
   // {
   //   path: 'user-settings',
   //   loadComponent: () =>

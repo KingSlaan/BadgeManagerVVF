@@ -31,6 +31,11 @@ export const navItems: INavData[] = [
     url: '/stampa-documenti',
     iconComponent: { name: 'cil-cursor' },
   },
+  {
+    name: 'Logs',
+    url: '/logs',
+    iconComponent: { name: 'cil-puzzle' },
+  },
   // {
   //   title: true,
   //   name: 'Theme'

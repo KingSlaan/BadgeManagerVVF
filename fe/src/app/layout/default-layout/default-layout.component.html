@@ -8,8 +8,13 @@
   visible
 >
   <c-sidebar-header class="border-bottom">
-    <c-sidebar-brand [routerLink]="[]">
-      <img [src]="logoSrc()" alt="Logo" [width]="logoWidth()" />
+    <c-sidebar-brand [routerLink]="['/']">
+      <img
+        [src]="logoSrc()"
+        alt="Logo"
+        [width]="logoWidth()"
+        class="sidebar-logo"
+      />
       <!-- <svg [class]="{icon: false}" cIcon class="sidebar-brand-full" height="32" name="logo" title="CoreUI Logo"></svg> -->
       <!-- <svg cIcon class="sidebar-brand-narrow" height="32" name="signet" title="CoreUI Logo"></svg> -->
     </c-sidebar-brand>
