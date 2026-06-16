@@ -32,3 +32,10 @@
 //  --scrollbar-thumb-transition: height ease-out 150ms, width ease-out 150ms;
 //  --scrollbar-track-transition: height ease-out 150ms, width ease-out 150ms;
 //}
+
+.header-logo {
+  height: 36px;
+  max-width: 160px;
+  object-fit: contain;
+  transition: all 0.2s ease;
+}

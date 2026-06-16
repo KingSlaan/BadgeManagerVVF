@@ -8,10 +8,10 @@ import {
   DataGridToolbarConfig,
 } from '../../../../interfaces/datagrid';
 import { Tessera, Tessere } from '../../../../interfaces/tessere';
-import { cilCloudDownload, cilCloudUpload, cilPlus } from '@coreui/icons';
+import { cilCloudDownload, cilCloudUpload, cilPlus, cilPrint } from '@coreui/icons';
 import { AutocompleteOption } from '../../../../components/autocomplete-select/autocomplete-select.component';
 
-export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGridSearchConfig {
+export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataGridSearchConfig {
   return {
     enabled: true,
 
@@ -20,7 +20,7 @@ export function createTesseraSearchConfig(sediList:AutocompleteOption[]): DataGr
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator: 'contains' },
       { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
-      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'in', options: sediList, multiple:true},
+      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'in', options: sediList, multiple: true },
       {
         field: 'status',
         label: 'Status',
@@ -73,7 +73,8 @@ export const TESSERE_PERSIST_CONFIG = {
 export function createGridToolbar(
   openModalAggiungi: () => void,
   exportCsv: () => void,
-  importCsv: () => void
+  importCsv: () => void,
+   bulkPrint: (rows: Tessera[]) => void
 ): DataGridToolbarConfig {
   return {
     enabled: true,
@@ -98,6 +99,15 @@ export function createGridToolbar(
         action: importCsv,
         disabled: () => true
       },
+      {
+        label: 'Stampa Tessere',
+        icon: cilPrint,
+        color: 'info',
+        disabled: (ctx) => ctx.selectedRows.length === 0,
+        action: (ctx) => {
+          bulkPrint(ctx.selectedRows);
+        },
+      }
       // {
       //   label: 'Delete Selected',
       //   icon: cilPlus,

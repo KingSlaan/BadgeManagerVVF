@@ -13,7 +13,9 @@ import {
   ColComponent,
   FormControlDirective,
   FormDirective,
-  RowComponent
+  GutterDirective,
+  RowComponent,
+  RowDirective
 } from '@coreui/angular';
 
 
@@ -32,7 +34,9 @@ import {
     CardFooterComponent,
     FormDirective,
     FormControlDirective,
-    ButtonDirective
+    ButtonDirective,
+    GutterDirective,
+    RowDirective
   ]
 })
 export class UserSettingsComponent implements OnInit {
@@ -41,19 +45,22 @@ export class UserSettingsComponent implements OnInit {
 
   loading = false;
   saving = false;
-  errorMessage = '';
-  successMessage = '';
   disabled = true;
 
   selectedImage: File | null = null;
   imagePreview: string | null = null;
 
   form = this.fb.group({
-    email: ['', []]
+    email: ['', []],
+    ruolo: ['', []],
+    dataCreazione: ['', []],
   });
 
   ngOnInit(): void {
     this.loadUserSettings();
+    this.form.controls.email.disable({ emitEvent: false });
+    this.form.controls.ruolo.disable({ emitEvent: false });
+    this.form.controls.dataCreazione.disable({ emitEvent: false });
   }
 
   loadUserSettings(): void {
@@ -69,7 +76,6 @@ export class UserSettingsComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.errorMessage = 'Error loading user settings';
         this.loading = false;
       }
     });
@@ -99,8 +105,6 @@ export class UserSettingsComponent implements OnInit {
     }
 
     this.saving = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const { email } = this.form.getRawValue();
 
@@ -114,11 +118,9 @@ export class UserSettingsComponent implements OnInit {
 
           this.imagePreview = user.imageUrl ?? this.imagePreview;
           this.selectedImage = null;
-          this.successMessage = 'User settings updated successfully';
           this.saving = false;
         },
         error: () => {
-          this.errorMessage = 'Error updating user settings';
           this.saving = false;
         }
       });

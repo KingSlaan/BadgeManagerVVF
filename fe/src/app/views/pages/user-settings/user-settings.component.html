@@ -4,30 +4,35 @@
       <c-card-body>
         <h4>User Settings</h4>
 
-        @if (errorMessage) {
-          <div class="alert alert-danger">
-            {{ errorMessage }}
-          </div>
-        }
-
-        @if (successMessage) {
-          <div class="alert alert-success">
-            {{ successMessage }}
-          </div>
-        }
-
-        <form cForm [formGroup]="form" (ngSubmit)="save()">
-          <div class="mb-3">
+        <form cForm [formGroup]="form" (ngSubmit)="save()" cRow [gutter]="3">
+          <c-col xs="6">
             <label class="form-label">Email</label>
             <input
               cFormControl
-              disabled
-              placeholder="Disabled input"
+              formControlName="email"
+              placeholder="Email"
               type="text"
             />
-          </div>
-
-          <div class="mb-3">
+          </c-col>
+          <c-col xs="6">
+            <label class="form-label">Ruolo</label>
+            <input
+              cFormControl
+              formControlName="ruolo"
+              placeholder="Ruolo"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="6">
+            <label class="form-label">Data Creazione</label>
+            <input
+              cFormControl
+              formControlName="dataCreazione"
+              placeholder="Data Creazione"
+              type="text"
+            />
+          </c-col>
+          <c-col xs="12">
             <label class="form-label">Profile Image</label>
             <input
               cFormControl
@@ -35,7 +40,7 @@
               accept="image/*"
               (change)="onImageSelected($event)"
             />
-          </div>
+          </c-col>
         </form>
       </c-card-body>
       <c-card-footer>
@@ -51,7 +56,7 @@
   <c-col xs="12" lg="4">
     <c-card>
       <c-card-body class="text-center">
-        <h5>Preview</h5>
+        <h5>Profile Image</h5>
 
         <div class="profile-preview-wrapper">
           <img

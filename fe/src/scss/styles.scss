@@ -734,3 +734,18 @@ body,
 .selected-tag .tag-remove {
   color: #fff;
 }
+
+/* CoreUI Dropdown */
+
+.dropdown-item {
+  cursor: pointer !important;
+  user-select: none;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cui-tertiary-bg);
+}

@@ -21,7 +21,8 @@ import {
   HeaderNavComponent,
   HeaderTogglerDirective,
   SidebarToggleDirective,
-  AvatarComponent
+  AvatarComponent,
+  ButtonDirective
 } from '@coreui/angular';
 import versionInfo from '../../../../assets/version.json';
 import { IconDirective } from '@coreui/icons-angular';
@@ -45,7 +46,8 @@ import { cilClock } from '@coreui/icons';
     DropdownMenuDirective,
     DropdownItemDirective,
     RouterLink,
-    NgClass
+    NgClass,
+    ButtonDirective
   ]
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit, OnDestroy {
@@ -60,7 +62,7 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
   readonly colorModes = [
     { name: 'light', text: 'Light', icon: 'cilSun' },
     { name: 'dark', text: 'Dark', icon: 'cilMoon' },
-    { name: 'auto', text: 'Auto', icon: 'cilContrast' }
+    // { name: 'auto', text: 'Auto', icon: 'cilContrast' }
   ];
 
   readonly icons = computed(() => {
@@ -73,6 +75,14 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
   readonly currentTime = signal(new Date());
 
   private timer?: ReturnType<typeof setInterval>;
+
+  setSimpleColorMode(colorMode:any) {
+    if(colorMode == 'light') {
+      this.colorMode.set('dark')
+    } else {
+      this.colorMode.set('light')
+    }
+  }
 
   get envClass(): string {
     return `env-badge env-${this.version.environment}`;

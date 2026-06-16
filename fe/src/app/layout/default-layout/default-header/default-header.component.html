@@ -17,7 +17,12 @@
         {{ envLabel }}
       </span>
       <span class="header-clock">
-        <svg [cIcon]="iconsStatic.cilClock" class="me-1" size="sm" title="Time"></svg>
+        <svg
+          [cIcon]="iconsStatic.cilClock"
+          class="me-1"
+          size="sm"
+          title="Time"
+        ></svg>
         {{ formattedDateTime }}
       </span>
 
@@ -77,6 +82,18 @@
 </ng-template>
 
 <ng-template #themeDropdown>
+  <button
+    cButton
+    variant="ghost"
+    shape="rounded-pill"
+    direction="dropend"
+    (click)="setSimpleColorMode(colorMode())"
+  >
+    <svg cIcon [name]="icons()" size="lg"></svg>
+  </button>
+</ng-template>
+
+<!-- <ng-template #themeDropdownOld>
   <c-dropdown alignment="end" variant="nav-item">
     <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
       <svg cIcon [name]="icons()" size="lg"></svg>
@@ -95,4 +112,4 @@
       }
     </div>
   </c-dropdown>
-</ng-template>
+</ng-template> -->

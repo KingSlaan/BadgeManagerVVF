@@ -87,7 +87,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   toolbarConfig: DataGridToolbarConfig = createGridToolbar(
     () => this.openModalAggiungi(),
     () => this.exportCsv(),
-    () => this.importCsv()
+    () => this.importCsv(),
+     (rows) => this.bulkPrint(rows)
   )
 
   loadingConfig: DataGridLoadingConfig = TESSERE_LOADING_STATE_CONFIG;
@@ -120,6 +121,22 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   };
 
   requestSearch = signal(this.initialRequest);
+
+  selectionConfig = {
+    enabled: true,
+    mode: 'multiple',
+    rowKey: 'idTessera',
+  } as const;
+
+  selectedTessere = signal<Tessera[]>([]);
+
+  onSelectionChange(event: { selectedRows: Tessera[] }): void {
+    this.selectedTessere.set(event.selectedRows);
+  }
+
+  bulkPrint(rows: Tessera[]): void {
+    console.log('Bulk disable', rows);
+  }
 
   actionsArray = [
     {
@@ -160,7 +177,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-danger",
       icon: this.icons.cilDelete,
       title: "Disuso",
-      visibility: (row:any) => !!row.codiceFiscale
+      visibility: (row: any) => !!row.codiceFiscale
     },
     {
       name: "cronologia",
@@ -180,7 +197,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-secondary",
       icon: this.icons.cilPrint,
       title: "Stampa Tessera",
-      visibility: (row:any) => !!row.codiceFiscale
+      visibility: (row: any) => !!row.codiceFiscale
     },
   ];
 

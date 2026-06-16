@@ -1,6 +1,16 @@
 import { TemplateRef } from '@angular/core';
 import { AutocompleteOption } from '../components/autocomplete-select/autocomplete-select.component';
 
+export interface DataGridSelectionConfig {
+  enabled: boolean;
+  mode: 'single' | 'multiple';
+  rowKey: string;
+}
+
+export interface DataGridSelectionEvent<T = any> {
+  selectedRows: T[];
+}
+
 export interface DataGridContextMenuConfig<T = any> {
   enabled: boolean;
   template: TemplateRef<any>;
@@ -9,6 +19,10 @@ export interface DataGridContextMenuConfig<T = any> {
 export interface DataGridPersistConfig {
   enabled: boolean;
   storageKey: string;
+}
+
+export interface DataGridToolbarContext<T = any> {
+  selectedRows: T[];
 }
 
 export interface DataGridState {
@@ -64,9 +78,9 @@ export interface DataGridToolbarAction<T = any> {
   icon?: any;
   color?: string;
   variant?: 'button' | 'outline';
-  visible?: () => boolean;
-  disabled?: () => boolean;
-  action: () => void;
+  visible?: (context: DataGridToolbarContext<T>) => boolean;
+  disabled?: (context: DataGridToolbarContext<T>) => boolean;
+  action: (context: DataGridToolbarContext<T>) => void;
 }
 
 export interface DataGridToolbarConfig<T = any> {

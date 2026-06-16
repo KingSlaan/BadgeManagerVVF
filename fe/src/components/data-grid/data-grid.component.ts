@@ -1,8 +1,9 @@
 import {
   DataGridColumn, DataGridContextMenuConfig, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridPageEvent,
-  DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSorting, DataGridSortingConfig,
+  DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSelectionConfig, DataGridSelectionEvent, DataGridSorting, DataGridSortingConfig,
   DataGridState,
-  DataGridToolbarConfig
+  DataGridToolbarConfig,
+  DataGridToolbarContext
 } from './../../interfaces/datagrid';
 import { DatepickerComponent } from './../datepicker/datepicker.component';
 import { AutocompleteSelectComponent } from '../autocomplete-select/autocomplete-select.component';
@@ -101,6 +102,15 @@ export class DataGridComponent<T = any> implements OnInit {
     this.closeContextMenu();
   }
   // END CONTEXT MENU
+
+  // ROW SELECTION
+  selectionConfig = input<DataGridSelectionConfig>();
+
+  @Output()
+  selectionChange = new EventEmitter<DataGridSelectionEvent<T>>();
+
+  selectedRows = signal<T[]>([]);
+  // END ROW SELECTION
 
   @Output()
   dataRequest = new EventEmitter<DataGridRequest>();
@@ -494,4 +504,84 @@ export class DataGridComponent<T = any> implements OnInit {
     this.contextMenuOpen.set(false);
     this.contextMenuRow.set(null);
   }
+
+  private getRowKey(row: T): any {
+    const key = this.selectionConfig()?.rowKey;
+
+    return key
+      ? (row as any)[key]
+      : row;
+  }
+
+  isSelected(row: T): boolean {
+    const rowKey = this.getRowKey(row);
+
+    return this.selectedRows().some(
+      selected => this.getRowKey(selected) === rowKey
+    );
+  }
+
+  toggleRowSelection(event: Event, row: T): void {
+    event.stopPropagation();
+
+    const config = this.selectionConfig();
+
+    if (!config?.enabled) {
+      return;
+    }
+
+    if (config.mode === 'single') {
+      this.selectedRows.set(
+        this.isSelected(row) ? [] : [row]
+      );
+    } else {
+      this.selectedRows.update(rows =>
+        this.isSelected(row)
+          ? rows.filter(
+            selected =>
+              this.getRowKey(selected) !== this.getRowKey(row)
+          )
+          : [...rows, row]
+      );
+    }
+
+    this.emitSelection();
+  }
+
+  toggleAllRows(event: Event): void {
+    event.stopPropagation();
+
+    const config = this.selectionConfig();
+
+    if (!config?.enabled || config.mode !== 'multiple') {
+      return;
+    }
+
+    this.selectedRows.set(
+      this.areAllRowsSelected()
+        ? []
+        : [...this.displayedRows()]
+    );
+
+    this.emitSelection();
+  }
+
+  areAllRowsSelected(): boolean {
+    const rows = this.displayedRows();
+
+    return (
+      rows.length > 0 &&
+      rows.every(row => this.isSelected(row))
+    );
+  }
+
+  private emitSelection(): void {
+    this.selectionChange.emit({
+      selectedRows: this.selectedRows(),
+    });
+  }
+
+  toolbarContext = computed<DataGridToolbarContext<T>>(() => ({
+    selectedRows: this.selectedRows(),
+  }));
 }
