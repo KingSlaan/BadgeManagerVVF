@@ -1,12 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
   <groupId>ApplicativoBadgeVVF</groupId>
   <artifactId>ApplicativoBadgeVVF</artifactId>
   <version>2.0.1</version>
+  <name>TESSERACT - Applicativo Badge VVF</name>
   <packaging>war</packaging>
+  
   <properties>
     <maven.build.timestamp.format>dd/MM/yyyy HH:mm:ss</maven.build.timestamp.format>
-   </properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   
   <dependencies>
     <dependency>
@@ -36,18 +40,15 @@
   </dependencies>
   
   <build>
+  	<finalName>ApplicativoBadgeVVF</finalName>
+  
     <resources>
-      <resource>
-        <directory>resources</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
       <resource>
          <directory>src/main/resources</directory>
          <filtering>true</filtering> 
        </resource>
     </resources>
+    
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -59,6 +60,15 @@
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.3</version>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/resources</directory>
+              <filtering>true</filtering>
+              <targetPath>WEB-INF/classes</targetPath>
+            </resource>
+          </webResources>
+        </configuration>
       </plugin>
     </plugins>
   </build>
