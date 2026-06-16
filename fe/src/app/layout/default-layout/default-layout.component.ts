@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
@@ -47,14 +47,30 @@ function isOverflown(element: HTMLElement) {
 export class DefaultLayoutComponent {
   public navItems = [...navItems];
 
+  readonly sidebarNarrow = signal(false);
 
-  logoPath(): string {
-    let theme = document.documentElement.getAttribute('data-coreui-theme');
-    return theme === 'light'
-      // ? '../../../assets/images/BannerDEFINITIVOVer1.svg'
-      ? '../../../assets/images/BannerDEFINITIVO_NewVersion.svg'
-      // : '../../../assets/images/BannerDEFINITIVO_BiancoVer2.svg';
-      : '../../../assets/images/BannerDEFINITIVO_NewVersion_White.svg';
+  toggleSidebarNarrow(): void {
+    this.sidebarNarrow.update(value => !value);
   }
+
+  readonly logoWidth = computed(() => {
+    return this.sidebarNarrow() ? 40 : 220;
+  });
+
+
+  readonly logoSrc = computed(() => {
+    const theme = document.documentElement.getAttribute('data-coreui-theme');
+    const narrow = this.sidebarNarrow();
+
+    if (theme === 'dark') {
+      return narrow
+        ? '../../../assets/images/IconDEFINITIVO_NewVersion_White.svg'
+        : '../../../assets/images/BannerDEFINITIVO_NewVersion_White.svg';
+    }
+
+    return narrow
+      ? '../../../assets/images/IconDEFINITIVO_NewVersion.svg'
+      : '../../../assets/images/BannerDEFINITIVO_NewVersion.svg';
+  });
 
 }

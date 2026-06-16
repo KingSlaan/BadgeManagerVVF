@@ -92,14 +92,14 @@
       <hr />
       <div class="d-flex gap-2 mb-3 flex-wrap justify-content-end">
         @for (action of toolbarConfig()?.actions; track action.label) {
-          @if (!action.visible || action.visible()) {
+          @if (!action.visible || action.visible(toolbarContext())) {
             <button
               cButton
               [color]="action.color || 'primary'"
               variant="ghost"
               shape="rounded-pill"
-              [disabled]="action.disabled?.()"
-              (click)="action.action()"
+              [disabled]="action.disabled?.(toolbarContext())"
+              (click)="action.action(toolbarContext())"
               size="sm"
             >
               <!-- ICON -->
@@ -140,6 +140,18 @@
       <table cTable>
         <thead>
           <tr>
+            @if (selectionConfig()?.enabled) {
+              <th style="width: 48px">
+                @if (selectionConfig()?.mode === "multiple") {
+                  <input
+                    cFormCheckInput
+                    type="checkbox"
+                    [checked]="areAllRowsSelected()"
+                    (click)="toggleAllRows($event)"
+                  />
+                }
+              </th>
+            }
             @for (column of columns(); track column.field) {
               <!-- <th [style.width]="column.width" [class]="column.className">
                 {{ column.header }}
@@ -181,6 +193,16 @@
               (contextmenu)="openContextMenu($event, row)"
               (click)="closeContextMenu()"
             >
+              @if (selectionConfig()?.enabled) {
+                <td>
+                  <input
+                    cFormCheckInput
+                    type="checkbox"
+                    [checked]="isSelected(row)"
+                    (click)="toggleRowSelection($event, row)"
+                  />
+                </td>
+              }
               @for (column of columns(); track column.field) {
                 <td [class]="column.className">
                   <!-- TEMPLATE MODE -->
@@ -191,6 +213,7 @@
                         context: {
                           $implicit: row,
                           row: row,
+                          selectedRows: selectedRows(),
                         }
                       "
                     />
@@ -216,7 +239,7 @@
       >
         @if (paginationConfig()?.showPageSizeSelector) {
           <div class="d-flex align-items-center gap-2">
-            <span>Rows per page</span>
+            <span>Righe per pagina</span>
 
             <select
               cSelect
@@ -237,11 +260,11 @@
         }
 
         <div class="d-flex gap-1 align-items-center text-body-secondary small">
-          Showing
+          Mostra
           <strong>{{ pageStart() }}</strong>
           -
           <strong>{{ pageEnd() }}</strong>
-          of
+          di
           <strong>{{ totalItems() }}</strong>
           items
         </div>
@@ -255,7 +278,7 @@
             [disabled]="paginationConfig()!.page === 1"
             (click)="changePage(paginationConfig()!.page - 1)"
           >
-            Previous
+            Indietro
           </button>
 
           @for (p of paginationPages(); track $index) {
@@ -284,7 +307,7 @@
             [disabled]="paginationConfig()!.page === totalPages"
             (click)="changePage(paginationConfig()!.page + 1)"
           >
-            Next
+            Avanti
           </button>
         </div>
       </div>

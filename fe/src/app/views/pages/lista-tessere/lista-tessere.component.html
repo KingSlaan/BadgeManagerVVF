@@ -11,7 +11,9 @@
   [emptyStateConfig]="emptyStateConfig"
   (dataRequest)="loadData($event)"
   [contextMenuConfig]="contextMenuConfig"
-/>
+  />
+  <!-- [selectionConfig]="selectionConfig"
+  (selectionChange)="onSelectionChange($event)" -->
 
 <app-tessera-modal-cmp
   [(visible)]="isModalOpen"
@@ -31,7 +33,7 @@
   [tesseraSelectedHistory]="tesseraHistory()"
 ></app-tessera-history>
 
-<ng-template #actionTemplate let-row>
+<ng-template #actionTemplate let-row let-selectedRows="selectedRows">
   <c-dropdown>
     <button
       cButton
@@ -59,17 +61,22 @@
   </c-dropdown>
 </ng-template>
 
-<ng-template #contextActionTemplate let-row>
+<ng-template #contextActionTemplate let-row let-selectedRows="selectedRows">
   <ul cListGroup class="context-menu-list">
-  @for (action of actionsArray; track action.name) {
-    @if (action.visibility(row)) {
-      <li cListGroupItem action (click)="action.do(row)" class="context-menu-item">
-        <span [class]="action.color">
-          <svg [cIcon]="action.icon" [title]="action.title"></svg>
-          {{ action.title }}
-        </span>
-      </li>
+    @for (action of actionsArray; track action.name) {
+      @if (action.visibility(row)) {
+        <li
+          cListGroupItem
+          action
+          (click)="action.do(row)"
+          class="context-menu-item"
+        >
+          <span [class]="action.color">
+            <svg [cIcon]="action.icon" [title]="action.title"></svg>
+            {{ action.title }}
+          </span>
+        </li>
+      }
     }
-  }
   </ul>
 </ng-template>
