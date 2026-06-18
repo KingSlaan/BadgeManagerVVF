@@ -70,11 +70,15 @@ export const TESSERE_PERSIST_CONFIG = {
   storageKey: 'tessere-grid',
 };
 
+export const TESSERE_URL_STATE_CONFIG = {
+  enabled: true,
+};
+
 export function createGridToolbar(
   openModalAggiungi: () => void,
   exportCsv: () => void,
   importCsv: () => void,
-   bulkPrint: (rows: Tessera[]) => void
+  bulkPrint: (rows: Tessera[]) => void
 ): DataGridToolbarConfig {
   return {
     enabled: true,
@@ -147,7 +151,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
       field: 'persona',
       header: 'Persona',
       render: (row: any) =>
-        `${row.cognome} ${row.nome} <br/> <small> <strong>${row.codiceFiscale} </strong></small>`,
+        row.cognome ? `${row.cognome} ${row.nome} <br/> <small> <strong>${row.codiceFiscale} </strong></small>` : '',
     },
     // {
     //   field: 'codiceFiscale',
@@ -157,7 +161,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
       field: 'codiceInterno',
       header: 'Codice Interno',
       render: (row: any) =>
-        `${row.codiceInterno}`,
+        row.codiceInterno ? `${row.codiceInterno}` : '',
     },
     // {
     //   field: 'dataOraIndisponibilita',

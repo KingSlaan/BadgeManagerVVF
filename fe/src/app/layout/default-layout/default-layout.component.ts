@@ -1,7 +1,8 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
+  ColorModeService,
   ContainerComponent,
   ShadowOnScrollDirective,
   SidebarBrandComponent,
@@ -47,6 +48,9 @@ function isOverflown(element: HTMLElement) {
 export class DefaultLayoutComponent {
   public navItems = [...navItems];
 
+  readonly #colorModeService = inject(ColorModeService);
+  readonly colorMode = this.#colorModeService.colorMode;
+
   readonly sidebarNarrow = signal(false);
 
   toggleSidebarNarrow(): void {
@@ -59,7 +63,7 @@ export class DefaultLayoutComponent {
 
 
   readonly logoSrc = computed(() => {
-    const theme = document.documentElement.getAttribute('data-coreui-theme');
+    const theme = this.colorMode();
     const narrow = this.sidebarNarrow();
 
     if (theme === 'dark') {

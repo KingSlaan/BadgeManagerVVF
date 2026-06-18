@@ -20,7 +20,6 @@ import {
   HostListener,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import { CommonModule } from '@angular/common';
 
 import {
@@ -144,7 +143,6 @@ export class DataGridComponent<T = any> implements OnInit {
       }
     });
 
-    // Then restore persisted values
     this.restoreState();
 
     // Default sorting only if none persisted
@@ -584,4 +582,5 @@ export class DataGridComponent<T = any> implements OnInit {
   toolbarContext = computed<DataGridToolbarContext<T>>(() => ({
     selectedRows: this.selectedRows(),
   }));
+
 }

@@ -1,15 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowDirective } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, RowDirective } from '@coreui/angular';
 import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
 import { SediStateService } from '../../../../states/sedi-state.service';
 import { AutocompleteOption, AutocompleteSelectComponent } from '../../../../components/autocomplete-select/autocomplete-select.component';
-import { DataGridRequest } from 'src/interfaces/datagrid';
-import { SediService } from 'src/app/services/sedi.service';
+import { DataGridRequest } from '../../../../interfaces/datagrid';
 import { map, Observable, tap } from 'rxjs';
-import { TessereService } from 'src/app/services/tessere.service';
-import { JsonPipe } from '@angular/common';
-import { UtilsService } from 'src/app/services/utils.service';
+import { TessereService } from '../../../services/tessere.service';
+import { UtilsService } from '../../../services/utils.service';
 @Component({
   selector: 'app-stampa-documenti',
   imports: [
@@ -26,9 +24,7 @@ import { UtilsService } from 'src/app/services/utils.service';
     RowDirective,
     FormsModule,
     DatepickerComponent,
-    FormSelectDirective,
-    AutocompleteSelectComponent,
-    JsonPipe
+    AutocompleteSelectComponent
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',

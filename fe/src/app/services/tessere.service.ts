@@ -1,10 +1,10 @@
 import { API_CONSTANTS } from './../../constants/api.constants';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Tessera, Tessere } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DataGridRequest } from './../../interfaces/datagrid';
-import { ApiResponse } from 'src/interfaces/api-response';
+import { ApiResponse } from '../../interfaces/api-response';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +31,11 @@ export class TessereService {
     return this.http.post<Array<Tessera>>(`${this.apiUrl}/inserimentoTessereServlet`, tessere);
   }
 
-  assegnaTessera(id: string,tessere: any) {
+  assegnaTessera(id: string, tessere: any) {
     return this.http.post<Tessera>(`${this.apiUrl}/assegnaTesseraServlet`, tessere);
   }
 
-  cambiaSedeTessera(id: string,tessere: any) {
+  cambiaSedeTessera(id: string, tessere: any) {
     return this.http.post<Tessera>(`${this.apiUrl}/cambiaSedeServlet`, tessere);
   }
 
@@ -49,6 +49,22 @@ export class TessereService {
 
   invalidaTessera(id: string, tessera: any): any {
     return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
+  }
+
+  stampaTessere(dipendentiSelezionati: any[], formato: 'PDF' | 'WORD'): Observable<HttpResponse<Blob>> {
+    const payload = dipendentiSelezionati.map(d => ({
+      nome: d.nome,
+      cognome: d.cognome
+    }));
+
+    return this.http.post(
+      `${this.apiUrl}/stampaBadgeServlet`,
+      payload,
+      {
+        observe: 'response',
+        responseType: 'blob'
+      }
+    );
   }
 
   /**

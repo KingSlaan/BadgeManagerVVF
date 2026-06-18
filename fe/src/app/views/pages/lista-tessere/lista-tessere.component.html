@@ -1,19 +1,21 @@
-<app-datagrid
-  [columns]="columns"
-  [rows]="tessere()"
-  [searchConfig]="searchConfig"
-  [toolbarConfig]="toolbarConfig"
-  [paginationConfig]="paginationConfig"
-  [sortingConfig]="sortingConfig"
-  [loadingConfig]="loadingConfig"
-  [persistConfig]="persistConfig"
-  [loading]="datagridLoading()"
-  [emptyStateConfig]="emptyStateConfig"
-  (dataRequest)="loadData($event)"
-  [contextMenuConfig]="contextMenuConfig"
+@if (searchReady()) {
+  <app-datagrid
+    [columns]="columns"
+    [rows]="tessere()"
+    [searchConfig]="searchConfig"
+    [toolbarConfig]="toolbarConfig"
+    [paginationConfig]="paginationConfig"
+    [sortingConfig]="sortingConfig"
+    [loadingConfig]="loadingConfig"
+    [persistConfig]="persistConfig"
+    [loading]="datagridLoading()"
+    [emptyStateConfig]="emptyStateConfig"
+    (dataRequest)="loadData($event)"
+    [contextMenuConfig]="contextMenuConfig"
+    [selectionConfig]="selectionConfig"
+    (selectionChange)="onSelectionChange($event)"
   />
-  <!-- [selectionConfig]="selectionConfig"
-  (selectionChange)="onSelectionChange($event)" -->
+}
 
 <app-tessera-modal-cmp
   [(visible)]="isModalOpen"

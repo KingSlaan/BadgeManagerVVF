@@ -5,7 +5,7 @@ import { AlertComponent, BadgeComponent, ButtonDirective, ColComponent, FormCont
 import { cilMinus, cilPlus, cilX, cilCheckAlt } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastService } from '../../../app/services/toast.service';
 
 @Component({
   selector: 'app-tessera-aggiungi',
@@ -67,13 +67,11 @@ export class TesseraAggiungiComponent {
   confirm() {
     this.tessereService.createTessere(this.badgeListArrayFinal).subscribe({
       next: (data: any) => {
-        let dataReturn = data;
         this.toast.success('User saved successfully');
-         this.saved.emit();
+        this.saved.emit();
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
-        this.toast.error('Errore nel sarvataggio delle tessere brother <br/> WEWEWE!!!', 'Inserimento Tessere');
       }
     });
     // do something here if needed
@@ -90,10 +88,10 @@ export class TesseraAggiungiComponent {
     let errorMessages: Array<string> = [];
     let valid = true;
 
-    if (codInterno.length !== 20) {
-      valid = false;
-      errorMessages.push("Il codice interno deve essere di lunghezza 20");
-    }
+    // if (codInterno.length !== 20) {
+    //   valid = false;
+    //   errorMessages.push("Il codice interno deve essere di lunghezza 20");
+    // }
     if (!regex.test(codInterno)) {
       valid = false;
       errorMessages.push("Il codice interno deve essere composto di 20 numeri");
