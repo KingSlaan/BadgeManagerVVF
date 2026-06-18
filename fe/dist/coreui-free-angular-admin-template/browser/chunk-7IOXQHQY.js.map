@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/services/sedi.service.ts"],
+  "sourcesContent": ["import { API_CONSTANTS } from './../../constants/api.constants';\r\nimport { inject, Injectable } from '@angular/core';\r\nimport { Observable } from 'rxjs';\r\nimport { HttpClient } from '@angular/common/http';\r\nimport { Sede } from '../../interfaces/sedi';\r\nimport { DataGridRequest } from '../../interfaces/datagrid';\r\nimport { ApiResponse } from '../../interfaces/api-response';\r\n\r\n@Injectable({\r\n  providedIn: 'root',\r\n})\r\nexport class SediService {\r\n  private http = inject(HttpClient);\r\n\r\n  // Example base API URL\r\n  private apiUrl = API_CONSTANTS.BASE_URL;\r\n\r\n  /**\r\n   * GET - Get all tessere\r\n   */\r\n  getSedi(body: DataGridRequest): Observable<ApiResponse<Sede[]>> {\r\n    return this.http.post<ApiResponse<Sede[]>>(`${this.apiUrl}/getDipartimentiServlet`,body);\r\n  }\r\n\r\n  getSediList(): Observable<ApiResponse<Sede[]>> {\r\n    return this.http.get<ApiResponse<Sede[]>>(`${this.apiUrl}/getDipartimentiServlet`);\r\n  }\r\n\r\n}\r\n"],
+  "mappings": ";;;;;;;;;;;;;;AAWM,IAAO,cAAP,MAAO,aAAW;EAHxB,cAAA;AAIU,SAAA,OAAO,OAAO,UAAU;AAGxB,SAAA,SAAS,cAAc;;;;;EAK/B,QAAQ,MAAqB;AAC3B,WAAO,KAAK,KAAK,KAA0B,GAAG,KAAK,MAAM,2BAA0B,IAAI;EACzF;EAEA,cAAW;AACT,WAAO,KAAK,KAAK,IAAyB,GAAG,KAAK,MAAM,yBAAyB;EACnF;;;uCAfW,cAAW;IAAA;EAAA;;4EAAX,cAAW,SAAX,aAAW,WAAA,YAFV,OAAM,CAAA;EAAA;;;sEAEP,aAAW,CAAA;UAHvB;WAAW;MACV,YAAY;KACb;;;",
+  "names": []
+}

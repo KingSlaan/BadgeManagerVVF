@@ -33,6 +33,10 @@ const boardGames = [
   'Unmatched',
   'Voidfall',
   'TwilightImperium',
+  'Viticulture',
+  'Emerge',
+  'Amalfi',
+  'Agricola',
 ];
 
 const bumpType = process.argv[2] || 'patch';

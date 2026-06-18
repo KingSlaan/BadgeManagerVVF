@@ -1,6 +1,6 @@
 import {
   AuthService
-} from "./chunk-J4T4EQQU.js";
+} from "./chunk-NELE7QKC.js";
 import {
   ToastService
 } from "./chunk-3JIFYRST.js";
@@ -104,8 +104,18 @@ import {
   cilUserUnfollow
 } from "./chunk-Y5M6FWPP.js";
 import {
-  ActivatedRoute,
   ColorModeService,
+  SpinnerModule,
+  ToastBodyComponent,
+  ToastComponent,
+  ToastHeaderComponent,
+  ToastModule,
+  ToasterComponent,
+  takeUntilDestroyed
+} from "./chunk-7NVYWTLR.js";
+import "./chunk-7LGTHZSA.js";
+import {
+  ActivatedRoute,
   CommonModule,
   DomRendererFactory2,
   HttpContextToken,
@@ -114,25 +124,17 @@ import {
   NavigationEnd,
   Router,
   RouterOutlet,
-  SpinnerModule,
   Title,
-  ToastBodyComponent,
-  ToastComponent,
-  ToastHeaderComponent,
-  ToastModule,
-  ToasterComponent,
   bootstrapApplication,
   provideHttpClient,
   provideRouter,
-  takeUntilDestroyed,
   withEnabledBlockingInitialNavigation,
   withHashLocation,
   withInMemoryScrolling,
   withInterceptors,
   withRouterConfig,
   withViewTransitions
-} from "./chunk-ICNVWBIK.js";
-import "./chunk-7LGTHZSA.js";
+} from "./chunk-M5X3AQM3.js";
 import {
   ANIMATION_MODULE_TYPE,
   ChangeDetectionScheduler,
@@ -1002,7 +1004,7 @@ var authGuard = () => {
 var routes = [
   {
     path: "",
-    loadComponent: () => import("./chunk-CEHCHYAY.js").then((m) => m.DefaultLayoutComponent),
+    loadComponent: () => import("./chunk-SFKKZFA5.js").then((m) => m.DefaultLayoutComponent),
     canActivate: [authGuard],
     data: {
       title: "Home"
@@ -1010,24 +1012,24 @@ var routes = [
     children: [
       {
         path: "",
-        loadComponent: () => import("./chunk-JE5PQ3MO.js").then((m) => m.DashboardComponent),
+        loadComponent: () => import("./chunk-SRAAW577.js").then((m) => m.DashboardComponent),
         data: {
           title: "Dashboard"
         }
       },
       {
         path: "liste",
-        loadChildren: () => import("./chunk-OXXIBU4N.js").then((m) => m.routes)
+        loadChildren: () => import("./chunk-GXXKYDO5.js").then((m) => m.routes)
       },
       {
         path: "user-settings",
         canActivate: [authGuard],
-        loadComponent: () => import("./chunk-5KEGQVOA.js").then((m) => m.UserSettingsComponent)
+        loadComponent: () => import("./chunk-4S7T6SX6.js").then((m) => m.UserSettingsComponent)
       },
       {
         path: "stampa-documenti",
         canActivate: [authGuard],
-        loadComponent: () => import("./chunk-SNREGSP7.js").then((m) => m.StampaDocumentiComponent)
+        loadComponent: () => import("./chunk-ICVEFYXB.js").then((m) => m.StampaDocumentiComponent)
       },
       {
         path: "logs",
@@ -1039,7 +1041,7 @@ var routes = [
   {
     path: "login",
     canActivate: [loginGuard],
-    loadComponent: () => import("./chunk-7AQ7GS7E.js").then((m) => m.LoginComponent)
+    loadComponent: () => import("./chunk-XYN2WQJO.js").then((m) => m.LoginComponent)
   },
   {
     path: "**",

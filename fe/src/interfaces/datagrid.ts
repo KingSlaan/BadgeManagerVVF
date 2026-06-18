@@ -1,5 +1,19 @@
 import { TemplateRef } from '@angular/core';
-import { AutocompleteOption } from '../components/autocomplete-select/autocomplete-select.component';
+
+export interface DataGridSelectionSummaryConfig<T = any> {
+  enabled: boolean;
+  label?: string;
+  displayField: keyof T | string;
+  maxHeight?: string;
+  clearButton?: boolean;
+}
+
+export type DataGridFilterValue =
+  | string
+  | boolean
+  | string[]
+  | number
+  | null;
 
 export type DataGridFilterOperator =
   | 'contains'
@@ -99,7 +113,7 @@ export interface DataGridToolbarConfig<T = any> {
 export interface DataGridFilter {
   field: string;
   operator: DataGridFilterOperator;
-  value: string;
+  value: DataGridFilterValue;
 }
 
 export interface DataGridFilterRequest {
