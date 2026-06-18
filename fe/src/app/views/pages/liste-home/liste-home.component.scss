@@ -35,3 +35,23 @@
 
   border-color: var(--cui-primary);
 }
+
+.menu-card {
+  padding: 2rem;
+  text-align: center;
+}
+
+.menu-icon {
+  width: 80px;
+  height: 80px;
+
+  color: var(--cui-primary);
+
+  margin-bottom: 1rem;
+
+  transition: .2s ease;
+}
+
+.menu-card:hover .menu-icon {
+  transform: scale(1.1);
+}

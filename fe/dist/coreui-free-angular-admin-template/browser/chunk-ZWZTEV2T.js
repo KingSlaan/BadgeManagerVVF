@@ -1,10 +1,4 @@
 import {
-  cilTrash,
-  cilUser,
-  cilUserFollow,
-  cilUserUnfollow
-} from "./chunk-Y5M6FWPP.js";
-import {
   API_CONSTANTS,
   CardBodyComponent,
   CardComponent,
@@ -16,6 +10,12 @@ import {
   WidgetStatCComponent
 } from "./chunk-7NVYWTLR.js";
 import "./chunk-7LGTHZSA.js";
+import {
+  cilTrash,
+  cilUser,
+  cilUserFollow,
+  cilUserUnfollow
+} from "./chunk-U43FZQ3F.js";
 import {
   HttpClient,
   IconDirective
@@ -16571,4 +16571,4 @@ var DashboardComponent = class _DashboardComponent {
 export {
   DashboardComponent
 };
-//# sourceMappingURL=chunk-SRAAW577.js.map
+//# sourceMappingURL=chunk-ZWZTEV2T.js.map

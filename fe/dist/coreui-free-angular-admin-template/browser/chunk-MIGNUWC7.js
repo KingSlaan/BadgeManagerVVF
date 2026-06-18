@@ -2,9 +2,6 @@ import {
   AuthService
 } from "./chunk-NELE7QKC.js";
 import {
-  cilClock
-} from "./chunk-Y5M6FWPP.js";
-import {
   API_CONSTANTS,
   AvatarComponent,
   BreadcrumbRouterComponent,
@@ -32,6 +29,9 @@ import {
   coerceNumberProperty
 } from "./chunk-7NVYWTLR.js";
 import "./chunk-7LGTHZSA.js";
+import {
+  cilClock
+} from "./chunk-U43FZQ3F.js";
 import {
   DatePipe,
   HttpClient,
@@ -376,9 +376,9 @@ var DefaultFooterComponent = class _DefaultFooterComponent extends FooterCompone
 
 // src/assets/version.json
 var version_default = {
-  version: "3.0.2-Carcassonne",
-  environment: "test",
-  buildDate: "2026-06-18T10:12:53.049Z"
+  version: "3.0.3-GreatWesternTrail",
+  environment: "dev",
+  buildDate: "2026-06-18T10:56:08.389Z"
 };
 
 // src/app/layout/default-layout/default-header/default-header.component.ts
@@ -3630,4 +3630,4 @@ export {
   DefaultHeaderComponent,
   DefaultLayoutComponent
 };
-//# sourceMappingURL=chunk-SFKKZFA5.js.map
+//# sourceMappingURL=chunk-MIGNUWC7.js.map

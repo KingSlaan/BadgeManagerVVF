@@ -5,6 +5,17 @@ import {
   ToastService
 } from "./chunk-3JIFYRST.js";
 import {
+  ColorModeService,
+  SpinnerModule,
+  ToastBodyComponent,
+  ToastComponent,
+  ToastHeaderComponent,
+  ToastModule,
+  ToasterComponent,
+  takeUntilDestroyed
+} from "./chunk-7NVYWTLR.js";
+import "./chunk-7LGTHZSA.js";
+import {
   cibCcAmex,
   cibCcApplePay,
   cibCcMastercard,
@@ -102,18 +113,7 @@ import {
   cilUserFemale,
   cilUserFollow,
   cilUserUnfollow
-} from "./chunk-Y5M6FWPP.js";
-import {
-  ColorModeService,
-  SpinnerModule,
-  ToastBodyComponent,
-  ToastComponent,
-  ToastHeaderComponent,
-  ToastModule,
-  ToasterComponent,
-  takeUntilDestroyed
-} from "./chunk-7NVYWTLR.js";
-import "./chunk-7LGTHZSA.js";
+} from "./chunk-U43FZQ3F.js";
 import {
   ActivatedRoute,
   CommonModule,
@@ -1004,7 +1004,7 @@ var authGuard = () => {
 var routes = [
   {
     path: "",
-    loadComponent: () => import("./chunk-SFKKZFA5.js").then((m) => m.DefaultLayoutComponent),
+    loadComponent: () => import("./chunk-MIGNUWC7.js").then((m) => m.DefaultLayoutComponent),
     canActivate: [authGuard],
     data: {
       title: "Home"
@@ -1012,14 +1012,14 @@ var routes = [
     children: [
       {
         path: "",
-        loadComponent: () => import("./chunk-SRAAW577.js").then((m) => m.DashboardComponent),
+        loadComponent: () => import("./chunk-ZWZTEV2T.js").then((m) => m.DashboardComponent),
         data: {
           title: "Dashboard"
         }
       },
       {
         path: "liste",
-        loadChildren: () => import("./chunk-GXXKYDO5.js").then((m) => m.routes)
+        loadChildren: () => import("./chunk-KSC3UNQR.js").then((m) => m.routes)
       },
       {
         path: "user-settings",
@@ -1029,7 +1029,7 @@ var routes = [
       {
         path: "stampa-documenti",
         canActivate: [authGuard],
-        loadComponent: () => import("./chunk-ICVEFYXB.js").then((m) => m.StampaDocumentiComponent)
+        loadComponent: () => import("./chunk-SKXQE3NJ.js").then((m) => m.StampaDocumentiComponent)
       },
       {
         path: "logs",
