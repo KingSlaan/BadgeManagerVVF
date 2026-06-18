@@ -33,12 +33,15 @@
 
       @if (weatherInfo()) {
         <div class="version-number">
-          {{ weatherIcon(weatherInfo()!.weatherCode) }}
-          {{ weatherInfo()!.temperature }}°C
+          Today
+          {{ weatherIcon(weatherInfo()!.todayCode) }}
+          {{ weatherInfo()!.todayTemp }}°C
         </div>
 
         <div class="version-date">
-          {{ weatherInfo()!.city }}
+          Tomorrow
+          {{ weatherIcon(weatherInfo()!.tomorrowCode) }}
+          {{ weatherInfo()!.tomorrowTemp }}°C
         </div>
       } @else {
         <div class="version-number">--</div>

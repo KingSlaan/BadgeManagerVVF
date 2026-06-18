@@ -53,8 +53,10 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
       next: (data) => {
         this.weatherInfo.set({
           city: 'Roma',
-          temperature: Math.round(data.current.temperature_2m),
-          weatherCode: data.current.weather_code
+          todayTemp: Math.round(data.current.temperature_2m),
+          todayCode: data.current.weather_code,
+          tomorrowTemp: Math.round(data.daily.temperature_2m_max[1]),
+          tomorrowCode: data.daily.weather_code[1]
         });
       },
       error: (err) => {
