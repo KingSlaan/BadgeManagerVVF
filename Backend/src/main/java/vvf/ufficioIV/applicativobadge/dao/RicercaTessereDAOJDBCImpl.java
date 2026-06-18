@@ -65,6 +65,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "nome": dbColumn = "a.NOME"; break;
                     case "cognome": dbColumn = "a.COGNOME"; break;
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
+                    case "codTipoTessera": dbColumn = "t.CODTIPOTESSERA"; break;
                     case "sede": dbColumn = "t.SEDE"; break; // <-- FILTRO APPLICATO SUL CODICE UNIVOCO
                     default: continue; // ignora filtri non riconosciuti o gestiti male
                 }

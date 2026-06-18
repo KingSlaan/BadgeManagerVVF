@@ -10,7 +10,7 @@ import java.util.Properties;
  * Ascoltatore che intercetta l'avvio e lo spegnimento dell'applicazione su Tomcat.
  * 
  * 	EXTRA: 	Run As -> Maven Build ... -> Goals = clean package -> Run
- * 			Refresh 
+ * 			Refresh del progetto per il nuovo .war
  */
 @WebListener
 public class AppStartupListener implements ServletContextListener {

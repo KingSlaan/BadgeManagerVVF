@@ -17,6 +17,11 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
             e.printStackTrace();
         }
     }
+    
+    // NUOVO COSTRUTTORE per usare una transazione condivisa
+    public TesseraDecode1DAOJDBCImpl(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public boolean insertTesseraDecode(TesseraDecode1 tDecode) throws SQLException {

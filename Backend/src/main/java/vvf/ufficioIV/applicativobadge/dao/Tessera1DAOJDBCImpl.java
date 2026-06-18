@@ -26,6 +26,11 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
             e.printStackTrace();
         }
     }
+    
+    // NUOVO COSTRUTTORE per usare una transazione condivisa
+    public Tessera1DAOJDBCImpl(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public boolean updateSede(String idTessera, String nuovaSede) throws SQLException {
