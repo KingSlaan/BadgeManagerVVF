@@ -1,17 +1,17 @@
 import {
   DATAGRID_CONSTANTS_NO_PAGINATION,
   DataGridComponent
-} from "./chunk-FFYWZ4OD.js";
-import "./chunk-RPFFDMG2.js";
+} from "./chunk-D35SSEZ4.js";
+import "./chunk-CUR4M7JY.js";
 import "./chunk-3D2CXWAA.js";
-import {
-  cilPencil
-} from "./chunk-Y5M6FWPP.js";
 import {
   API_CONSTANTS,
   ButtonDirective
 } from "./chunk-7NVYWTLR.js";
 import "./chunk-7LGTHZSA.js";
+import {
+  cilPencil
+} from "./chunk-U43FZQ3F.js";
 import {
   HttpClient,
   IconDirective
@@ -247,4 +247,4 @@ var ListaUtentiComponent = class _ListaUtentiComponent {
 export {
   ListaUtentiComponent
 };
-//# sourceMappingURL=chunk-GA5NSYKN.js.map
+//# sourceMappingURL=chunk-SGOUUMKJ.js.map

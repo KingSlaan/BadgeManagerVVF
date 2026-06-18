@@ -4,32 +4,32 @@ import "./chunk-WDMUDEB6.js";
 var routes = [
   {
     path: "",
-    loadComponent: () => import("./chunk-3L3EOHT3.js").then((m) => m.ListeHomeComponent)
+    loadComponent: () => import("./chunk-ERZCNIUV.js").then((m) => m.ListeHomeComponent)
   },
   {
     path: "sedi",
-    loadComponent: () => import("./chunk-IFERMXPA.js").then((m) => m.ListaSediComponent),
+    loadComponent: () => import("./chunk-FVIGGYP4.js").then((m) => m.ListaSediComponent),
     data: {
       title: $localize`Sedi`
     }
   },
   {
     path: "tessere",
-    loadComponent: () => import("./chunk-RBA4OJ67.js").then((m) => m.ListaTessereComponent),
+    loadComponent: () => import("./chunk-ZYF4URQR.js").then((m) => m.ListaTessereComponent),
     data: {
       title: $localize`Gestione Tessere`
     }
   },
   {
     path: "utenti",
-    loadComponent: () => import("./chunk-GA5NSYKN.js").then((m) => m.ListaUtentiComponent),
+    loadComponent: () => import("./chunk-SGOUUMKJ.js").then((m) => m.ListaUtentiComponent),
     data: {
       title: $localize`Utenti`
     }
   },
   {
     path: "stampa-documenti",
-    loadComponent: () => import("./chunk-ICVEFYXB.js").then((m) => m.StampaDocumentiComponent),
+    loadComponent: () => import("./chunk-SKXQE3NJ.js").then((m) => m.StampaDocumentiComponent),
     data: {
       title: $localize`Utenti`
     }
@@ -53,4 +53,4 @@ var routes = [
 export {
   routes
 };
-//# sourceMappingURL=chunk-GXXKYDO5.js.map
+//# sourceMappingURL=chunk-KSC3UNQR.js.map

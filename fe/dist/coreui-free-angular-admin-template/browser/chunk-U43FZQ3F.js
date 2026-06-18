@@ -7,11 +7,17 @@ var cilBan = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='
 // node_modules/@coreui/icons/dist/esm/free/cil-building.js
 var cilBuilding = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M440 464V16H72v448H16v32h480v-32Zm-32 0H272v-64h-32v64H104V48h304Z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M160 304h32v32h-32zm80 0h32v32h-32zm80 0h32v32h-32zm-160-96h32v32h-32zm80 0h32v32h-32zm80 0h32v32h-32zm-160-96h32v32h-32zm80 0h32v32h-32zm80 0h32v32h-32z' class='ci-primary'/>"];
 
+// node_modules/@coreui/icons/dist/esm/free/cil-calculator.js
+var cilCalculator = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M472 40H40a24.03 24.03 0 0 0-24 24v384a24.03 24.03 0 0 0 24 24h432a24.03 24.03 0 0 0 24-24V64a24.03 24.03 0 0 0-24-24m-8 400H48V72h416Z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M152 240h32v-40h40v-32h-40v-40h-32v40h-40v32h40zm44.284 45.089L168 313.373l-28.284-28.284-22.627 22.627L145.373 336l-28.284 28.284 22.627 22.627L168 358.627l28.284 28.284 22.627-22.627L190.627 336l28.284-28.284zM288 168h112v32H288zm0 120h112v32H288zm0 64h112v32H288z' class='ci-primary'/>"];
+
 // node_modules/@coreui/icons/dist/esm/free/cil-delete.js
 var cilDelete = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M227.313 363.313 312 278.627l84.687 84.686 22.626-22.626L334.627 256l84.686-84.687-22.626-22.626L312 233.373l-84.687-84.686-22.626 22.626L289.373 256l-84.686 84.687z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M472 64H194.644a24.1 24.1 0 0 0-17.42 7.492L16 241.623v28.754l161.224 170.131a24.1 24.1 0 0 0 17.42 7.492H472a24.03 24.03 0 0 0 24-24V88a24.03 24.03 0 0 0-24-24m-8 352H198.084L48 257.623v-3.246L198.084 96H464Z' class='ci-primary'/>"];
 
 // node_modules/@coreui/icons/dist/esm/free/cil-history.js
 var cilHistory = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M256.25 16A240 240 0 0 0 88 84.977V16H56v128h128v-32h-77.713A208 208 0 0 1 256.25 48C370.8 48 464 141.2 464 255.75S370.8 463.5 256.25 463.5 48.5 370.3 48.5 255.75h-32a239.75 239.75 0 0 0 409.279 169.529A239.75 239.75 0 0 0 256.25 16' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M240 111.951 239.465 288H368v-32h-96.437L272 112.049z' class='ci-primary'/>"];
+
+// node_modules/@coreui/icons/dist/esm/free/cil-notes.js
+var cilNotes = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M112 152h288v32H112zm0 88h288v32H112zm0 88h152v32H112z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M480 48H32v416h448Zm-32 384H64V80h384Z' class='ci-primary'/>"];
 
 // node_modules/@coreui/icons/dist/esm/free/cil-options.js
 var cilOptions = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M256 144a64 64 0 1 0-64-64 64.07 64.07 0 0 0 64 64m0-96a32 32 0 1 1-32 32 32.036 32.036 0 0 1 32-32m0 320a64 64 0 1 0 64 64 64.07 64.07 0 0 0-64-64m0 96a32 32 0 1 1 32-32 32.036 32.036 0 0 1-32 32m0-272a64 64 0 1 0 64 64 64.07 64.07 0 0 0-64-64m0 96a32 32 0 1 1 32-32 32.036 32.036 0 0 1-32 32' class='ci-primary'/>"];
@@ -126,9 +132,6 @@ var cilBold = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d=
 
 // node_modules/@coreui/icons/dist/esm/free/cil-bookmark.js
 var cilBookmark = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M424 496h-35.25L256.008 381.19 123.467 496H88V16h336ZM120 48v408.667l135.992-117.8L392 456.5V48Z' class='ci-primary'/>"];
-
-// node_modules/@coreui/icons/dist/esm/free/cil-calculator.js
-var cilCalculator = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M472 40H40a24.03 24.03 0 0 0-24 24v384a24.03 24.03 0 0 0 24 24h432a24.03 24.03 0 0 0 24-24V64a24.03 24.03 0 0 0-24-24m-8 400H48V72h416Z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M152 240h32v-40h40v-32h-40v-40h-32v40h-40v32h40zm44.284 45.089L168 313.373l-28.284-28.284-22.627 22.627L145.373 336l-28.284 28.284 22.627 22.627L168 358.627l28.284 28.284 22.627-22.627L190.627 336l28.284-28.284zM288 168h112v32H288zm0 120h112v32H288zm0 64h112v32H288z' class='ci-primary'/>"];
 
 // node_modules/@coreui/icons/dist/esm/free/cil-calendar.js
 var cilCalendar = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M472 96h-88V40h-32v56H160V40h-32v56H40a24.03 24.03 0 0 0-24 24v336a24.03 24.03 0 0 0 24 24h432a24.03 24.03 0 0 0 24-24V120a24.03 24.03 0 0 0-24-24m-8 352H48V128h80v40h32v-40h192v40h32v-40h80Z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M112 224h32v32h-32zm88 0h32v32h-32zm80 0h32v32h-32zm88 0h32v32h-32zm-256 72h32v32h-32zm88 0h32v32h-32zm80 0h32v32h-32zm88 0h32v32h-32zm-256 72h32v32h-32zm88 0h32v32h-32zm80 0h32v32h-32zm88 0h32v32h-32z' class='ci-primary'/>"];
@@ -267,9 +270,6 @@ var cilMinus = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d
 
 // node_modules/@coreui/icons/dist/esm/free/cil-moon.js
 var cilMoon = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M268.279 496c-67.574 0-130.978-26.191-178.534-73.745S16 311.293 16 243.718A252.25 252.25 0 0 1 154.183 18.676a24.44 24.44 0 0 1 34.46 28.958 220.12 220.12 0 0 0 54.8 220.923A218.75 218.75 0 0 0 399.085 333.2a220.2 220.2 0 0 0 65.277-9.846 24.439 24.439 0 0 1 28.959 34.461A252.26 252.26 0 0 1 268.279 496M153.31 55.781A219.3 219.3 0 0 0 48 243.718C48 365.181 146.816 464 268.279 464a219.3 219.3 0 0 0 187.938-105.31 253 253 0 0 1-57.13 6.513 250.54 250.54 0 0 1-178.268-74.016 252.15 252.15 0 0 1-67.509-235.4Z' class='ci-primary'/>"];
-
-// node_modules/@coreui/icons/dist/esm/free/cil-notes.js
-var cilNotes = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M112 152h288v32H112zm0 88h288v32H112zm0 88h152v32H112z' class='ci-primary'/><path fill='var(--ci-primary-color, currentcolor)' d='M480 48H32v416h448Zm-32 384H64V80h384Z' class='ci-primary'/>"];
 
 // node_modules/@coreui/icons/dist/esm/free/cil-paper-plane.js
 var cilPaperPlane = ["512 512", "<path fill='var(--ci-primary-color, currentcolor)' d='M474.444 19.857a20.34 20.34 0 0 0-21.592-2.781L33.737 213.8v38.066l176.037 70.414L322.69 496h38.074l120.3-455.4a20.34 20.34 0 0 0-6.62-20.743M337.257 459.693 240.2 310.37l149.353-163.582-23.631-21.576L215.4 290.069 70.257 232.012 443.7 56.72Z' class='ci-primary'/>"];
@@ -448,4 +448,4 @@ export {
   cilUser,
   cilX
 };
-//# sourceMappingURL=chunk-Y5M6FWPP.js.map
+//# sourceMappingURL=chunk-U43FZQ3F.js.map

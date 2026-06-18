@@ -11,11 +11,11 @@ import {
 import {
   DATAGRID_CONSTANTS,
   DataGridComponent
-} from "./chunk-FFYWZ4OD.js";
+} from "./chunk-D35SSEZ4.js";
 import {
   AutocompleteSelectComponent,
   DatepickerComponent
-} from "./chunk-RPFFDMG2.js";
+} from "./chunk-CUR4M7JY.js";
 import {
   DefaultValueAccessor,
   FormControl,
@@ -32,23 +32,6 @@ import {
   ɵNgNoValidate,
   ɵNgSelectMultipleOption
 } from "./chunk-3D2CXWAA.js";
-import {
-  cilActionUndo,
-  cilBan,
-  cilBuilding,
-  cilCheckAlt,
-  cilCloudDownload,
-  cilCloudUpload,
-  cilDelete,
-  cilHistory,
-  cilMinus,
-  cilOptions,
-  cilPencil,
-  cilPlus,
-  cilPrint,
-  cilSearch,
-  cilX
-} from "./chunk-Y5M6FWPP.js";
 import {
   AlertComponent,
   BadgeComponent,
@@ -75,6 +58,23 @@ import {
   TooltipDirective
 } from "./chunk-7NVYWTLR.js";
 import "./chunk-7LGTHZSA.js";
+import {
+  cilActionUndo,
+  cilBan,
+  cilBuilding,
+  cilCheckAlt,
+  cilCloudDownload,
+  cilCloudUpload,
+  cilDelete,
+  cilHistory,
+  cilMinus,
+  cilOptions,
+  cilPencil,
+  cilPlus,
+  cilPrint,
+  cilSearch,
+  cilX
+} from "./chunk-U43FZQ3F.js";
 import {
   ActivatedRoute,
   IconDirective,
@@ -1934,4 +1934,4 @@ var ListaTessereComponent = class _ListaTessereComponent {
 export {
   ListaTessereComponent
 };
-//# sourceMappingURL=chunk-RBA4OJ67.js.map
+//# sourceMappingURL=chunk-ZYF4URQR.js.map
