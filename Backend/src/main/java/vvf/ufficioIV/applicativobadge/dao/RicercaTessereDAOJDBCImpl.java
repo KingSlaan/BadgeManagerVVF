@@ -67,39 +67,46 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "codiceInterno": dbColumn = "td.CODICEINTERNO"; break;
                     case "codTipoTessera": dbColumn = "t.CODTIPOTESSERA"; break;
                     case "sede": dbColumn = "t.SEDE"; break; // <-- FILTRO APPLICATO SUL CODICE UNIVOCO
-                    default: continue; // ignora filtri non riconosciuti o gestiti male
+                    default: 
+                    	System.out.println("[DEBUG] filtri ignorati o non riconosciuti");
+                    	continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
                 // --- GESTIONE NUOVO OPERATORE "in" (Valore Array) ---
                 if ("in".equalsIgnoreCase(operator) && valueElement.isJsonArray()) {
                     JsonArray valueArray = valueElement.getAsJsonArray();
                     if (valueArray.size() > 0) {
-                        where.append(" AND UPPER(").append(dbColumn).append(") IN (");
+                        // AGGIUNTO TRIM LATO SQL
+                        where.append(" AND TRIM(UPPER(").append(dbColumn).append(")) IN (");
                         for (int i = 0; i < valueArray.size(); i++) {
                             where.append("?"); // Aggiunge i placeholder
                             if (i < valueArray.size() - 1) {
                                 where.append(", ");
                             }
-                            params.add(valueArray.get(i).getAsString().toUpperCase());
+                            // AGGIUNTO .trim() LATO JAVA
+                            params.add(valueArray.get(i).getAsString().trim().toUpperCase());
                         }
                         where.append(") ");
                     }
                 } 
                 // --- GESTIONE OPERATORI CLASSICI (Valore Stringa/Primitiva) ---
                 else if (valueElement.isJsonPrimitive()) {
-                    String stringValue = valueElement.getAsString();
+                    // AGGIUNTO .trim() LATO JAVA
+                    String stringValue = valueElement.getAsString().trim();
                     
                     if ("contains".equalsIgnoreCase(operator)) {
-                        where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
+                        // AGGIUNTO TRIM LATO SQL
+                        where.append(" AND TRIM(UPPER(").append(dbColumn).append(")) LIKE ? ");
                         
-                        // Gestione ottimizzata "inizia per" su NOME e COGNOME inserita in precedenza
+                        // Gestione ottimizzata "inizia per" su NOME e COGNOME
                         if ("nome".equals(field) || "cognome".equals(field)) {
                             params.add(stringValue.toUpperCase() + "%"); 
                         } else {
                             params.add("%" + stringValue.toUpperCase() + "%");
                         }
                     } else if ("equals".equalsIgnoreCase(operator)) {
-                        where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
+                        // AGGIUNTO TRIM LATO SQL
+                        where.append(" AND TRIM(UPPER(").append(dbColumn).append(")) = ? ");
                         params.add(stringValue.toUpperCase());
                     }
                 }

@@ -174,10 +174,12 @@ public class InserimentoTessereServlet extends HttpServlet {
 
                 // Formattazione
                 String idTessera;
-                String codiceInterno;
+                // Il codice interno rimane ESATTAMENTE quello passato dal frontend (rimuoviamo solo gli spazi iniziali/finali accidentali)
+                String codiceInterno = rawCodiceInterno.trim(); 
+
                 try {
+                    // Applichiamo il padding a 10 zeri SOLO all'ID Tessera
                     idTessera = formattaStringaNumerica(rawIdTessera, 10, "ID Tessera");
-                    codiceInterno = formattaStringaNumerica(rawCodiceInterno, 10, "Codice Interno");
                 } catch (IllegalArgumentException e) {
                     throw new Exception("Errore di validazione all'indice " + i + ": " + e.getMessage());
                 }
