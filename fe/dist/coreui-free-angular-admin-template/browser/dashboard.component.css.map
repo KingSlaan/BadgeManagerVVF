@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/views/dashboard/dashboard.component.scss"],
-  "sourcesContent": [":host {\r\n  .legend {\r\n    small {\r\n      font-size: x-small;\r\n    }\r\n  }\r\n}\r\n"],
-  "mappings": ";AAEI,MAAA,CAAA,OAAA;AACE,aAAA;;",
-  "names": []
-}
