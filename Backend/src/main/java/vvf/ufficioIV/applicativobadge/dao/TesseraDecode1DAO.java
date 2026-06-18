@@ -8,4 +8,5 @@ public interface TesseraDecode1DAO {
     TesseraDecode1 getByIdTessera(String idTessera);
     TesseraDecode1 getByCodiceInterno(String codiceInterno);
     boolean deleteByIdTessera(String idTessera) throws Exception;
+    boolean existsByLast10CharsCodiceInterno(String suffix);
 }

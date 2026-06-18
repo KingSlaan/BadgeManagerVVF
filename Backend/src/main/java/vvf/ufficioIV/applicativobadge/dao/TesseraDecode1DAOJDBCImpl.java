@@ -73,6 +73,22 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
             return ps.executeUpdate() == 1;
         }
     }
+    
+    // Aggiungi questo metodo dentro TesseraDecode1DAOJDBCImpl
+    @Override
+    public boolean existsByLast10CharsCodiceInterno(String suffix) {
+        // La funzione SUBSTR(colonna, -10) in Oracle prende gli ultimi 10 caratteri.
+        String sql = "SELECT 1 FROM TESSERADECODE1 WHERE SUBSTR(CODICEINTERNO, -10) = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, suffix);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // Ritorna true se trova almeno un record corrispondente
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore in existsByLast10CharsCodiceInterno: " + e.getMessage());
+        }
+        return false;
+    }
 
     @Override
     public void closeConnection() {
