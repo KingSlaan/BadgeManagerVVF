@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/views/pages/liste-home/liste-home.component.scss"],
-  "sourcesContent": [".cards-grid {\r\n  display: grid;\r\n\r\n  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\r\n\r\n  gap: 2rem;\r\n}\r\n\r\n.menu-card {\r\n  cursor: pointer;\r\n\r\n  padding: 2rem;\r\n\r\n  border-radius: 0.75rem;\r\n\r\n  background: var(--cui-body-bg);\r\n\r\n  border: 1px solid var(--cui-border-color);\r\n\r\n  transition: 0.2s;\r\n\r\n  display: flex;\r\n\r\n  flex-direction: column;\r\n\r\n  align-items: center;\r\n\r\n  text-align: center;\r\n}\r\n\r\n.menu-card:hover {\r\n  transform: translateY(-4px);\r\n\r\n  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);\r\n\r\n  border-color: var(--cui-primary);\r\n}\r\n\r\n.menu-card {\r\n  padding: 2rem;\r\n  text-align: center;\r\n}\r\n\r\n.menu-icon {\r\n  width: 80px;\r\n  height: 80px;\r\n\r\n  color: var(--cui-primary);\r\n\r\n  margin-bottom: 1rem;\r\n\r\n  transition: .2s ease;\r\n}\r\n\r\n.menu-card:hover .menu-icon {\r\n  transform: scale(1.1);\r\n}\r\n"],
-  "mappings": ";AAAA,CAAA;AACE,WAAA;AAEA,yBAAA,OAAA,QAAA,EAAA,OAAA,KAAA,EAAA;AAEA,OAAA;;AAGF,CAAA;AACE,UAAA;AAEA,WAAA;AAEA,iBAAA;AAEA,cAAA,IAAA;AAEA,UAAA,IAAA,MAAA,IAAA;AAEA,cAAA;AAEA,WAAA;AAEA,kBAAA;AAEA,eAAA;AAEA,cAAA;;AAGF,CAtBA,SAsBA;AACE,aAAA,WAAA;AAEA,cAAA,EAAA,OAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AAEA,gBAAA,IAAA;;AAGF,CA9BA;AA+BE,WAAA;AACA,cAAA;;AAGF,CAAA;AACE,SAAA;AACA,UAAA;AAEA,SAAA,IAAA;AAEA,iBAAA;AAEA,cAAA,KAAA;;AAGF,CA9CA,SA8CA,OAAA,CAXA;AAYE,aAAA,MAAA;;",
-  "names": []
-}
