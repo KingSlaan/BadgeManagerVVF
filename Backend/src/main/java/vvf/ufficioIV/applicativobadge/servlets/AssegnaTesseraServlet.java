@@ -214,6 +214,22 @@ public class AssegnaTesseraServlet extends HttpServlet {
                     return;
                 }
             }
+            
+            // VERIFICA 4: Sovrapposizione assegnazione per il DIPENDENTE (Nuovo controllo)
+            System.out.println("[assegnaTesseraServlet] Verifica sovrapposizione tessere per il dipendente...");
+            List<TesseraDipend1> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
+            for (TesseraDipend1 assEsistente : assegnazioniDipendente) {
+                LocalDateTime startEsistente = assEsistente.getDataOraInizioAssegnazione();
+                LocalDateTime endEsistente   = assEsistente.getDataOraFineAssegnazione();
+                
+                // Se c'è sovrapposizione temporale
+                if (dataInizio.isBefore(endEsistente) && dataFine.isAfter(startEsistente)) {
+                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
+                        "Il dipendente possiede già una tessera attiva nel periodo temporale selezionato.");
+                    return;
+                }
+            }
+            
             System.out.println("[assegnaTesseraServlet] Nessuna sovrapposizione rilevata.");
 
             // AZIONE 1: Aggiorna sede su TESSERA1

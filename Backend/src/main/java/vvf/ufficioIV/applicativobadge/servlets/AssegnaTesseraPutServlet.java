@@ -178,6 +178,16 @@ public class AssegnaTesseraPutServlet extends HttpServlet {
                 }
             }
 
+            // Verifica: sovrapposizioni di assegnazione per il DIPENDENTE (Nuovo controllo)
+            List<TesseraDipend1> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
+            for (TesseraDipend1 ass : assegnazioniDipendente) {
+                if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
+                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, 
+                        "Il dipendente possiede già una tessera attiva nel periodo temporale selezionato.");
+                    return;
+                }
+            }
+            
             // Insert nuova assegnazione
             TesseraDipend1 nuovaAssegnazione = new TesseraDipend1(idTessera, codFiscale, dataInizio, dataFine);
             if (daoAssegnaz.insertAssegnazione(nuovaAssegnazione)) {
