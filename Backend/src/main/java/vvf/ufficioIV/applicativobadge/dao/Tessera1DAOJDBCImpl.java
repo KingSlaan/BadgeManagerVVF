@@ -42,6 +42,36 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
         }
     }
     
+    public Tessera1 getTesseraByIdForUpdate(String idTessera) {
+        // Il "FOR UPDATE" dice al DB: "Blocca questa riga in scrittura per gli altri, la sto modificando io"
+        String sql = "SELECT IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE " +
+                     "FROM TESSERA1 WHERE IDTESSERA = ? FOR UPDATE";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idTessera);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Tessera1 t = new Tessera1();
+                    t.setIdTessera(rs.getString("IDTESSERA"));
+                    t.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
+                    t.setSede(rs.getString("SEDE"));
+                    
+                    Timestamp ts = rs.getTimestamp("DATAORAINDISPONIBILITA");
+                    if (ts != null) {
+                        t.setDataOraIndisponibilita(ts.toLocalDateTime());
+                    }
+                    
+                    t.setTesseraAte(rs.getInt("TESSERA_ATE"));
+                    return t;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore nel recupero della tessera FOR UPDATE: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
     @Override
     public boolean insertTessera(Tessera1 t) throws SQLException {
         String sql = "INSERT INTO TESSERA1 (IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE) " +

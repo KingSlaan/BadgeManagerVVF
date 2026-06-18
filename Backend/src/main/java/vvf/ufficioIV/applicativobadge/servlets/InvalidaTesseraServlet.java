@@ -12,13 +12,19 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
+import vvf.ufficioIV.applicativobadge.entity.Tessera1;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -69,14 +75,22 @@ public class InvalidaTesseraServlet extends HttpServlet {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("[InvalidaTesseraServlet] >>> Inizio doPut (Transazionale)");
 
+        // ── 1. Estrazione e Validazione Path Param ─────────────────────────────
         String pathInfo = request.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera mancante nell'URL.");
             return;
         }
-        String idTessera = pathInfo.substring(1);
+        String idTesseraUrl = pathInfo.substring(1).trim().toUpperCase();
 
+        if (idTesseraUrl.length() > 10) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "L'ID Tessera nell'URL supera i 10 caratteri consentiti.");
+            return;
+        }
+
+        // ── 2. Estrazione e Parsing JSON Body ──────────────────────────────────
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -106,35 +120,95 @@ public class InvalidaTesseraServlet extends HttpServlet {
             return;
         }
 
+        // ── 3. Caricamento DB Config ───────────────────────────────────────────
         Properties props = loadDbProps();
         if (props == null) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB Config");
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore DB Config: file di configurazione non trovato.");
             return;
         }
 
-        Tessera1DAO daoTessera = null;
-        TesseraDipend1DAO daoAssegnaz = null;
-
+        // ── 4. GESTIONE TRANSAZIONALE ──────────────────────────────────────────
+        Connection conn = null;
         try {
-            daoTessera  = new Tessera1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
-            daoAssegnaz = new TesseraDipend1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
+            Class.forName("oracle.jdbc.OracleDriver");
+            String dbUrl = "jdbc:oracle:thin:@//" + props.getProperty("db.ip") + ":" + props.getProperty("db.port") + "/" + props.getProperty("db.name");
+            conn = DriverManager.getConnection(dbUrl, props.getProperty("db.user"), props.getProperty("db.password"));
+            
+            //  DISABILITA AUTOCOMMIT: Inizio Transazione
+            conn.setAutoCommit(false);
 
-            // Invalida: 1. Aggiorna TESSERA1
-            boolean invalidata = daoTessera.invalidaTessera(idTessera, dataIndisp);
+            Tessera1DAO daoTessera = new Tessera1DAOJDBCImpl(conn);
+            TesseraDipend1DAO daoAssegnaz = new TesseraDipend1DAOJDBCImpl(conn);
 
-            if (invalidata) {
-                // 2. Cascata: Revoca l'assegnazione in corso (se presente) usando la stessa data
-                daoAssegnaz.revocaAssegnazioneAttiva(idTessera, dataIndisp);
-                ResponseUtil.sendOkNoData(response, "Tessera invalidata e relativa assegnazione revocata con successo.");
-            } else {
+            // A. LOCK DELLA TESSERA (Pessimistic Lock per prevenire assegnazioni simultanee)
+            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTesseraUrl);
+            if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera non trovata.");
+                return;
             }
 
+            // B. VERIFICA STATO TESSERA
+            if (tessera.getDataOraIndisponibilita() != null && !tessera.getDataOraIndisponibilita().isAfter(LocalDateTime.now())) {
+                // La tessera ha già una data di indisponibilità nel passato o presente
+                ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "La tessera risulta già invalidata a sistema.");
+                return;
+            }
+
+            // C. PROTEZIONE PARADOSSI TEMPORALI SULLE ASSEGNAZIONI
+            // Verifichiamo che la data di invalidazione non sia precedente all'inizio dell'assegnazione corrente
+            List<TesseraDipend1> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTesseraUrl);
+            for (TesseraDipend1 ass : assegnazioni) {
+                // Troviamo l'assegnazione attualmente attiva (che finisce nel futuro)
+                if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
+                    if (dataIndisp.isBefore(ass.getDataOraInizioAssegnazione())) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, 
+                            "La data di invalidazione non può essere antecedente all'inizio dell'assegnazione corrente (" 
+                            + ass.getDataOraInizioAssegnazione().format(formatter) + ").");
+                        return;
+                    }
+                }
+            }
+
+            // ── 5. ESECUZIONE AGGIORNAMENTI A CASCATA ──────────────────────────
+            
+            // Step 1: Invalida la tessera fisica
+            boolean invalidata = daoTessera.invalidaTessera(idTesseraUrl, dataIndisp);
+            if (!invalidata) {
+                throw new SQLException("Impossibile aggiornare la riga su TESSERA1.");
+            }
+
+            // Step 2: Revoca assegnazioni attive
+            // Nota: daoAssegnaz.revocaAssegnazioneAttiva restituisce true/false, ma potrebbe giustamente 
+            // restituire false se NON ci sono assegnazioni attive. Non deve essere un errore bloccante.
+            daoAssegnaz.revocaAssegnazioneAttiva(idTesseraUrl, dataIndisp);
+
+            //  COMMIT: Conferma tutte le modifiche
+            conn.commit();
+            ResponseUtil.sendOkNoData(response, "Tessera invalidata e relativa assegnazione (se presente) revocata con successo.");
+            System.out.println("[InvalidaTesseraServlet] <<< Completato con successo");
+
         } catch (Exception e) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno: " + e.getMessage());
+            // ❌ ROLLBACK: Ripristina il DB in caso di fallimento
+            System.err.println("[InvalidaTesseraServlet] Errore critico. Esecuzione Rollback: " + e.getMessage());
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("Errore fatale durante il rollback: " + ex.getMessage());
+                }
+            }
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno durante il processo di invalidazione: " + e.getMessage());
         } finally {
-            if (daoTessera != null)  daoTessera.closeConnection();
-            if (daoAssegnaz != null) daoAssegnaz.closeConnection();
+            //  CHIUSURA CONNESSIONE UNICA
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException ex) {
+                    System.err.println("Errore in chiusura connessione: " + ex.getMessage());
+                }
+            }
         }
     }
 
@@ -149,7 +223,7 @@ public class InvalidaTesseraServlet extends HttpServlet {
     }
 
     private String getStringSafe(JsonObject json, String key) {
-        try { return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString() : null; }
+        try { return json.has(key) && !json.get(key).isJsonNull() ? json.get(key).getAsString().trim() : null; }
         catch (Exception e) { return null; }
     }
 

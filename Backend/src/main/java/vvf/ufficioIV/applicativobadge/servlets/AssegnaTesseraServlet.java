@@ -15,7 +15,6 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.AnagraficaCodFiscale1;
 import vvf.ufficioIV.applicativobadge.entity.Tessera1;
 import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
@@ -23,6 +22,9 @@ import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -112,170 +114,153 @@ public class AssegnaTesseraServlet extends HttpServlet {
             return;
         }
 
-        // ── 3. Estrai campi dal frontend ──────────────────────────────────────
-        String codFiscale     = getStringSafe(json, "codiceFiscale");
-        String idTessera      = getStringSafe(json, "idTessera");
-        String sede           = getStringSafe(json, "sede");
-        String codTipoTessera = getStringSafe(json, "codTipoTessera");
+        // ── 3. Estrai e Normalizza i campi (Mettiamo tutto in UPPERCASE per sicurezza) ──
+        String codFiscale     = getStringSafe(json, "codiceFiscale") != null ? getStringSafe(json, "codiceFiscale").toUpperCase() : null;
+        String idTessera      = getStringSafe(json, "idTessera") != null ? getStringSafe(json, "idTessera").toUpperCase() : null;
+        String sede           = getStringSafe(json, "sede") != null ? getStringSafe(json, "sede").toUpperCase() : null;
+        String codTipoTessera = getStringSafe(json, "codTipoTessera") != null ? getStringSafe(json, "codTipoTessera").toUpperCase() : null;
         String dataInizioStr  = getStringSafe(json, "dataInizioAssegnazione");
         String dataFineStr    = getStringSafe(json, "dataFineAssegnazione");
 
-        System.out.println("[assegnaTesseraServlet] Parametri ricevuti:");
-        System.out.println("  codiceFiscale          = " + codFiscale);
-        System.out.println("  idTessera              = " + idTessera);
-        System.out.println("  sede                   = " + sede);
-        System.out.println("  codTipoTessera         = " + codTipoTessera);
-        System.out.println("  dataInizioAssegnazione = " + dataInizioStr);
-        System.out.println("  dataFineAssegnazione   = " + dataFineStr);
-
-        // ── 4. Validazione obbligatori ────────────────────────────────────────
-        if (isBlank(codFiscale) || isBlank(idTessera) || isBlank(sede) ||
-            isBlank(codTipoTessera) || isBlank(dataInizioStr) || isBlank(dataFineStr)) {
+        // ── 4. VALIDAZIONI MANIACALI (Prima di toccare il DB) ──
+        if (isBlank(codFiscale) || isBlank(idTessera) || isBlank(sede) || isBlank(codTipoTessera) || isBlank(dataInizioStr)) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametri obbligatori mancanti.");
             return;
         }
 
-        // ── 5. Validazione codTipoTessera ('D' o 'S') ────────────────────────
-        String codTipoTesseraUpper = codTipoTessera.toUpperCase();
-        if (!codTipoTesseraUpper.equals("D") && !codTipoTesseraUpper.equals("S")) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST,
-                "Valore codTipoTessera non valido: deve essere 'D' (dipendente) o 'S' (sostitutiva).");
+        // A. Controlli schema DB (Lunghezze)
+        if (idTessera.length() > 10) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera supera i 10 caratteri consentiti.");
+            return;
+        }
+        if (sede.length() > 7) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Sede supera i caratteri consentiti.");
+            return;
+        }
+        if (codTipoTessera.length() != 1 || (!codTipoTessera.equals("D") && !codTipoTessera.equals("S"))) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Tipo Tessera non valido. Atteso 'D' o 'S'.");
             return;
         }
 
-        // ── 6. Parsing date (formato: dd/MM/yyyy HH:mm:ss) ───────────────────
+        // B. Controlli Formali (Regex Codice Fiscale)
+        if (codFiscale.length() != 16 || !codFiscale.matches("^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$")) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato Codice Fiscale non valido.");
+            return;
+        }
+
+        // C. Logica Date
         LocalDateTime dataInizio = parseDate(dataInizioStr);
         LocalDateTime dataFine   = parseDate(dataFineStr);
+        
+        // Gestione Default Data Fine se mancante (Dipende dalle tue regole di business)
+        if (dataFine == null) {
+            dataFine = LocalDateTime.of(9999, 12, 31, 23, 59, 59); // Data fittizia "infinito"
+        }
 
-        if (dataInizio == null || dataFine == null) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST,
-                "Formato date non valido. Atteso: dd/MM/yyyy HH:mm:ss (es. 30/05/2026 23:00:00).");
+        if (dataInizio == null) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data inizio non valido.");
             return;
         }
 
-        if (dataInizio.isAfter(dataFine)) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST,
-                "La data di inizio non può essere successiva alla data di fine.");
+        // Non permettere che Inizio sia uguale o maggiore alla Fine
+        if (!dataInizio.isBefore(dataFine)) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "La data di inizio deve essere rigorosamente precedente alla data di fine.");
             return;
         }
 
-        // ── 7. Carica config DB ───────────────────────────────────────────────
+        // ── 5. CONNESSIONE E TRANSAZIONE ──
         Properties props = new Properties();
         try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/db.properties")) {
-            if (is == null) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Configurazione DB non trovata.");
-                return;
-            }
             props.load(is);
+        } catch (Exception e) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Configurazione DB non trovata.");
+            return;
         }
 
-        String ip   = props.getProperty("db.ip");
-        String port = props.getProperty("db.port");
-        String db   = props.getProperty("db.name");
-        String user = props.getProperty("db.user");
-        String pwd  = props.getProperty("db.password");
-
-        AnagraficaCodFiscale1DAO daoAnagrafica = null;
-        Tessera1DAO              daoTessera    = null;
-        TesseraDipend1DAO        daoAssegnaz   = null;
-
+        Connection conn = null;
         try {
-            daoAnagrafica = new AnagraficaCodFiscale1DAOJDBCImpl(ip, port, db, user, pwd);
-            daoTessera    = new Tessera1DAOJDBCImpl(ip, port, db, user, pwd);
-            daoAssegnaz   = new TesseraDipend1DAOJDBCImpl(ip, port, db, user, pwd);
+            String dbUrl = "jdbc:oracle:thin:@//" + props.getProperty("db.ip") + ":" + props.getProperty("db.port") + "/" + props.getProperty("db.name");
+            conn = DriverManager.getConnection(dbUrl, props.getProperty("db.user"), props.getProperty("db.password"));
+            
+            // DISABILITIAMO AUTOCOMMIT: Inizia la Transazione!
+            conn.setAutoCommit(false);
 
-            // VERIFICA 1: Il codice fiscale esiste in anagrafica?
-            System.out.println("[assegnaTesseraServlet] Verifica codice fiscale...");
-            AnagraficaCodFiscale1 anagrafica = daoAnagrafica.getByCodFiscale(codFiscale);
-            if (anagrafica == null) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Codice fiscale non trovato a sistema.");
+            // Inizializziamo i DAO passandogli LA STESSA connessione
+            AnagraficaCodFiscale1DAO daoAnagrafica = new AnagraficaCodFiscale1DAOJDBCImpl(conn);
+            Tessera1DAO daoTessera = new Tessera1DAOJDBCImpl(conn);
+            TesseraDipend1DAO daoAssegnaz = new TesseraDipend1DAOJDBCImpl(conn);
+
+            // --- VERIFICHE DI BUSINESS CON DATABASE ---
+
+            // 1. Esiste l'anagrafica?
+            if (daoAnagrafica.getByCodFiscale(codFiscale) == null) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Codice Fiscale non trovato a sistema.");
                 return;
             }
-            System.out.println("[assegnaTesseraServlet] Codice fiscale OK: " + anagrafica.getCognome() + " " + anagrafica.getNome());
 
-            // VERIFICA 2: La tessera esiste?
-            System.out.println("[assegnaTesseraServlet] Verifica tessera...");
-            Tessera1 tessera = daoTessera.getTesseraById(idTessera);
+            // 2. Lock della Tessera (Race Condition Prevention)
+            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
             if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente.");
                 return;
             }
-            System.out.println("[assegnaTesseraServlet] Tessera trovata: " + idTessera);
 
-            // VERIFICA 3: Sovrapposizione di assegnazione
-            System.out.println("[assegnaTesseraServlet] Verifica sovrapposizione assegnazioni...");
-            List<TesseraDipend1> assegnazioniEsistenti = daoAssegnaz.getAssegnazioniByTessera(idTessera);
-            for (TesseraDipend1 assEsistente : assegnazioniEsistenti) {
-                LocalDateTime startEsistente = assEsistente.getDataOraInizioAssegnazione();
-                LocalDateTime endEsistente   = assEsistente.getDataOraFineAssegnazione();
-                if (dataInizio.isBefore(endEsistente) && dataFine.isAfter(startEsistente)) {
-                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
-                        "La tessera risulta già assegnata nel periodo selezionato.");
+            // 3. Controllo Indisponibilità Tessera
+            if (tessera.getDataOraIndisponibilita() != null && tessera.getDataOraIndisponibilita().isBefore(LocalDateTime.now())) {
+                 ResponseUtil.sendError(response, HttpServletResponse.SC_FORBIDDEN, "Impossibile assegnare: la tessera risulta invalidata o indisponibile.");
+                 return;
+            }
+
+            // 4. Verifica Sovrapposizioni (Usiamo >= e <= per evitare anche l'adiacenza esatta al secondo se richiesto, altrimenti tieni il tuo check)
+            List<TesseraDipend1> assegnazioniTessera = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+            for (TesseraDipend1 ass : assegnazioniTessera) {
+                if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
+                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "La tessera risulta già assegnata nel periodo selezionato.");
                     return;
                 }
             }
-            
-            // VERIFICA 4: Sovrapposizione assegnazione per il DIPENDENTE (Nuovo controllo)
-            System.out.println("[assegnaTesseraServlet] Verifica sovrapposizione tessere per il dipendente...");
+
             List<TesseraDipend1> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
-            for (TesseraDipend1 assEsistente : assegnazioniDipendente) {
-                LocalDateTime startEsistente = assEsistente.getDataOraInizioAssegnazione();
-                LocalDateTime endEsistente   = assEsistente.getDataOraFineAssegnazione();
-                
-                // Se c'è sovrapposizione temporale
-                if (dataInizio.isBefore(endEsistente) && dataFine.isAfter(startEsistente)) {
-                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT,
-                        "Il dipendente possiede già una tessera attiva nel periodo temporale selezionato.");
+            for (TesseraDipend1 ass : assegnazioniDipendente) {
+                if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
+                    ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "Il dipendente possiede già una tessera attiva nel periodo selezionato.");
                     return;
                 }
             }
+
+            // --- ESECUZIONE AGGIORNAMENTI (Tutto o Niente) ---
             
-            System.out.println("[assegnaTesseraServlet] Nessuna sovrapposizione rilevata.");
-
-            // AZIONE 1: Aggiorna sede su TESSERA1
-            System.out.println("[assegnaTesseraServlet] Aggiornamento sede...");
-            boolean sedeAggiornata = daoTessera.updateSede(idTessera, sede);
-            if (!sedeAggiornata) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Errore durante l'aggiornamento della sede.");
-                return;
+            // Puoi usare il metodo unificato che hai già per ottimizzare la query!
+            boolean tesseraAggiornata = daoTessera.updateSedeECodTipo(idTessera, sede, codTipoTessera);
+            if (!tesseraAggiornata) {
+                throw new SQLException("Errore aggiornamento dati tessera.");
             }
-            System.out.println("[assegnaTesseraServlet] Sede aggiornata OK.");
 
-            // AZIONE 2: Aggiorna codTipoTessera su TESSERA1
-            System.out.println("[assegnaTesseraServlet] Aggiornamento codTipoTessera...");
-            boolean tipoAggiornato = daoTessera.updateCodTipoTessera(idTessera, codTipoTesseraUpper);
-            if (!tipoAggiornato) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Errore durante l'aggiornamento del tipo tessera.");
-                return;
-            }
-            System.out.println("[assegnaTesseraServlet] CodTipoTessera aggiornato OK.");
-
-            // AZIONE 3: Inserisci assegnazione in TESSERADIPEND1
-            System.out.println("[assegnaTesseraServlet] Inserimento assegnazione...");
             TesseraDipend1 nuovaAssegnazione = new TesseraDipend1(idTessera, codFiscale, dataInizio, dataFine);
-            boolean inserita = daoAssegnaz.insertAssegnazione(nuovaAssegnazione);
-            if (!inserita) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Errore durante il salvataggio dell'assegnazione.");
-                return;
+            boolean assegnazioneInserita = daoAssegnaz.insertAssegnazione(nuovaAssegnazione);
+            if (!assegnazioneInserita) {
+                throw new SQLException("Errore inserimento in TESSERADIPEND1.");
             }
-            System.out.println("[assegnaTesseraServlet] Assegnazione inserita OK.");
 
-            // Nessun dato da restituire: operazione di scrittura → data: null
+            // SE ARRIVIAMO QUI, È ANDATO TUTTO BENE: CONFERMIAMO!
+            conn.commit();
             ResponseUtil.sendOkNoData(response, "Tessera assegnata correttamente.");
-            System.out.println("[assegnaTesseraServlet] >>> Fine doPost con successo.");
 
         } catch (Exception e) {
-            System.err.println("[assegnaTesseraServlet] Eccezione: " + e.getMessage());
-            e.printStackTrace();
-            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                "Errore interno del server: " + e.getMessage());
+            // IN CASO DI ERRORE, ANNULLIAMO TUTTE LE MODIFICHE DELLA TRANSAZIONE
+            System.err.println("[assegnaTesseraServlet] Rollback in corso per errore: " + e.getMessage());
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno, operazione annullata: " + e.getMessage());
         } finally {
-            if (daoAnagrafica != null) daoAnagrafica.closeConnection();
-            if (daoTessera != null)    daoTessera.closeConnection();
-            if (daoAssegnaz != null)   daoAssegnaz.closeConnection();
+            // CHIUDIAMO LA CONNESSIONE QUI, UNA VOLTA SOLA
+            if (conn != null) {
+                try { 
+                    conn.setAutoCommit(true); // Buona norma ripristinarlo prima di chiudere
+                    conn.close(); 
+                } catch (SQLException ex) { ex.printStackTrace(); }
+            }
         }
     }
 

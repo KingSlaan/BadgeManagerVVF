@@ -177,6 +177,11 @@ public class InserimentoTessereServlet extends HttpServlet {
                 // Il codice interno rimane ESATTAMENTE quello passato dal frontend (rimuoviamo solo gli spazi iniziali/finali accidentali)
                 String codiceInterno = rawCodiceInterno.trim(); 
 
+                // Nuovo controllo di sicurezza per la lunghezza massima
+                if (codiceInterno.length() > 20) {
+                    throw new Exception("Errore di validazione all'indice " + i + ": Il codice interno supera la lunghezza massima consentita di 20 caratteri (Trovati: " + codiceInterno.length() + ").");
+                }
+                
                 try {
                     // Applichiamo il padding a 10 zeri SOLO all'ID Tessera
                     idTessera = formattaStringaNumerica(rawIdTessera, 10, "ID Tessera");

@@ -19,6 +19,11 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
             e.printStackTrace();
         }
     }
+    
+    // Aggiungere in tutti i DAO
+    public AnagraficaCodFiscale1DAOJDBCImpl(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public boolean insertAnagrafica(AnagraficaCodFiscale1 a) throws SQLException {
