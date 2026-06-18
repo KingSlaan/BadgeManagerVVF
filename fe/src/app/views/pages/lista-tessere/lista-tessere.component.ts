@@ -12,18 +12,20 @@ import {
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint } from '@coreui/icons';
-import { DataGridColumn, DataGridContextMenuConfig, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
-import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig } from './lista-tessere.datagrid';
+import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig, TESSERE_URL_STATE_CONFIG } from './lista-tessere.datagrid';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
 import { Sedi } from './../../../../interfaces/sedi';
 import { SediService } from '../../../services/sedi.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { buildDataGridRequestFromState } from '../../../../components/data-grid/data-grid-utils';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -51,6 +53,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   private tessereService = inject(TessereService);
   private sediService = inject(SediService);
   public utilsService = inject(UtilsService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
 
@@ -60,6 +64,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   mode = ACTION_CONSTANTS.ADD;
   datagridLoading = signal(false);
   action_const = ACTION_CONSTANTS;
+
+  searchReady = signal(false);
 
   today: Date = new Date();
 
@@ -76,7 +82,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   searchConfig: DataGridSearchConfig = {
     enabled: true,
     fields: [],
-  };;
+  };
 
   paginationConfig = DATAGRID_CONSTANTS;
 
@@ -88,7 +94,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     () => this.openModalAggiungi(),
     () => this.exportCsv(),
     () => this.importCsv(),
-     (rows) => this.bulkPrint(rows)
+    (rows) => this.bulkPrint(rows)
   )
 
   loadingConfig: DataGridLoadingConfig = TESSERE_LOADING_STATE_CONFIG;
@@ -128,6 +134,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     rowKey: 'idTessera',
   } as const;
 
+  urlStateConfig = TESSERE_URL_STATE_CONFIG;
+
   selectedTessere = signal<Tessera[]>([]);
 
   onSelectionChange(event: { selectedRows: Tessera[] }): void {
@@ -135,7 +143,31 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   bulkPrint(rows: Tessera[]): void {
-    console.log('Bulk disable', rows);
+    debugger;
+    this.tessereService.stampaTessere(rows, 'WORD').subscribe({
+      next: response => {
+        const blob = response.body!;
+
+        let fileName = 'DocumentoRisposta.docx';
+
+        const disposition = response.headers.get('Content-Disposition');
+        if (disposition) {
+          const match = disposition.match(/filename="?([^"]+)"?/);
+          if (match) {
+            fileName = match[1];
+          }
+        }
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+      }
+    });
   }
 
   actionsArray = [
@@ -192,7 +224,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     {
       name: "stampa-tessera",
       do: (row: any) => {
-        this.openHistoryModal(row.idTessera)
+        this.bulkPrint([row])
       },
       color: "text-secondary",
       icon: this.icons.cilPrint,
@@ -209,7 +241,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.loadData(this.getInitialRequest());
+    // this.loadData(this.getInitialRequest());
     this.getSedi();
   }
 
@@ -223,6 +255,9 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
         this.sedi.set([...(options ?? [])]);
 
         this.searchConfig = createTesseraSearchConfig(options);
+
+        this.searchReady.set(true);
+        this.loadData(this.getInitialRequest());
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
@@ -262,6 +297,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   loadData(request: DataGridRequest) {
     this.datagridLoading.set(true);
     this.requestSearch.set(request);
+    this.updateUrlFromRequest(request);
 
     this.tessereService.getTessere(request).subscribe({
       next: (data: any) => {
@@ -323,31 +359,42 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   private getInitialRequest(): DataGridRequest {
-    const saved = localStorage.getItem(this.persistConfig.storageKey);
+    return buildDataGridRequestFromState(
+      this.searchConfig,
+      this.initialRequest,
+      this.persistConfig.storageKey,
+      this.route.snapshot.queryParamMap
+    );
+  }
 
-    if (!saved) {
-      return this.initialRequest;
+  private updateUrlFromRequest(request: DataGridRequest): void {
+    if (!this.urlStateConfig.enabled) {
+      return;
     }
 
-    const state = JSON.parse(saved);
+    const queryParams: Record<string, any> = {};
 
-    return {
-      filters: Object.entries(state.filters ?? {})
-        .filter(([_, value]) =>
-          value !== null &&
-          value !== undefined &&
-          value !== ''
-        )
-        .map(([field, value]) => ({
-          field,
-          operator: 'contains' as const,
-          value: String(value),
-        })),
+    request.filters.forEach(filter => {
+      if (Array.isArray(filter.value)) {
+        queryParams[filter.field] =
+          filter.value.length ? filter.value.join(',') : null;
+        return;
+      }
 
-      pagination: this.initialRequest.pagination,
+      queryParams[filter.field] =
+        filter.value !== null &&
+          filter.value !== undefined &&
+          filter.value !== ''
+          ? filter.value
+          : null;
+    });
 
-      sorting: state.sorting ?? this.initialRequest.sorting,
-    };
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
 }

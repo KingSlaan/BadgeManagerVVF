@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { provideRouter } from '@angular/router';
 import { ListaTessereComponent } from './lista-tessere.component';
 
 describe('ListaTessereComponent', () => {
@@ -8,9 +8,12 @@ describe('ListaTessereComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListaTessereComponent]
+      imports: [ListaTessereComponent],
+      providers: [
+        provideRouter([]),
+      ],
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ListaTessereComponent);
     component = fixture.componentInstance;

@@ -9,7 +9,7 @@
         </div>
 
         <div class="version-date">
-          {{ versionInfo().buildDate | date: "d MMM y" }}
+          {{ versionInfo().buildDate | date: "d MMM y HH:mm:ss" }}
         </div>
       }
     </div>
@@ -23,13 +23,13 @@
         </div>
 
         <div class="version-date">
-          {{ versionInfoBE().buildDate | date: "d MMM y" }}
+          {{ versionInfoBE().buildDate }}
         </div>
       }
     </div>
 
     <div class="version-card">
-      <div class="version-title">Weather</div>
+      <div class="version-title">Meteo</div>
 
       @if (weatherInfo()) {
         <div class="version-number">
@@ -49,7 +49,7 @@
   </div>
 
   <div class="version-card">
-    <div class="version-title">Authors</div>
+    <div class="version-title">Autori</div>
 
     <div class="version-number">
       Powered by

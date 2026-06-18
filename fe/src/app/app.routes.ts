@@ -1,3 +1,4 @@
+import { LogsViewerComponent } from './views/pages/logs-viewer/logs-viewer.component';
 import { loginGuard } from './../guards/login.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from '../guards/auth.guard';
@@ -39,7 +40,7 @@ export const routes: Routes = [
       {
         path: 'logs',
         canActivate: [authGuard],
-        loadComponent: () => import('./views/pages/stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent)
+        loadComponent: () => import('./views/pages/logs-viewer/logs-viewer.component').then(m => m.LogsViewerComponent)
       }
     ]
   },

@@ -1,6 +1,14 @@
 import { TemplateRef } from '@angular/core';
 import { AutocompleteOption } from '../components/autocomplete-select/autocomplete-select.component';
 
+export type DataGridFilterOperator =
+  | 'contains'
+  | 'equals'
+  | 'starts'
+  | 'in';
+export interface DataGridUrlStateConfig {
+  enabled: boolean;
+}
 export interface DataGridSelectionConfig {
   enabled: boolean;
   mode: 'single' | 'multiple';
@@ -90,7 +98,7 @@ export interface DataGridToolbarConfig<T = any> {
 
 export interface DataGridFilter {
   field: string;
-  operator: 'contains' | 'equals';
+  operator: DataGridFilterOperator;
   value: string;
 }
 
@@ -106,11 +114,14 @@ export interface DataGridSelectOption {
 export interface DataGridSearchField {
   field: string;
   label: string;
-  size?: string;
   type?: 'text' | 'select' | 'date' | 'checkbox' | 'autocomplete';
-  operator?: 'contains' | 'equals' | 'starts' | 'in';
+  operator?: DataGridFilterOperator;
+  size?: string;
   multiple?: boolean;
-  options?: DataGridSelectOption[] | AutocompleteOption[];
+  options?: {
+    label: string;
+    value: any;
+  }[];
 }
 
 export interface DataGridSearchConfig {

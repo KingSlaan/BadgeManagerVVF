@@ -31,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'logs',
-    loadComponent: () => import('./stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent),
+    loadComponent: () => import('./logs-viewer/logs-viewer.component').then(m => m.LogsViewerComponent),
     data: {
       title: $localize`Logs`
     }
