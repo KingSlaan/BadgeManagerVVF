@@ -12,14 +12,16 @@
       [min]="min"
       [max]="max"
       [disabled]="disabled"
+      [readonly]="readonly"
       (change)="onValueChange($event)"
     />
 
     <input
       type="text"
-      class="cui-input custom-datepicker-input"
+      class="cui-input"
+      [class.is-readonly]="readonly"
       [value]="displayValue"
-      [placeholder]="placeholder || computedPlaceholder"
+      [placeholder]="placeholder"
       [disabled]="disabled"
       readonly
       (click)="openPicker(dateInput)"
@@ -59,7 +61,6 @@
           <svg [cIcon]="icons.cilInfinity"></svg>
         </button>
       }
-
     </div>
   </div>
 </div>

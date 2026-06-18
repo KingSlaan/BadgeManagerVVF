@@ -45,6 +45,7 @@ export class DatepickerComponent implements ControlValueAccessor {
   @Input() todayButtonLabel = 'Today';
   @Input() specificDateButtonLabel = 'No end date';
   @Input() showTime = true;
+  @Input() readonly = false;
 
   icons = {
     cilCalendar,

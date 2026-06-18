@@ -37,7 +37,7 @@
   overflow-y: auto;
   border: 1px solid var(--cui-border-color);
   border-radius: var(--cui-border-radius);
-  background-color: var(--cui-body-bg);
+  background-color: var(--app-surface);
   color: var(--cui-body-color);
   box-shadow: var(--cui-box-shadow);
 }
@@ -85,7 +85,7 @@
   padding: 0.25rem 2.25rem 0.25rem 0.5rem;
   border: 1px solid var(--cui-border-color);
   border-radius: var(--cui-border-radius);
-  background-color: var(--cui-body-bg);
+  background-color: var(--app-surface);
   color: var(--cui-body-color);
 }
 

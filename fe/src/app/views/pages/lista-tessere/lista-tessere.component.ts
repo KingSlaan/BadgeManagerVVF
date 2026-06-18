@@ -19,7 +19,7 @@ import { TesseraHistoryComponent } from './../../../../components/modals/tessera
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
-import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig, TESSERE_URL_STATE_CONFIG } from './lista-tessere.datagrid';
+import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig, TESSERE_URL_STATE_CONFIG, TESSERE_SELECTION_SUMMARY_CONFIG, TESSERE_SORTING_CONFIG } from './lista-tessere.datagrid';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
 import { Sedi } from './../../../../interfaces/sedi';
@@ -101,13 +101,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   emptyStateConfig = TESSERE_EMPTY_STATE_CONFIG;
 
-  sortingConfig: DataGridSortingConfig = {
-    enabled: true,
-    defaultSorting: {
-      field: 'idTessera',
-      direction: 'desc',
-    },
-  };
+  sortingConfig = TESSERE_SORTING_CONFIG;
 
   persistConfig = TESSERE_PERSIST_CONFIG;
 
@@ -136,6 +130,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   urlStateConfig = TESSERE_URL_STATE_CONFIG;
 
+  selectionSummaryConfig = TESSERE_SELECTION_SUMMARY_CONFIG;
+
   selectedTessere = signal<Tessera[]>([]);
 
   onSelectionChange(event: { selectedRows: Tessera[] }): void {
@@ -143,7 +139,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   bulkPrint(rows: Tessera[]): void {
-    debugger;
     this.tessereService.stampaTessere(rows, 'WORD').subscribe({
       next: response => {
         const blob = response.body!;
@@ -297,6 +292,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   loadData(request: DataGridRequest) {
     this.datagridLoading.set(true);
     this.requestSearch.set(request);
+
     this.updateUrlFromRequest(request);
 
     this.tessereService.getTessere(request).subscribe({
@@ -374,25 +370,40 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
     const queryParams: Record<string, any> = {};
 
-    request.filters.forEach(filter => {
-      if (Array.isArray(filter.value)) {
-        queryParams[filter.field] =
-          filter.value.length ? filter.value.join(',') : null;
+    this.searchConfig.fields.forEach(field => {
+      const filter = request.filters.find(
+        f => f.field === field.field
+      );
+
+      if (!filter) {
         return;
       }
 
-      queryParams[filter.field] =
-        filter.value !== null &&
-          filter.value !== undefined &&
-          filter.value !== ''
-          ? filter.value
-          : null;
+      const value = filter.value;
+
+      if (Array.isArray(value)) {
+        if (value.length) {
+          queryParams[field.field] = value.join(',');
+        }
+
+        return;
+      }
+
+      if (field.type === 'checkbox') {
+        queryParams[field.field] =
+          value ? true : null;
+
+        return;
+      }
+
+      if (value !== null && value !== undefined && value !== '') {
+        queryParams[field.field] = value;
+      }
     });
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
-      queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }

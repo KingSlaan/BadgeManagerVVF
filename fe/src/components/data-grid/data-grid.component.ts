@@ -1,5 +1,5 @@
 import {
-  DataGridColumn, DataGridContextMenuConfig, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridPageEvent,
+  DataGridColumn, DataGridContextMenuConfig, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridSelectionSummaryConfig,
   DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSelectionConfig, DataGridSelectionEvent, DataGridSorting, DataGridSortingConfig,
   DataGridState,
   DataGridToolbarConfig,
@@ -88,6 +88,8 @@ export class DataGridComponent<T = any> implements OnInit {
   toolbarConfig = input<DataGridToolbarConfig<T>>();
   persistConfig = input<DataGridPersistConfig>();
 
+  selectionSummaryConfig = input<DataGridSelectionSummaryConfig<T>>();
+
   // CONTEXT MENU
   contextMenuConfig = input<DataGridContextMenuConfig<T>>();
 
@@ -154,7 +156,6 @@ export class DataGridComponent<T = any> implements OnInit {
       this.currentSorting = defaultSorting;
     }
   }
-
 
   applyFilters(): void {
     const filters = this.buildFilters();
@@ -503,7 +504,7 @@ export class DataGridComponent<T = any> implements OnInit {
     this.contextMenuRow.set(null);
   }
 
-  private getRowKey(row: T): any {
+  getRowKey(row: T): any {
     const key = this.selectionConfig()?.rowKey;
 
     return key
@@ -582,5 +583,31 @@ export class DataGridComponent<T = any> implements OnInit {
   toolbarContext = computed<DataGridToolbarContext<T>>(() => ({
     selectedRows: this.selectedRows(),
   }));
+
+  getSelectionLabel(row: T): string {
+    const field = this.selectionSummaryConfig()?.displayField;
+
+    if (!field) {
+      return '';
+    }
+
+    return String((row as any)[field] ?? '');
+  }
+
+  removeSelectedRow(row: T): void {
+    this.selectedRows.update(rows =>
+      rows.filter(
+        selected =>
+          this.getRowKey(selected) !== this.getRowKey(row)
+      )
+    );
+
+    this.emitSelection();
+  }
+
+  clearSelection(): void {
+    this.selectedRows.set([]);
+    this.emitSelection();
+  }
 
 }

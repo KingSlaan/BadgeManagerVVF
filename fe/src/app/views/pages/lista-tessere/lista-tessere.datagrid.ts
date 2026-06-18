@@ -49,8 +49,16 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
   }
 };
 
-export const TESSERE_SORTING_CONFIG: DataGridSortingConfig = {
+export const TESSERE_SELECTION_SUMMARY_CONFIG = {
   enabled: true,
+  label: 'Tessere selezionate',
+  displayField: 'idTessera',
+  maxHeight: '90px',
+  clearButton: true,
+};
+
+export const TESSERE_SORTING_CONFIG: DataGridSortingConfig = {
+  enabled: false,
   defaultSorting: {
     field: 'idTessera',
     direction: 'desc',

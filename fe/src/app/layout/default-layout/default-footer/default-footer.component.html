@@ -29,25 +29,21 @@
     </div>
 
     <div class="version-card">
-      <div class="version-title">Meteo</div>
+      <div class="version-title">Weather</div>
 
-      @if (weatherInfo()) {
-        <div class="version-number">
-          Today
-          {{ weatherIcon(weatherInfo()!.todayCode) }}
-          {{ weatherInfo()!.todayTemp }}°C
-        </div>
+      <div class="version-date">📍 {{ weatherInfo()!.city }}</div>
 
-        <div class="version-date">
-          Tomorrow
-          {{ weatherIcon(weatherInfo()!.tomorrowCode) }}
-          {{ weatherInfo()!.tomorrowTemp }}°C
-        </div>
-      } @else {
-        <div class="version-number">--</div>
+      <div class="version-number">
+        Today
+        {{ weatherIcon(weatherInfo()!.todayCode) }}
+        {{ weatherInfo()!.todayTemp }}°C
+      </div>
 
-        <div class="version-date">Loading...</div>
-      }
+      <div class="version-date">
+        Tomorrow
+        {{ weatherIcon(weatherInfo()!.tomorrowCode) }}
+        {{ weatherInfo()!.tomorrowTemp }}°C
+      </div>
     </div>
   </div>
 

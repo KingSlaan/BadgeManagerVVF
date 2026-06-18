@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () =>
+      import('./liste-home/liste-home.component')
+        .then(m => m.ListeHomeComponent)
+  },
+  {
     path: 'sedi',
     loadComponent: () => import('./lista-sedi/lista-sedi.component').then(m => m.ListaSediComponent),
     data: {

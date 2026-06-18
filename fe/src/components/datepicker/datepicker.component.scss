@@ -13,19 +13,18 @@
   width: 100%;
   height: 46px;
 
-  background: var(--cui-body-bg);
   border: 1px solid var(--cui-border-color);
   border-radius: 6px;
 
+  overflow: hidden;
+
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease,
-    opacity 0.2s ease;
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:focus-within {
     border-color: var(--cui-primary);
-    box-shadow: 0 0 0 3px rgba(var(--cui-primary-rgb), 0.2);
+    box-shadow: 0 0 0 0.2rem rgba(var(--cui-primary-rgb), 0.25);
   }
 
   &.invalid {
@@ -33,19 +32,10 @@
   }
 
   &.disabled {
-    background: var(--cui-secondary-bg);
-    border-color: var(--cui-border-color);
-    opacity: 0.75;
     cursor: not-allowed;
 
-    .cui-input {
-      color: var(--cui-secondary-color);
-      cursor: not-allowed;
-    }
-
-    .calendar-icon {
-      color: var(--cui-secondary-color);
-      opacity: 0.8;
+    .action-icon {
+      opacity: 0.45;
     }
   }
 }
@@ -57,29 +47,31 @@
 }
 
 .cui-input {
-  width: 100%;
+  flex: 1;
+
   height: 100%;
 
   border: none;
   outline: none;
-  background: transparent;
 
-  padding: 0 110px 0 16px;
-
-  font-size: 1rem;
-  font-weight: 500;
-
+  background: var(--app-surface);
   color: var(--cui-body-color);
 
-  cursor: pointer;
+  padding: 0 110px 0 16px;
 
   &::placeholder {
     color: var(--cui-secondary-color);
   }
 
   &:disabled {
+    background: var(--cui-secondary-bg);
     color: var(--cui-secondary-color);
+    cursor: not-allowed;
     -webkit-text-fill-color: var(--cui-secondary-color);
+  }
+
+  &.is-readonly:not(:disabled) {
+    background: var(--cui-secondary-bg);
   }
 }
 
