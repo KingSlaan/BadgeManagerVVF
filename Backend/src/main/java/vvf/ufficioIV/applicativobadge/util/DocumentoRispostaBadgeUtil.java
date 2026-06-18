@@ -5,10 +5,12 @@ import vvf.ufficioIV.applicativobadge.dto.NominativoDTO;
 import org.apache.poi.xwpf.usermodel.*;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfConverter;
 import fr.opensagres.poi.xwpf.converter.pdf.PdfOptions;
-
+import org.apache.poi.xwpf.usermodel.BreakType;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 import java.util.List;
+
 
 public class DocumentoRispostaBadgeUtil {
 
@@ -243,4 +245,140 @@ public class DocumentoRispostaBadgeUtil {
         // Fallback per numeri oltre il milione (improbabile per richieste badge, ma previene blocchi)
         return String.valueOf(n);
     }
+    
+    
+    //------------
+    //STAMPA BADGE
+    //-----------
+    /**
+     * Genera un unico file PDF contenente n pagine (una per ogni badge).
+     */
+    public static void generaStampaMassiva(List<NominativoDTO> nominativi, OutputStream out) throws Exception {
+        String templateName = "/STAMPA_TEMPLATE.docx";
+        
+        // 1. Carichiamo il template in memoria
+        byte[] templateBytes;
+        try (InputStream is = DocumentoRispostaBadgeUtil.class.getResourceAsStream(templateName)) {
+            if (is == null) {
+                throw new RuntimeException("Template di stampa badge non trovato al percorso: " + templateName);
+            }
+            templateBytes = org.apache.poi.util.IOUtils.toByteArray(is);
+        }
+
+        if (nominativi == null || nominativi.isEmpty()) {
+            return;
+        }
+
+        // 2. Apriamo il Master Document e compiliamo il PRIMO dipendente
+        XWPFDocument masterDoc = new XWPFDocument(new ByteArrayInputStream(templateBytes));
+        NominativoDTO primo = nominativi.get(0);
+        String cognomePrimo = primo.getCognome() != null ? primo.getCognome().toUpperCase() : "";
+        String nomePrimo = primo.getNome() != null ? primo.getNome().toUpperCase() : "";
+        
+        for (XWPFParagraph p : masterDoc.getParagraphs()) {
+            sostituisciTestoNelParagrafo(p, "$COGNOME$", cognomePrimo);
+            sostituisciTestoNelParagrafo(p, "$NOME$", nomePrimo);
+            
+            // MIRACOLO: Applica il grassetto SOLO ai dati e pulisce le etichette
+            applicaGrassettoAlDato(p, cognomePrimo);
+            applicaGrassettoAlDato(p, nomePrimo);
+        }
+        
+        // 3. Compiliamo dal SECONDO dipendente in poi
+        for (int i = 1; i < nominativi.size(); i++) {
+            NominativoDTO dip = nominativi.get(i);
+            String cognomeTxt = dip.getCognome() != null ? dip.getCognome().toUpperCase() : "";
+            String nomeTxt = dip.getNome() != null ? dip.getNome().toUpperCase() : "";
+            
+            List<XWPFParagraph> masterParagraphs = masterDoc.getParagraphs();
+            if (!masterParagraphs.isEmpty()) {
+                masterParagraphs.get(masterParagraphs.size() - 1).createRun().addBreak(BreakType.PAGE);
+            }
+            
+            try (XWPFDocument tempDoc = new XWPFDocument(new ByteArrayInputStream(templateBytes))) {
+                for (XWPFParagraph srcP : tempDoc.getParagraphs()) {
+                    sostituisciTestoNelParagrafo(srcP, "$COGNOME$", cognomeTxt);
+                    sostituisciTestoNelParagrafo(srcP, "$NOME$", nomeTxt);
+                    
+                    // MIRACOLO: Applica il grassetto SOLO ai dati e pulisce le etichette
+                    applicaGrassettoAlDato(srcP, cognomeTxt);
+                    applicaGrassettoAlDato(srcP, nomeTxt);
+                    
+                    XWPFParagraph newP = masterDoc.createParagraph();
+                    if (srcP.getCTP().getPPr() != null) {
+                        newP.getCTP().setPPr((org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr) srcP.getCTP().getPPr().copy());
+                    }
+                    
+                    for (XWPFRun srcRun : srcP.getRuns()) {
+                        XWPFRun newRun = newP.createRun();
+                        newRun.getCTR().set(srcRun.getCTR().copy());
+                        // Nota: Ho rimosso il "newRun.setBold(true)" forzato che avevamo messo prima!
+                    }
+                }
+            }
+        }
+        
+        
+        /* VERSIONE PDF - COMMENTARE/SCOMMENTARE
+        // 4. Convertiamo in PDF
+        fr.opensagres.poi.xwpf.converter.pdf.PdfOptions options = fr.opensagres.poi.xwpf.converter.pdf.PdfOptions.create();
+        fr.opensagres.poi.xwpf.converter.pdf.PdfConverter.getInstance().convert(masterDoc, out, options);
+        masterDoc.close();
+        */
+        
+        /* VERSIONE WORD - COMMENTARE/SCOMMENTARE */
+        // 4. Salviamo direttamente il documento Word unito nell'OutputStream
+        masterDoc.write(out);
+        masterDoc.close();
+        /**/
+    }
+
+    /**
+     * Metodo di supporto che "spezza" dinamicamente le righe: isola il dato 
+     * (es. "MARIO") mettendolo in GRASSETTO e in "ARIAL BLACK", assicurando che 
+     * l'etichetta (es. "Nome: ") sia in testo Arial normale.
+     */
+    private static void applicaGrassettoAlDato(XWPFParagraph p, String valoreDaCercare) {
+        if (valoreDaCercare == null || valoreDaCercare.trim().isEmpty()) return;
+        
+        for (int i = 0; i < p.getRuns().size(); i++) {
+            XWPFRun run = p.getRuns().get(i);
+            String text = run.getText(0);
+            
+            if (text != null && text.contains(valoreDaCercare)) {
+                if (text.equals(valoreDaCercare)) {
+                    // Se la riga contiene ESATTAMENTE solo il valore, forziamo Bold e Arial Black
+                    run.setBold(true);
+                    run.setFontFamily("Arial Black");
+                } else {
+                    // Se la riga è mista (es: "Nome: MARIO"), la splittiamo matematicamente
+                    int index = text.indexOf(valoreDaCercare);
+                    String primaParte = text.substring(0, index);
+                    String dopoParte = text.substring(index + valoreDaCercare.length());
+                    
+                    // 1. Reimposta la prima parte (l'etichetta "Nome: ") togliendo il grassetto e lasciando Arial standard
+                    run.setText(primaParte, 0);
+                    run.setBold(false);
+                    
+                    // 2. Crea un nuovo blocco ESCLUSIVO per il dato applicando Bold e Arial Black
+                    XWPFRun boldRun = p.insertNewRun(i + 1);
+                    boldRun.getCTR().set(run.getCTR().copy());
+                    boldRun.setText(valoreDaCercare, 0);
+                    boldRun.setBold(true);
+                    boldRun.setFontFamily("Arial Black"); // <--- AGGIUNTO QUI
+                    
+                    // 3. Se c'è testo dopo il nome, lo rimette normale
+                    if (!dopoParte.isEmpty()) {
+                        XWPFRun afterRun = p.insertNewRun(i + 2);
+                        afterRun.getCTR().set(run.getCTR().copy());
+                        afterRun.setText(dopoParte, 0);
+                        afterRun.setBold(false);
+                        i++;
+                    }
+                    i++; // Salta il blocco modificato per evitare cicli infiniti
+                }
+            }
+        }
+    }
+    
 }

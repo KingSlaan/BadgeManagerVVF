@@ -29,4 +29,14 @@
     <servlet-name>GeneraPdfBadgeServlet</servlet-name>
     <url-pattern>/GeneraPdfBadgeServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>StampaBadgeServlet</display-name>
+    <servlet-name>StampaBadgeServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.StampaBadgeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>StampaBadgeServlet</servlet-name>
+    <url-pattern>/StampaBadgeServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
