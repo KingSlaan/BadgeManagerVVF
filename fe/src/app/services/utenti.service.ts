@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONSTANTS } from 'src/constants/api.constants';
-import { DataGridRequest } from 'src/interfaces/datagrid';
+import { DataGridState } from 'src/interfaces/datagrid';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class UtentiService {
   /**
    * GET - Get all tessere
    */
-  getUtenti(body: DataGridRequest): Observable<Utente[]> {
+  getUtenti(body: DataGridState): Observable<Utente[]> {
     return this.http.post<Utente[]>(`${this.apiUrl}`, body);
   }
 }

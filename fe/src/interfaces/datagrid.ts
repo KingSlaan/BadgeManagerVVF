@@ -1,5 +1,16 @@
 import { TemplateRef } from '@angular/core';
 
+export interface DataGridPaginationState {
+  page: number;
+  pageSize: number;
+}
+
+export interface DataGridState {
+  filters: DataGridFilter[];
+  sorting: DataGridSorting | null;
+  pagination?: DataGridPaginationState;
+}
+
 export interface DataGridSelectionSummaryConfig<T = any> {
   enabled: boolean;
   label?: string;
@@ -45,15 +56,6 @@ export interface DataGridPersistConfig {
 
 export interface DataGridToolbarContext<T = any> {
   selectedRows: T[];
-}
-
-export interface DataGridState {
-  filters: Record<string, any>;
-  sorting: DataGridSorting | null;
-  pagination?: {
-    page: number;
-    pageSize: number;
-  };
 }
 
 export type DataGridSortDirection =
@@ -154,13 +156,4 @@ export interface DataGridColumn<T = any> {
     column: DataGridColumn<T>
   ) => string;
   template?: TemplateRef<any>;
-}
-
-export interface DataGridRequest {
-  filters: DataGridFilter[];
-  pagination?: {
-    page: number;
-    pageSize: number;
-  };
-  sorting?: DataGridSorting | null;
 }

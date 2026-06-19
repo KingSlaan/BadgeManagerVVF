@@ -73,11 +73,6 @@ export const TESSERE_LOADING_STATE_CONFIG: DataGridLoadingConfig = {
   text: 'Loading data...',
 }
 
-export const TESSERE_PERSIST_CONFIG = {
-  enabled: true,
-  storageKey: 'tessere-grid',
-};
-
 export const TESSERE_URL_STATE_CONFIG = {
   enabled: true,
 };

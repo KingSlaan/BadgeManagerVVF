@@ -1,9 +1,9 @@
 import {
   DataGridColumn, DataGridContextMenuConfig, DataGridEmptyStateConfig, DataGridLoadingConfig, DataGridSelectionSummaryConfig,
-  DataGridPaginationConfig, DataGridPersistConfig, DataGridRequest, DataGridSearchConfig, DataGridSelectionConfig, DataGridSelectionEvent, DataGridSorting, DataGridSortingConfig,
-  DataGridState,
+  DataGridPaginationConfig, DataGridSearchConfig, DataGridSelectionConfig, DataGridSelectionEvent, DataGridSorting, DataGridSortingConfig,
   DataGridToolbarConfig,
-  DataGridToolbarContext
+  DataGridToolbarContext,
+  DataGridState
 } from './../../interfaces/datagrid';
 import { DatepickerComponent } from './../datepicker/datepicker.component';
 import { AutocompleteSelectComponent } from '../autocomplete-select/autocomplete-select.component';
@@ -86,8 +86,7 @@ export class DataGridComponent<T = any> implements OnInit {
   loadingConfig = input<DataGridLoadingConfig>();
   emptyStateConfig = input<DataGridEmptyStateConfig>();
   toolbarConfig = input<DataGridToolbarConfig<T>>();
-  persistConfig = input<DataGridPersistConfig>();
-  initialRequest = input<DataGridRequest | null>(null);
+  initialState = input<DataGridState | null>(null);
 
   selectionSummaryConfig = input<DataGridSelectionSummaryConfig<T>>();
 
@@ -115,7 +114,7 @@ export class DataGridComponent<T = any> implements OnInit {
   // END ROW SELECTION
 
   @Output()
-  dataRequest = new EventEmitter<DataGridRequest>();
+  stateChange = new EventEmitter<DataGridState>();
 
   icons = { cilSearch, cilFilterX, cilFrown };
 
@@ -142,48 +141,51 @@ export class DataGridComponent<T = any> implements OnInit {
       }
     });
 
-    this.restoreState();
 
-    this.applyInitialRequestToFilters();
+    this.applyInitialState();
 
     if (this.sortingConfig()?.defaultSorting && !this.currentSorting) {
       this.currentSorting = this.sortingConfig()?.defaultSorting ?? null;
     }
   }
 
-  private applyInitialRequestToFilters(): void {
-    const request = this.initialRequest();
+  private applyInitialState(): void {
+    const state = this.initialState();
 
-    if (!request) {
+    if (!state) {
       return;
     }
 
-    request.filters.forEach(filter => {
+    state.filters.forEach(filter => {
       this.filterValues[filter.field] = filter.value;
     });
 
-    this.currentSorting = request.sorting ?? this.currentSorting;
+    this.currentSorting = state.sorting ?? this.currentSorting;
   }
 
-  applyFilters(): void {
-    const filters = this.buildFilters();
+  private buildGridState(
+    page?: number,
+    pageSize?: number
+  ): DataGridState {
+    const pagination = this.paginationConfig();
 
-    const request: DataGridRequest = {
-      filters,
+    const request: DataGridState = {
+      filters: this.buildFilters(),
       sorting: this.currentSorting,
     };
 
-    const pagination = this.paginationConfig();
-
     if (pagination?.enabled && pagination.serverSide) {
       request.pagination = {
-        page: 1,
-        pageSize: pagination.pageSize,
+        page: page ?? 1,
+        pageSize: pageSize ?? pagination.pageSize,
       };
     }
 
-    this.dataRequest.emit(request);
-    this.saveState();
+    return request;
+  }
+
+  applyFilters(): void {
+    this.stateChange.emit(this.buildGridState(1));
   }
 
   clearFilters(): void {
@@ -274,35 +276,21 @@ export class DataGridComponent<T = any> implements OnInit {
       return;
     }
 
-    const request: DataGridRequest = {
-      filters: this.buildFilters(),
-      sorting: this.currentSorting,
-      pagination: {
+    this.stateChange.emit(
+      this.buildGridState(
         page,
-        pageSize: pagination.pageSize,
-      },
-    };
-
-    this.dataRequest.emit(request);
+        pagination.pageSize
+      )
+    );
   }
 
   changePageSize(size: number): void {
-    const pagination = this.paginationConfig();
-
-    if (!pagination) {
-      return;
-    }
-
-    const request: DataGridRequest = {
-      filters: this.buildFilters(),
-      sorting: this.currentSorting,
-      pagination: {
-        page: 1,
-        pageSize: Number(size),
-      },
-    };
-
-    this.dataRequest.emit(request);
+    this.stateChange.emit(
+      this.buildGridState(
+        1,
+        Number(size)
+      )
+    );
   }
 
   hasRows = computed(() => this.displayedRows().length > 0);
@@ -444,53 +432,6 @@ export class DataGridComponent<T = any> implements OnInit {
     }
   }
 
-  saveState(): void {
-
-    const persist = this.persistConfig();
-
-    if (!persist?.enabled) {
-      return;
-    }
-
-    const state: DataGridState = {
-      filters: this.filterValues,
-      sorting: this.currentSorting,
-    };
-
-    localStorage.setItem(
-      persist.storageKey,
-      JSON.stringify(state)
-    );
-  }
-
-  restoreState(): void {
-
-    const persist =
-      this.persistConfig();
-
-    if (!persist?.enabled) {
-      return;
-    }
-
-    const savedState = localStorage.getItem(persist.storageKey);
-
-    if (!savedState) {
-      return;
-    }
-
-    const state: DataGridState = JSON.parse(savedState);
-
-    // FILTERS
-    Object.assign(
-      this.filterValues,
-      state.filters ?? {}
-    );
-
-    // SORTING
-
-    this.currentSorting = state.sorting ?? null;
-  }
-
   openContextMenu(event: MouseEvent, row: T): void {
     const config = this.contextMenuConfig();
 
@@ -564,11 +505,38 @@ export class DataGridComponent<T = any> implements OnInit {
       return;
     }
 
-    this.selectedRows.set(
-      this.areAllRowsSelected()
-        ? []
-        : [...this.displayedRows()]
-    );
+    const displayedRows = this.displayedRows();
+
+    if (this.areAllRowsSelected()) {
+      // deselect only displayed rows
+      this.selectedRows.update(selected =>
+        selected.filter(
+          selectedRow =>
+            !displayedRows.some(
+              displayedRow =>
+                this.getRowKey(displayedRow) ===
+                this.getRowKey(selectedRow)
+            )
+        )
+      );
+    } else {
+      // add displayed rows, keeping selections from other pages
+      this.selectedRows.update(selected => {
+        const newRows = displayedRows.filter(
+          displayedRow =>
+            !selected.some(
+              selectedRow =>
+                this.getRowKey(selectedRow) ===
+                this.getRowKey(displayedRow)
+            )
+        );
+
+        return [
+          ...selected,
+          ...newRows,
+        ];
+      });
+    }
 
     this.emitSelection();
   }

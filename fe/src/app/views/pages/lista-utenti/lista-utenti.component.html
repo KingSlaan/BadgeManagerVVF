@@ -3,18 +3,13 @@
   [rows]="utenti()"
   [searchConfig]="searchConfig"
   [paginationConfig]="paginationConfig"
-  [persistConfig]="persistConfig"
   [loading]="datagridLoading()"
-  (dataRequest)="loadData($event)"
+  [initialState]="gridState()"
+  (stateChange)="loadData($event)"
 />
 
 <ng-template #actionTemplate let-row>
-  <button
-    cButton
-    color="primary"
-    variant="ghost"
-    shape="rounded-pill"
-  >
+  <button cButton color="primary" variant="ghost" shape="rounded-pill">
     <svg [cIcon]="icons.cilPencil" title="Modifica"></svg>
   </button>
 </ng-template>

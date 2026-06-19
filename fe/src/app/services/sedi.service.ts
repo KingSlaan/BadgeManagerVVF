@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Sede } from '../../interfaces/sedi';
-import { DataGridRequest } from '../../interfaces/datagrid';
+import { DataGridState } from '../../interfaces/datagrid';
 import { ApiResponse } from '../../interfaces/api-response';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class SediService {
   /**
    * GET - Get all tessere
    */
-  getSedi(body: DataGridRequest): Observable<ApiResponse<Sede[]>> {
+  getSedi(body: DataGridState): Observable<ApiResponse<Sede[]>> {
     return this.http.post<ApiResponse<Sede[]>>(`${this.apiUrl}/getDipartimentiServlet`,body);
   }
 

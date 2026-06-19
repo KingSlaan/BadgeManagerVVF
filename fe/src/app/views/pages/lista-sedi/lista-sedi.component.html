@@ -5,5 +5,6 @@
   [paginationConfig]="paginationConfig"
   [sortingConfig]="sortingConfig"
   [loading]="datagridLoading()"
-  (dataRequest)="loadData($event)"
+  [initialState]="gridState()"
+  (stateChange)="loadData($event)"
 />
