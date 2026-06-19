@@ -20,6 +20,11 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
             e.printStackTrace();
         }
     }
+    
+    // Aggiungere in tutti i DAO
+    public TesseraDipend1DAOJDBCImpl(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public boolean insertAssegnazione(TesseraDipend1 a) throws SQLException {

@@ -145,7 +145,7 @@ public class InserimentoTessereServlet extends HttpServlet {
             String dbUrl = "jdbc:oracle:thin:@//" + ip + ":" + port + "/" + db;
             sharedConnection = DriverManager.getConnection(dbUrl, user, pwd);
             
-            // 🌟 DISABILITIAMO L'AUTOCOMMIT (INIZIO TRANSAZIONE)
+            // DISABILITIAMO L'AUTOCOMMIT (INIZIO TRANSAZIONE)
             sharedConnection.setAutoCommit(false);
 
             // Passiamo la stessa identica connessione ai due DAO
@@ -174,10 +174,21 @@ public class InserimentoTessereServlet extends HttpServlet {
 
                 // Formattazione
                 String idTessera;
-                String codiceInterno;
+                // Il codice interno rimane ESATTAMENTE quello passato dal frontend (rimuoviamo solo gli spazi iniziali/finali accidentali)
+                String codiceInterno = rawCodiceInterno.trim(); 
+
+                // Nuovo controllo di sicurezza per la lunghezza massima
+                if (codiceInterno.length() > 20) {
+                    throw new Exception("Errore di validazione all'indice " + i + ": Il codice interno supera la lunghezza massima consentita di 20 caratteri (Trovati: " + codiceInterno.length() + ").");
+                }
+                
+             // NUOVA LOGICA: Estrazione degli ultimi 10 caratteri
+                String suffixCodiceInterno = codiceInterno.length() > 10 ? 
+                                             codiceInterno.substring(codiceInterno.length() - 10) : 
+                                             codiceInterno;
+
                 try {
                     idTessera = formattaStringaNumerica(rawIdTessera, 10, "ID Tessera");
-                    codiceInterno = formattaStringaNumerica(rawCodiceInterno, 10, "Codice Interno");
                 } catch (IllegalArgumentException e) {
                     throw new Exception("Errore di validazione all'indice " + i + ": " + e.getMessage());
                 }
@@ -187,7 +198,11 @@ public class InserimentoTessereServlet extends HttpServlet {
                     throw new Exception("Inserimento bloccato: La tessera " + idTessera + " esiste già nel Database.");
                 }
                 if (daoTesseraDecode.getByCodiceInterno(codiceInterno) != null) {
-                    throw new Exception("Inserimento bloccato: Il codice interno " + codiceInterno + " è già assegnato.");
+                    throw new Exception("Inserimento bloccato: Il codice interno " + codiceInterno + " è già assegnato in modo esatto.");
+                }
+                // NUOVO CONTROLLO: Verifica se gli ultimi 10 caratteri esistono già nel DB
+                if (daoTesseraDecode.existsByLast10CharsCodiceInterno(suffixCodiceInterno)) {
+                    throw new Exception("Inserimento bloccato: Esiste già una tessera nel DB con gli stessi ultimi 10 caratteri (" + suffixCodiceInterno + ") assegnati al codice interno.");
                 }
 
                 // Verifica Duplicati interni al JSON
@@ -199,6 +214,16 @@ public class InserimentoTessereServlet extends HttpServlet {
                 for (TesseraDecode1 td : decodeDaInserire) {
                     if (td.getCodiceInterno().equals(codiceInterno)) {
                         throw new Exception("Payload non valido: Il codice interno " + codiceInterno + " è presente più volte nella richiesta.");
+                    }
+                    
+                    // NUOVO CONTROLLO: Verifica duplicazione degli ultimi 10 caratteri all'interno della richiesta JSON corrente
+                    String existingCode = td.getCodiceInterno();
+                    String existingSuffix = existingCode.length() > 10 ? 
+                                            existingCode.substring(existingCode.length() - 10) : 
+                                            existingCode;
+                    
+                    if (existingSuffix.equals(suffixCodiceInterno)) {
+                        throw new Exception("Payload non valido: Il suffisso di 10 caratteri (" + suffixCodiceInterno + ") è duplicato tra le tessere della richiesta.");
                     }
                 }
 
@@ -225,14 +250,14 @@ public class InserimentoTessereServlet extends HttpServlet {
                 tessereInserite++;
             }
 
-            // 🌟 TUTTO E' ANDATO BENE: SALVIAMO DEFINITIVAMENTE I DATI NEL DB (COMMIT) 🌟
+            // TUTTO E' ANDATO BENE: SALVIAMO DEFINITIVAMENTE I DATI NEL DB (COMMIT) 
             sharedConnection.commit();
             ResponseUtil.sendOkNoData(response, "Tessere (" + tessereInserite + ") validate ed inserite correttamente con un'unica transazione.");
 
         } catch (Exception e) {
             System.err.println("[inserimentoTessereServlet] Eccezione: " + e.getMessage());
             
-            // 🌟 C'E' STATO UN ERRORE: ANNULLIAMO TUTTE LE OPERAZIONI PENDENTI (ROLLBACK) 🌟
+            // C'E' STATO UN ERRORE: ANNULLIAMO TUTTE LE OPERAZIONI PENDENTI (ROLLBACK) 
             if (sharedConnection != null) {
                 try {
                     sharedConnection.rollback();
@@ -243,7 +268,7 @@ public class InserimentoTessereServlet extends HttpServlet {
             }
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } finally {
-            // 🌟 CHIUSURA DELLA CONNESSIONE CONDIVISA 🌟
+            // CHIUSURA DELLA CONNESSIONE CONDIVISA 
             if (sharedConnection != null) {
                 try {
                     sharedConnection.setAutoCommit(true); // E' buona prassi ripristinarlo prima di chiudere

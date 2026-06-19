@@ -1,7 +1,6 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
 import vvf.ufficioIV.applicativobadge.entity.TesseraDecode1;
-import java.util.List;
 
 public interface TesseraDecode1DAO {
     void closeConnection();
@@ -9,4 +8,5 @@ public interface TesseraDecode1DAO {
     TesseraDecode1 getByIdTessera(String idTessera);
     TesseraDecode1 getByCodiceInterno(String codiceInterno);
     boolean deleteByIdTessera(String idTessera) throws Exception;
+    boolean existsByLast10CharsCodiceInterno(String suffix);
 }

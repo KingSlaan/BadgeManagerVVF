@@ -17,6 +17,10 @@ import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Properties;
 
 /**
@@ -68,7 +72,7 @@ public class CambiaSedeServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println("[cambiaSedeServlet] >>> Inizio doPost");
+        System.out.println("[cambiaSedeServlet] >>> Inizio doPost (Transazionale)");
 
         // ── 1. Leggi body JSON ────────────────────────────────────────────────
         StringBuilder sb = new StringBuilder();
@@ -77,7 +81,6 @@ public class CambiaSedeServlet extends HttpServlet {
             while ((line = reader.readLine()) != null) sb.append(line);
         }
         String bodyJson = sb.toString();
-        System.out.println("[cambiaSedeServlet] Body ricevuto: " + bodyJson);
 
         if (isBlank(bodyJson)) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Body della richiesta vuoto o mancante.");
@@ -93,31 +96,41 @@ public class CambiaSedeServlet extends HttpServlet {
             return;
         }
 
-        // ── 3. Estrai campi dal frontend ──────────────────────────────────────
+        // ── 3. Estrai e Normalizza i campi (TUTTO UPPERCASE) ──────────────────
         String idTessera      = getStringSafe(json, "idTessera");
         String sede           = getStringSafe(json, "sede");
         String codTipoTessera = getStringSafe(json, "codTipoTessera");
 
-        System.out.println("[cambiaSedeServlet] Parametri ricevuti:");
-        System.out.println("  idTessera      = " + idTessera);
-        System.out.println("  sede           = " + sede);
-        System.out.println("  codTipoTessera = " + codTipoTessera);
+        if (idTessera != null) idTessera = idTessera.toUpperCase();
+        if (sede != null) sede = sede.toUpperCase();
+        if (codTipoTessera != null) codTipoTessera = codTipoTessera.toUpperCase();
 
-        // ── 4. Validazione obbligatori ────────────────────────────────────────
+        // ── 4. Validazioni Maniacali di Dominio e Schema DB ───────────────────
+        
+        // A. Presenza dati
         if (isBlank(idTessera) || isBlank(sede) || isBlank(codTipoTessera)) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametri obbligatori (idTessera, sede, codTipoTessera) mancanti.");
             return;
         }
 
-        // ── 5. Validazione codTipoTessera ('D' o 'S') ─────────────────────────
-        String codTipoTesseraUpper = codTipoTessera.toUpperCase();
-        if (!codTipoTesseraUpper.equals("D") && !codTipoTesseraUpper.equals("S")) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST,
-                "Valore codTipoTessera non valido: deve essere 'D' (dipendente) o 'S' (sostitutiva).");
+        // B. Vincoli colonne DB (Varchar2 Limits)
+        if (idTessera.length() > 10) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera supera i 10 caratteri consentiti.");
+            return;
+        }
+        
+        if (sede.length() > 10) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "La sigla della sede supera i 10 caratteri consentiti.");
             return;
         }
 
-        // ── 6. Carica config DB ───────────────────────────────────────────────
+        // C. Validazione Dominio codTipoTessera
+        if (codTipoTessera.length() != 1 || (!codTipoTessera.equals("D") && !codTipoTessera.equals("S"))) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Valore codTipoTessera non valido: deve essere 'D' (dipendente) o 'S' (sostitutiva).");
+            return;
+        }
+
+        // ── 5. Carica Configurazione DB ───────────────────────────────────────
         Properties props = new Properties();
         try (InputStream is = getServletContext().getResourceAsStream("/WEB-INF/db.properties")) {
             if (is == null) {
@@ -127,48 +140,71 @@ public class CambiaSedeServlet extends HttpServlet {
             props.load(is);
         }
 
-        String ip   = props.getProperty("db.ip");
-        String port = props.getProperty("db.port");
-        String db   = props.getProperty("db.name");
-        String user = props.getProperty("db.user");
-        String pwd  = props.getProperty("db.password");
-
-        Tessera1DAO daoTessera = null;
-
+        // ── 6. Avvio Connessione e Transazione Condivisa ──────────────────────
+        Connection conn = null;
         try {
-            daoTessera = new Tessera1DAOJDBCImpl(ip, port, db, user, pwd);
+            Class.forName("oracle.jdbc.OracleDriver");
+            String dbUrl = "jdbc:oracle:thin:@//" + props.getProperty("db.ip") + ":" + props.getProperty("db.port") + "/" + props.getProperty("db.name");
+            conn = DriverManager.getConnection(dbUrl, props.getProperty("db.user"), props.getProperty("db.password"));
+            
+            // 🔒 DISABILITA AUTOCOMMIT: Inizio Transazione
+            conn.setAutoCommit(false);
 
-            // VERIFICA: La tessera esiste?
-            System.out.println("[cambiaSedeServlet] Verifica esistenza tessera...");
-            Tessera1 tessera = daoTessera.getTesseraById(idTessera);
+            Tessera1DAO daoTessera = new Tessera1DAOJDBCImpl(conn);
+
+            // VERIFICA 1: La tessera esiste? Mettiamo in Lock PESSIMISTICO la riga.
+            System.out.println("[cambiaSedeServlet] Ricerca e blocco tessera...");
+            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
+            
             if (tessera == null) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente.");
+                ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente a sistema.");
                 return;
             }
-            System.out.println("[cambiaSedeServlet] Tessera trovata: " + idTessera);
+            
+            // VERIFICA 2: La tessera è operativa? (Non permettiamo di cambiare sede a tessere smarrite/invalidata)
+            if (tessera.getDataOraIndisponibilita() != null && tessera.getDataOraIndisponibilita().isBefore(LocalDateTime.now())) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_FORBIDDEN, "Impossibile modificare i dati: la tessera risulta invalidata o indisponibile.");
+                return;
+            }
 
-            // AZIONE UNIFICATA: Aggiorna Sede e Tipo Tessera in una singola transazione
+            // ESECUZIONE: Aggiorna Sede e Tipo Tessera
             System.out.println("[cambiaSedeServlet] Aggiornamento sede e codTipoTessera...");
-            boolean datiAggiornati = daoTessera.updateSedeECodTipo(idTessera, sede, codTipoTesseraUpper);
+            boolean datiAggiornati = daoTessera.updateSedeECodTipo(idTessera, sede, codTipoTessera);
             
             if (!datiAggiornati) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Errore durante l'aggiornamento dei dati della tessera.");
-                return;
+                throw new SQLException("Errore fatale: la query di update non ha modificato alcuna riga.");
             }
-            System.out.println("[cambiaSedeServlet] Dati aggiornati OK.");
 
-            // Nessun dato da restituire: operazione di scrittura → data: null
+            // ✅ TUTTO OK: CONFERMIAMO TRANSAZIONE
+            conn.commit();
+            System.out.println("[cambiaSedeServlet] Dati aggiornati e transazione completata con successo.");
             ResponseUtil.sendOkNoData(response, "Dati tessera aggiornati correttamente.");
-            System.out.println("[cambiaSedeServlet] >>> Fine doPost con successo.");
 
         } catch (Exception e) {
-            System.err.println("[cambiaSedeServlet] Eccezione: " + e.getMessage());
+            // ❌ ERRORE: ROLLBACK
+            System.err.println("[cambiaSedeServlet] Eccezione riscontrata: " + e.getMessage());
             e.printStackTrace();
-            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                "Errore interno del server: " + e.getMessage());
+            
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.err.println("[cambiaSedeServlet] Rollback eseguito correttamente.");
+                } catch (SQLException ex) {
+                    System.err.println("Errore fatale durante il rollback: " + ex.getMessage());
+                }
+            }
+            ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno durante l'aggiornamento: " + e.getMessage());
+            
         } finally {
-            if (daoTessera != null) daoTessera.closeConnection();
+            // 🧹 CHIUSURA RISORSE
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true); // Ripristino per best practice
+                    conn.close();
+                } catch (SQLException ex) {
+                    System.err.println("Errore durante la chiusura della connessione: " + ex.getMessage());
+                }
+            }
         }
     }
 
@@ -183,7 +219,7 @@ public class CambiaSedeServlet extends HttpServlet {
     private String getStringSafe(JsonObject json, String key) {
         try {
             return json.has(key) && !json.get(key).isJsonNull()
-                ? json.get(key).getAsString() : null;
+                ? json.get(key).getAsString().trim() : null;
         } catch (Exception e) { return null; }
     }
 
