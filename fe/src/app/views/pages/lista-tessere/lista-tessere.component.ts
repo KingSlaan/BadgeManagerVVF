@@ -276,7 +276,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.columns = createGridColumn(this.actionTemplate,this.statusTemplate);
+    this.columns = createGridColumn(this.actionTemplate, this.statusTemplate);
     this.contextMenuConfig = {
       enabled: true,
       template: this.contextActionTemplate,
@@ -364,14 +364,25 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getStatusColor(row:Tessera) {
-    console.log("row",row)
-    return TESSERE_STATUS_COLORS.LIBERA;
-    // return TESSERE_STATUS_COLORS.INDISPONIBILE;
-    // return TESSERE_STATUS_COLORS.OCCUPATA;
+  getStatusColor(row: Tessera) {
+    if(row){
+      const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
+      const timestampInizio = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
+      const timestampFine = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
+      const now = Date.now();
+
+      if (((timestampInizio < now && timestampFine < now) || !row.codiceFiscale ) && timestampIndisp < now)
+        return TESSERE_STATUS_COLORS.LIBERA;
+      else if (timestampIndisp > now) {
+        return TESSERE_STATUS_COLORS.INDISPONIBILE;
+      } else {
+        return TESSERE_STATUS_COLORS.OCCUPATA;
+      }
+    }
+    return TESSERE_STATUS_COLORS.ND;
   }
 
-  getStatusTooltip(row:Tessera) {
+  getStatusTooltip(row: Tessera) {
     return TESSERE_STATUS_MESSAGES.LIBERA;
     // return TESSERE_STATUS_COLORS.INDISPONIBILE;
     // return TESSERE_STATUS_COLORS.OCCUPATA;
