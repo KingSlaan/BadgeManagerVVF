@@ -1,15 +1,17 @@
-export type TesseraStatus = 'LIBERA' | 'INDISPONIBILE' | 'OCCUPATA';
+export type TesseraStatus = 'LIBERA' | 'INDISPONIBILE' | 'OCCUPATA' | 'ND';
 
 export const TESSERE_STATUS_COLORS: Record<TesseraStatus, string> = {
   LIBERA: 'success',
   INDISPONIBILE: 'danger',
-  OCCUPATA: 'warning'
+  OCCUPATA: 'warning',
+  ND: 'secondary',
 };
 
 export const TESSERE_STATUS_MESSAGES: Record<TesseraStatus, string> = {
   LIBERA: 'Libera',
   INDISPONIBILE: 'Indisponibile',
-  OCCUPATA: 'Occupata'
+  OCCUPATA: 'Occupata',
+  ND: 'ND',
 };
 
 // verde = libera --> indisponibilità attiva e non assegnata ;
