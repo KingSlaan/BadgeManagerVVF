@@ -6,6 +6,7 @@ import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons
 import { IconDirective } from '@coreui/icons-angular';
 import { ChartData } from 'chart.js';
 import { Statistiche, StatisticheSedeChart } from '../../../interfaces/statistiche';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -26,6 +27,7 @@ import { Statistiche, StatisticheSedeChart } from '../../../interfaces/statistic
 export class DashboardComponent implements OnInit {
 
   private statisticheService = inject(DashboardService);
+  private router = inject(Router);
 
   icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
 
@@ -88,6 +90,12 @@ export class DashboardComponent implements OnInit {
 
   calPerc(actual: number, tot: number): number {
     return (actual / tot) * 100;
+  }
+
+  goTo(route: string, queryParams?: Record<string, any>): void {
+    this.router.navigate([route], {
+      queryParams
+    });
   }
 
 }

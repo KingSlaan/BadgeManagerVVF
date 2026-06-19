@@ -22,8 +22,8 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
       { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'in', options: sediList, multiple: true },
       {
-        field: 'status',
-        label: 'Status',
+        field: 'codTipoTessera',
+        label: 'Codice Tipo Tessera',
         type: 'select',
         operator: 'equals',
         options: [
@@ -138,13 +138,12 @@ export function createGridToolbar(
   };
 }
 
-export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColumn<Tessera>[] {
+export function createGridColumn(actionTemplate: TemplateRef<any>,statusTemplate: TemplateRef<any>): DataGridColumn<Tessera>[] {
   return [
     {
       field: 'idTessera',
       header: 'ID',
       width: '80px',
-      sortable: true,
     },
     {
       field: 'codTipoTessera',
@@ -193,6 +192,11 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
           </small>
         `,
       width: "350px"
+    },
+        {
+      field: 'status',
+      header: '',
+      template: statusTemplate,
     },
     {
       field: 'actions',

@@ -1,6 +1,6 @@
 import { TessereService } from './../../../app/services/tessere.service';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { NgModel, Validators } from '@angular/forms';
 import { AlertComponent, BadgeComponent, ButtonDirective, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective, TooltipDirective } from '@coreui/angular';
 import { cilMinus, cilPlus, cilX, cilCheckAlt } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
@@ -41,11 +41,18 @@ export class TesseraAggiungiComponent {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
+  beError = signal('');
 
   listaBadgeForm = new FormGroup({
-    badgeValueStart: new FormControl(null),
-    badgeValueEnd: new FormControl(null),
-    listaBadgeString: new FormControl(''),
+    badgeValueStart: new FormControl(null, [
+      Validators.required,
+      Validators.min(0)
+    ]),
+    badgeValueEnd: new FormControl(null, [
+      Validators.required,
+      Validators.min(0)
+    ]),
+    listaBadgeString: new FormControl('', [Validators.required]),
   });
 
   icons = { cilX, cilPlus, cilMinus, cilCheckAlt };
@@ -72,6 +79,7 @@ export class TesseraAggiungiComponent {
       },
       error: (err: any) => {
         console.error('Error loading tessere', err);
+        this.beError = err;
       }
     });
     // do something here if needed
@@ -80,7 +88,7 @@ export class TesseraAggiungiComponent {
 
   checkTessereValidity() {
     const invalidNum = this.badgeListArrayFinal?.filter((element: any) => element.options.valid === false);
-    return !(this.badgeListArray?.length === this.badgeListArrayFinal?.length) || invalidNum.length > 0 || this.badgeListArrayFinal?.length === 0;
+    return !(this.badgeListArray?.length === this.badgeListArrayFinal?.length) || invalidNum.length > 0 || this.badgeListArrayFinal?.length === 0 || this.listaBadgeForm.invalid;
   }
 
   checkTesseraValid(codInterno: string) {
@@ -101,7 +109,6 @@ export class TesseraAggiungiComponent {
       if (this.badgeListArray?.filter(item => item === codInterno).length > 1) {
         valid = false;
         const indexesFound = this.getAllIndexes(this.badgeListArray, codInterno);
-        console.log("indexesFound", indexesFound);
         errorMessages.push("Il codice interno è già presente nella lista, quindi è duplicato nei seguenti indici: " + indexesFound.join(","));
       }
     }
@@ -110,6 +117,14 @@ export class TesseraAggiungiComponent {
       valid: valid,
       errorMessages: errorMessages
     };
+  }
+
+  preventNegative(event: KeyboardEvent) {
+    const blocked = ['-', '+', 'e', 'E'];
+
+    if (blocked.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
   getAllIndexes(arr: Array<string>, val: string) {
