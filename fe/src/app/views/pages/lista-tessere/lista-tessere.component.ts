@@ -10,6 +10,7 @@ import {
   DropdownToggleDirective,
   ListGroupDirective,
   ListGroupItemDirective,
+  RowComponent,
   TooltipDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
@@ -149,7 +150,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       next: response => {
         const blob = response.body!;
 
-        let fileName = 'DocumentoRisposta.docx';
+        let fileName = 'DocumentoRisposta.pdf';
 
         const disposition = response.headers.get('Content-Disposition');
         if (disposition) {
@@ -180,7 +181,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-info",
       icon: this.icons.cilActionUndo,
       title: "Assegna Dipendente",
-      visibility: () => true
+      visibility: (row: Tessera) => this.isLibera(row)
     },
     {
       name: "cambia-sede",
@@ -193,24 +194,24 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       visibility: () => true
     },
     {
-      name: "cambia-validità",
+      name: "disuso",
       do: (row: any) => {
         this.openModal(this.action_const.DISABLED, row.idTessera)
       },
       color: "text-danger",
       icon: this.icons.cilBan,
-      title: "Cambia Validità",
+      title: "Indisponibilità",
       visibility: () => true
     },
     {
-      name: "disuso",
+      name: "cambia-validità",
       do: (row: any) => {
         this.openModal(this.action_const.REMOVE, row.idTessera)
       },
       color: "text-danger",
       icon: this.icons.cilDelete,
-      title: "Disuso",
-      visibility: (row: any) => !!row.codiceFiscale
+      title: "Cambia Validità",
+      visibility: (row: any) => this.isOccupata(row) && !this.isIndisponibile(row)
     },
     {
       name: "cronologia",
@@ -230,7 +231,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-secondary",
       icon: this.icons.cilPrint,
       title: "Stampa Tessera",
-      visibility: (row: any) => !!row.codiceFiscale
+      visibility: (row: any) => this.isOccupata(row)
     },
   ];
 
@@ -363,17 +364,36 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     }
   }
 
+  isLibera(row: Tessera) {
+    return !this.isOccupata(row) && !this.isIndisponibile(row)
+  }
+
+  isOccupata(row: Tessera) {
+    const now = Date.now();
+    const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
+
+    if (timestampFine > now && row.codiceFiscale) {
+      return true;
+    }
+    return false;
+  }
+
+  isIndisponibile(row: Tessera): boolean {
+    const now = Date.now();
+    const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
+
+    if (timestampIndisp <= now) {
+      return true
+    }
+    return false;
+  }
+
+
   getStatusColor(row: Tessera) {
     if (row) {
-      const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
-      // const timestampInizio = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
-      const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
-      const now = Date.now();
-
-      if (timestampIndisp <= now) {
+      if (this.isIndisponibile(row)) {
         return TESSERE_STATUS_COLORS.INDISPONIBILE;
-      }
-      else if (timestampFine > now && row.codiceFiscale) {
+      } else if (this.isOccupata(row)) {
         return TESSERE_STATUS_COLORS.OCCUPATA;
       } else {
         return TESSERE_STATUS_COLORS.LIBERA;
@@ -384,15 +404,10 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   getStatusTooltip(row: Tessera) {
     if (row) {
-      const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
-      // const timestampInizio = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
-      const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
-      const now = Date.now();
-
-      if (timestampIndisp <= now) {
+      if (this.isIndisponibile(row)) {
         return TESSERE_STATUS_MESSAGES.INDISPONIBILE;
       }
-      else if (timestampFine > now && row.codiceFiscale) {
+      else if (this.isOccupata(row)) {
         return TESSERE_STATUS_MESSAGES.OCCUPATA;
       } else {
         return TESSERE_STATUS_MESSAGES.LIBERA;
