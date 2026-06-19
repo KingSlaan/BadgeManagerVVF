@@ -4,7 +4,7 @@ import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent,
 import { DatepickerComponent } from '../../../../components/datepicker/datepicker.component';
 import { SediStateService } from '../../../../states/sedi-state.service';
 import { AutocompleteOption, AutocompleteSelectComponent } from '../../../../components/autocomplete-select/autocomplete-select.component';
-import { DataGridRequest } from '../../../../interfaces/datagrid';
+import { DataGridState } from '../../../../interfaces/datagrid';
 import { map, Observable, tap } from 'rxjs';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
@@ -123,7 +123,7 @@ export class StampaDocumentiComponent implements OnInit {
   }
 
   searchTessere = (term: string): Observable<AutocompleteOption[]> => {
-    const request: DataGridRequest = {
+    const request: DataGridState = {
       filters: [
         {
           field: "cognome",
@@ -132,9 +132,10 @@ export class StampaDocumentiComponent implements OnInit {
         },
       ],
       pagination: {
-        page: 0,
+        page: 1,
         pageSize: 50
-      }
+      },
+       sorting: null,
     };
 
     return this.tessereService.getTessere(request).pipe(

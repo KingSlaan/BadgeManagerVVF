@@ -14,20 +14,20 @@ import {
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint } from '@coreui/icons';
-import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridFilterValue, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridFilterValue, DataGridLoadingConfig, DataGridPageEvent, DataGridSearchConfig, DataGridSortingConfig, DataGridState, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
-import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, TESSERE_PERSIST_CONFIG, createTesseraSearchConfig, TESSERE_URL_STATE_CONFIG, TESSERE_SELECTION_SUMMARY_CONFIG, TESSERE_SORTING_CONFIG } from './lista-tessere.datagrid';
+import { createGridColumn, createGridToolbar, TESSERE_EMPTY_STATE_CONFIG, TESSERE_LOADING_STATE_CONFIG, createTesseraSearchConfig, TESSERE_URL_STATE_CONFIG, TESSERE_SELECTION_SUMMARY_CONFIG, TESSERE_SORTING_CONFIG } from './lista-tessere.datagrid';
 import { TessereService } from '../../../services/tessere.service';
 import { UtilsService } from '../../../services/utils.service';
 import { Sedi } from './../../../../interfaces/sedi';
 import { SediService } from '../../../services/sedi.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { buildDataGridRequestFromState, buildUrlQueryParamsFromRequest } from '../../../../components/data-grid/data-grid-utils';
+import { buildDataGridState, buildUrlQueryParamsFromState } from '../../../../components/data-grid/data-grid-utils';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -111,24 +111,22 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   sortingConfig = TESSERE_SORTING_CONFIG;
 
-  persistConfig = TESSERE_PERSIST_CONFIG;
-
   tessere = signal<Tessere>([]);
   sedi = signal<Sedi>([]);
 
   tesseraSelected = signal<Tessera>(tesseraEmpty);
   tesseraHistory = signal<any>([]);
 
-  initialRequest: DataGridRequest = {
+  initialGridState: DataGridState | null = null;
+
+  gridState = signal<DataGridState>({
     filters: [],
+    sorting: this.sortingConfig.defaultSorting ?? null,
     pagination: {
       page: 1,
       pageSize: this.paginationConfig.pageSize,
     },
-    sorting: this.sortingConfig?.defaultSorting ?? null,
-  };
-
-  requestSearch = signal(this.initialRequest);
+  });
 
   selectionConfig = {
     enabled: true,
@@ -257,12 +255,13 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
         this.sedi.set([...(options ?? [])]);
         this.searchConfig = createTesseraSearchConfig(options);
-        const initialRequest = this.getInitialRequest();
+        const initialState = this.getInitialState();
 
-        this.requestSearch.set(initialRequest);
+        this.initialGridState = initialState;
+        this.gridState.set(initialState);
         this.searchReady.set(true);
 
-        this.loadData(initialRequest);
+        this.loadData(initialState);
       },
       error: (err: any) => {
         console.error('Error loading sedi', err);
@@ -296,16 +295,16 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.loadData(this.requestSearch())
+    this.loadData(this.gridState())
   }
 
-  loadData(request: DataGridRequest) {
+  loadData(state: DataGridState) {
     this.datagridLoading.set(true);
-    this.requestSearch.set(request);
+    this.gridState.set(state);
 
-    this.updateUrlFromRequest(request);
+    this.updateUrlFromState(state);
 
-    this.tessereService.getTessere(request).subscribe({
+    this.tessereService.getTessere(state).subscribe({
       next: (data: any) => {
         this.tessere.set([...(data.data ?? [])]);
 
@@ -360,49 +359,63 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.isModalOpen = visible;
 
     if (!visible) {
-      this.loadData(this.initialRequest);
+      this.loadData(this.gridState());
     }
   }
 
   getStatusColor(row: Tessera) {
-    if(row){
+    if (row) {
       const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
-      const timestampInizio = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
-      const timestampFine = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
+      // const timestampInizio = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
+      const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
       const now = Date.now();
 
-      if (((timestampInizio < now && timestampFine < now) || !row.codiceFiscale ) && timestampIndisp < now)
-        return TESSERE_STATUS_COLORS.LIBERA;
-      else if (timestampIndisp > now) {
+      if (timestampIndisp <= now) {
         return TESSERE_STATUS_COLORS.INDISPONIBILE;
-      } else {
+      }
+      else if (timestampFine > now && row.codiceFiscale) {
         return TESSERE_STATUS_COLORS.OCCUPATA;
+      } else {
+        return TESSERE_STATUS_COLORS.LIBERA;
       }
     }
     return TESSERE_STATUS_COLORS.ND;
   }
 
   getStatusTooltip(row: Tessera) {
-    return TESSERE_STATUS_MESSAGES.LIBERA;
-    // return TESSERE_STATUS_COLORS.INDISPONIBILE;
-    // return TESSERE_STATUS_COLORS.OCCUPATA;
+    if (row) {
+      const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
+      // const timestampInizio = row.dataOraInizioAssegnazione ? this.utilsService.parseItalianDate(row.dataOraInizioAssegnazione).getTime() : null;
+      const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
+      const now = Date.now();
+
+      if (timestampIndisp <= now) {
+        return TESSERE_STATUS_MESSAGES.INDISPONIBILE;
+      }
+      else if (timestampFine > now && row.codiceFiscale) {
+        return TESSERE_STATUS_MESSAGES.OCCUPATA;
+      } else {
+        return TESSERE_STATUS_MESSAGES.LIBERA;
+      }
+    }
+    return TESSERE_STATUS_COLORS.ND;
+
   }
 
-  private getInitialRequest(): DataGridRequest {
-    return buildDataGridRequestFromState(
+  private getInitialState(): DataGridState {
+    return buildDataGridState(
       this.searchConfig,
-      this.initialRequest,
-      this.persistConfig.storageKey,
+      this.gridState(),
       this.route.snapshot.queryParamMap
     );
   }
 
-  private updateUrlFromRequest(request: DataGridRequest): void {
+  private updateUrlFromState(request: DataGridState): void {
     if (!this.urlStateConfig.enabled) {
       return;
     }
 
-    const queryParams = buildUrlQueryParamsFromRequest(
+    const queryParams = buildUrlQueryParamsFromState(
       this.searchConfig,
       request
     );

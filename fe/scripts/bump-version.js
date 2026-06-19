@@ -37,6 +37,11 @@ const boardGames = [
   'Emerge',
   'Amalfi',
   'Agricola',
+  'Nemesis',
+  'Concordia',
+  'Cascadia',
+  'Lisboa',
+  'Arcs',
 ];
 
 const bumpType = process.argv[2] || 'patch';

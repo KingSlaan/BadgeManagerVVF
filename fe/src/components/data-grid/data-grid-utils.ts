@@ -1,65 +1,35 @@
 import {
-  DataGridRequest,
+  DataGridState,
   DataGridSearchConfig,
   DataGridFilter,
-  DataGridSorting,
 } from '../../interfaces/datagrid';
 
-export function buildDataGridRequestFromState(
+export function buildDataGridState(
   searchConfig: DataGridSearchConfig,
-  initialRequest: DataGridRequest,
-  storageKey: string,
+  initialState: DataGridState,
   queryParamMap: {
     keys: string[];
     has: (name: string) => boolean;
     get: (name: string) => string | null;
   }
-): DataGridRequest {
-
+): DataGridState {
   const hasUrlParams =
-    queryParamMap.keys.length > 0;
+    searchConfig.fields.some(field =>
+      queryParamMap.has(field.field)
+    );
 
   if (hasUrlParams) {
     return {
-      filters:
-        buildFiltersFromUrl(
-          searchConfig,
-          queryParamMap
-        ),
-
-      pagination:
-        initialRequest.pagination,
-
-      sorting:
-        initialRequest.sorting,
+      filters: buildFiltersFromUrl(
+        searchConfig,
+        queryParamMap
+      ),
+      sorting: initialState.sorting ?? null,
+      pagination: initialState.pagination,
     };
   }
 
-  const saved =
-    localStorage.getItem(storageKey);
-
-  if (!saved) {
-    return initialRequest;
-  }
-
-  const state = JSON.parse(saved) as {
-    filters?: Record<string, any>;
-    sorting?: DataGridSorting | null;
-  };
-
-  return {
-    filters:
-      buildFiltersFromStoredState(
-        searchConfig,
-        state.filters ?? {}
-      ),
-
-    pagination:
-      initialRequest.pagination,
-
-    sorting:
-      state.sorting ?? initialRequest.sorting,
-  };
+  return initialState;
 }
 
 function buildFiltersFromUrl(
@@ -102,42 +72,9 @@ function buildFiltersFromUrl(
     });
 }
 
-function buildFiltersFromStoredState(
+export function buildUrlQueryParamsFromState(
   searchConfig: DataGridSearchConfig,
-  storedFilters: Record<string, any>
-): DataGridFilter[] {
-
-  return searchConfig.fields
-    .filter(field => {
-      const value =
-        storedFilters[field.field];
-
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-
-      if (field.type === 'checkbox') {
-        return value === true;
-      }
-
-      return (
-        value !== null &&
-        value !== undefined &&
-        value !== ''
-      );
-    })
-    .map(field => ({
-      field: field.field,
-      operator:
-        field.operator ?? 'contains',
-      value:
-        storedFilters[field.field],
-    }));
-}
-
-export function buildUrlQueryParamsFromRequest(
-  searchConfig: DataGridSearchConfig,
-  request: DataGridRequest
+  request: DataGridState
 ): Record<string, any> {
   const queryParams: Record<string, any> = {};
 

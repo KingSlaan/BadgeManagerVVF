@@ -58,11 +58,6 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
   ];
 }
 
-export const UTENTI_PERSIST_CONFIG = {
-  enabled: true,
-  storageKey: 'utenti-grid',
-};
-
 export const UTENTI_MOCK: Utenti = [
   {
     id: 1,
@@ -86,3 +81,11 @@ export const UTENTI_MOCK: Utenti = [
   },
 
 ];
+
+export const UTENTI_SORTING_CONFIG: DataGridSortingConfig = {
+  enabled: false,
+  defaultSorting: {
+    field: 'idTessera',
+    direction: 'desc',
+  },
+}

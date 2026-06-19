@@ -1,9 +1,9 @@
 import { Component, inject, signal, TemplateRef, ViewChild } from '@angular/core';
 import { UtentiService } from 'src/app/services/utenti.service';
-import { DataGridColumn, DataGridPageEvent, DataGridRequest, DataGridSearchConfig } from 'src/interfaces/datagrid';
+import { DataGridColumn, DataGridPageEvent, DataGridState, DataGridSearchConfig, DataGridSortingConfig } from 'src/interfaces/datagrid';
 import {
   createGridColumn, createSearchConfig,
-  UTENTI_PERSIST_CONFIG
+  UTENTI_SORTING_CONFIG
 } from './lista-utenti.datagrid';
 import { DATAGRID_CONSTANTS_NO_PAGINATION } from 'src/constants/datagrid.constants';
 import { Utente, Utenti } from 'src/interfaces/utenti';
@@ -32,17 +32,21 @@ export class ListaUtentiComponent {
   searchConfig: DataGridSearchConfig = createSearchConfig();
 
   paginationConfig = DATAGRID_CONSTANTS_NO_PAGINATION;
-  persistConfig = UTENTI_PERSIST_CONFIG;
+  sortingConfig: DataGridSortingConfig = UTENTI_SORTING_CONFIG;
+
 
   utenti = signal<Utenti>([]);
 
-  initialRequest: DataGridRequest = {
+  initialGridState: DataGridState | null = null;
+
+  gridState = signal<DataGridState>({
     filters: [],
+    sorting: this.sortingConfig.defaultSorting ?? null,
     pagination: {
       page: 1,
       pageSize: this.paginationConfig.pageSize,
     },
-  };
+  });
 
   @ViewChild('actionTemplate', {
     static: true,
@@ -52,10 +56,10 @@ export class ListaUtentiComponent {
   columns = createGridColumn(this.actionTemplate);
 
   ngOnInit(): void {
-    this.loadData(this.initialRequest);
+    this.loadData(this.gridState());
   }
 
-  loadData(request: DataGridRequest) {
+  loadData(request: DataGridState) {
     this.datagridLoading.set(true);
 
     this.utentiService.getUtenti(request).subscribe({

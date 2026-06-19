@@ -1,9 +1,9 @@
 import { SediService } from './../../../services/sedi.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig } from '../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridState, DataGridSearchConfig, DataGridSortingConfig } from '../../../../interfaces/datagrid';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { DATAGRID_CONSTANTS_NO_PAGINATION } from '../../../../constants/datagrid.constants';
-import { createGridColumn, createSearchConfig, SEDI_PERSIST_CONFIG, SEDI_SORTING_CONFIG } from './lista-sedi.datagrid';
+import { createGridColumn, createSearchConfig, SEDI_SORTING_CONFIG } from './lista-sedi.datagrid';
 import { Sede, Sedi } from 'src/interfaces/sedi';
 
 @Component({
@@ -23,25 +23,26 @@ export class ListaSediComponent implements OnInit {
   searchConfig: DataGridSearchConfig = createSearchConfig();
   paginationConfig = DATAGRID_CONSTANTS_NO_PAGINATION;
   sortingConfig: DataGridSortingConfig = SEDI_SORTING_CONFIG;
-  persistConfig = SEDI_PERSIST_CONFIG;
   sedi = signal<Sedi>([]);
 
-  initialRequest: DataGridRequest = {
+  initialGridState: DataGridState | null = null;
+
+  gridState = signal<DataGridState>({
     filters: [],
+    sorting: this.sortingConfig.defaultSorting ?? null,
     pagination: {
       page: 1,
       pageSize: this.paginationConfig.pageSize,
     },
-    sorting: this.sortingConfig?.defaultSorting ?? null,
-  };
+  });
 
-columns: DataGridColumn<Sede>[] = createGridColumn();
+  columns: DataGridColumn<Sede>[] = createGridColumn();
 
   ngOnInit(): void {
-    this.loadData(this.initialRequest);
+    this.loadData(this.gridState());
   }
 
-  loadData(request: DataGridRequest) {
+  loadData(request: DataGridState) {
     this.datagridLoading.set(true);
 
     this.sediService.getSedi(request).subscribe({

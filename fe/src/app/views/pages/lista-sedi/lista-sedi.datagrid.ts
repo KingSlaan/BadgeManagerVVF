@@ -15,7 +15,7 @@ export function createSearchConfig(): DataGridSearchConfig {
 }
 
 export const SEDI_SORTING_CONFIG: DataGridSortingConfig = {
-  enabled: true,
+  enabled: false,
   defaultSorting: {
     field: 'idTessera',
     direction: 'desc',
@@ -35,10 +35,6 @@ export function createGridColumn(): DataGridColumn<Sede>[] {
   ];
 }
 
-export const SEDI_PERSIST_CONFIG = {
-  enabled: true,
-  storageKey: 'sedi-grid',
-};
 
 export const SEDI_MOCK: Sedi = [
   {
