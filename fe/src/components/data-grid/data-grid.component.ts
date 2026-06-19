@@ -87,6 +87,7 @@ export class DataGridComponent<T = any> implements OnInit {
   emptyStateConfig = input<DataGridEmptyStateConfig>();
   toolbarConfig = input<DataGridToolbarConfig<T>>();
   persistConfig = input<DataGridPersistConfig>();
+  initialRequest = input<DataGridRequest | null>(null);
 
   selectionSummaryConfig = input<DataGridSelectionSummaryConfig<T>>();
 
@@ -131,14 +132,10 @@ export class DataGridComponent<T = any> implements OnInit {
   currentSorting: DataGridSorting | null = null;
 
   ngOnInit() {
-    // Init empty object keys first
     this.searchConfig()?.fields.forEach((f: any) => {
       if (f.type === 'checkbox') {
-
         this.filterValues[f.field] ??= false;
-
       } else if (f.type === 'autocomplete' && f.multiple) {
-
         this.filterValues[f.field] ??= [];
       } else {
         this.filterValues[f.field] ??= '';
@@ -147,14 +144,25 @@ export class DataGridComponent<T = any> implements OnInit {
 
     this.restoreState();
 
-    // Default sorting only if none persisted
-    if (
-      this.sortingConfig()?.defaultSorting && !this.currentSorting
-    ) {
-      const defaultSorting = this.sortingConfig()?.defaultSorting ?? null;
+    this.applyInitialRequestToFilters();
 
-      this.currentSorting = defaultSorting;
+    if (this.sortingConfig()?.defaultSorting && !this.currentSorting) {
+      this.currentSorting = this.sortingConfig()?.defaultSorting ?? null;
     }
+  }
+
+  private applyInitialRequestToFilters(): void {
+    const request = this.initialRequest();
+
+    if (!request) {
+      return;
+    }
+
+    request.filters.forEach(filter => {
+      this.filterValues[filter.field] = filter.value;
+    });
+
+    this.currentSorting = request.sorting ?? this.currentSorting;
   }
 
   applyFilters(): void {

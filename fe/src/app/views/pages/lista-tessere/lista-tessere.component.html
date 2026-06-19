@@ -10,6 +10,7 @@
     [persistConfig]="persistConfig"
     [loading]="datagridLoading()"
     [emptyStateConfig]="emptyStateConfig"
+    [initialRequest]="requestSearch()"
     (dataRequest)="loadData($event)"
     [contextMenuConfig]="contextMenuConfig"
     [selectionConfig]="selectionConfig"
@@ -82,4 +83,14 @@
       }
     }
   </ul>
+</ng-template>
+
+<ng-template #statusTemplate let-row>
+  <div
+    class="status-container"
+    [cTooltip]="getStatusTooltip(row)"
+    cTooltipPlacement="top"
+  >
+    <span [class]="'status-dot status-dot--' + getStatusColor(row)"></span>
+  </div>
 </ng-template>

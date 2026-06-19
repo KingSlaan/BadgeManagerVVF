@@ -1,0 +1,34 @@
+
+
+.status-dot--success {
+  background-color: var(--cui-success);
+}
+
+.status-dot--warning {
+  background-color: var(--cui-warning);
+}
+
+.status-dot--danger {
+  background-color: var(--cui-danger);
+}
+
+.status-cell {
+  height: 100%;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.status-container {
+  min-height: 40px; // same or close to your table row height
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-dot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

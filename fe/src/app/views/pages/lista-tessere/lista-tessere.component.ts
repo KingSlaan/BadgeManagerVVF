@@ -1,3 +1,4 @@
+import { TESSERE_STATUS_COLORS, TESSERE_STATUS_MESSAGES } from './../../../../constants/tessere-status.constants';
 import { DATAGRID_CONSTANTS } from './../../../../constants/datagrid.constants';
 import { Component, inject, OnInit, AfterViewInit, TemplateRef, ViewChild, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -8,11 +9,12 @@ import {
   DropdownMenuDirective,
   DropdownToggleDirective,
   ListGroupDirective,
-  ListGroupItemDirective
+  ListGroupItemDirective,
+  TooltipDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint } from '@coreui/icons';
-import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridFilterValue, DataGridLoadingConfig, DataGridPageEvent, DataGridRequest, DataGridSearchConfig, DataGridSortingConfig, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
@@ -25,7 +27,7 @@ import { UtilsService } from '../../../services/utils.service';
 import { Sedi } from './../../../../interfaces/sedi';
 import { SediService } from '../../../services/sedi.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { buildDataGridRequestFromState } from '../../../../components/data-grid/data-grid-utils';
+import { buildDataGridRequestFromState, buildUrlQueryParamsFromRequest } from '../../../../components/data-grid/data-grid-utils';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -42,7 +44,8 @@ import { buildDataGridRequestFromState } from '../../../../components/data-grid/
     DropdownMenuDirective,
     DropdownToggleDirective,
     ListGroupDirective,
-    ListGroupItemDirective
+    ListGroupItemDirective,
+    TooltipDirective
   ],
   templateUrl: './lista-tessere.component.html',
   styleUrl: './lista-tessere.component.scss',
@@ -78,6 +81,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     static: true,
   })
   contextActionTemplate!: TemplateRef<any>;
+
+  @ViewChild('statusTemplate', {
+    static: true,
+  })
+  statusTemplate!: TemplateRef<any>;
 
   searchConfig: DataGridSearchConfig = {
     enabled: true,
@@ -236,7 +244,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.loadData(this.getInitialRequest());
     this.getSedi();
   }
 
@@ -247,15 +254,18 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
           label: sede.descrizione,
           value: sede.codSede
         }));
+
         this.sedi.set([...(options ?? [])]);
-
         this.searchConfig = createTesseraSearchConfig(options);
+        const initialRequest = this.getInitialRequest();
 
+        this.requestSearch.set(initialRequest);
         this.searchReady.set(true);
-        this.loadData(this.getInitialRequest());
+
+        this.loadData(initialRequest);
       },
       error: (err: any) => {
-        console.error('Error loading tessere', err);
+        console.error('Error loading sedi', err);
       },
     });
   }
@@ -266,7 +276,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.columns = createGridColumn(this.actionTemplate);
+    this.columns = createGridColumn(this.actionTemplate,this.statusTemplate);
     this.contextMenuConfig = {
       enabled: true,
       template: this.contextActionTemplate,
@@ -354,6 +364,19 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getStatusColor(row:Tessera) {
+    console.log("row",row)
+    return TESSERE_STATUS_COLORS.LIBERA;
+    // return TESSERE_STATUS_COLORS.INDISPONIBILE;
+    // return TESSERE_STATUS_COLORS.OCCUPATA;
+  }
+
+  getStatusTooltip(row:Tessera) {
+    return TESSERE_STATUS_MESSAGES.LIBERA;
+    // return TESSERE_STATUS_COLORS.INDISPONIBILE;
+    // return TESSERE_STATUS_COLORS.OCCUPATA;
+  }
+
   private getInitialRequest(): DataGridRequest {
     return buildDataGridRequestFromState(
       this.searchConfig,
@@ -368,38 +391,10 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const queryParams: Record<string, any> = {};
-
-    this.searchConfig.fields.forEach(field => {
-      const filter = request.filters.find(
-        f => f.field === field.field
-      );
-
-      if (!filter) {
-        return;
-      }
-
-      const value = filter.value;
-
-      if (Array.isArray(value)) {
-        if (value.length) {
-          queryParams[field.field] = value.join(',');
-        }
-
-        return;
-      }
-
-      if (field.type === 'checkbox') {
-        queryParams[field.field] =
-          value ? true : null;
-
-        return;
-      }
-
-      if (value !== null && value !== undefined && value !== '') {
-        queryParams[field.field] = value;
-      }
-    });
+    const queryParams = buildUrlQueryParamsFromRequest(
+      this.searchConfig,
+      request
+    );
 
     this.router.navigate([], {
       relativeTo: this.route,

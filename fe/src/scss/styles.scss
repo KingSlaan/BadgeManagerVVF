@@ -749,3 +749,34 @@ body,
 .dropdown-item:hover {
   background-color: var(--cui-tertiary-bg);
 }
+
+.sidebar-nav .nav-group-items .nav-link {
+  padding-left: 2.75rem;
+}
+
+.sidebar-nav .nav-group-items .nav-icon {
+  margin-left: 0.25rem;
+}
+
+.sidebar-nav .nav-group-items {
+  margin-left: 0.75rem;
+  border-left: 1px solid var(--cui-border-color);
+}
+
+.shadow-card {
+  border-radius: 1rem;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, .08),
+    0 1px 3px rgba(0, 0, 0, .05);
+
+  transition: .2s ease;
+}
+
+.shadow-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, .15),
+    0 4px 10px rgba(0, 0, 0, .08);
+    cursor: pointer;
+}

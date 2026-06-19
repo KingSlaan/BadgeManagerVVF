@@ -1,7 +1,7 @@
 import { ListeCard } from './../../../../interfaces/liste-card';
 import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { cilCalculator, cilNotes, cilUser } from '@coreui/icons';
+import { cilBuilding, cilCreditCard, cilUser } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
@@ -20,7 +20,13 @@ export class ListeHomeComponent {
       title: 'Tessere',
       description: 'Gestione badge',
       route: '/liste/tessere',
-      icon: cilCalculator
+      icon: cilCreditCard
+    },
+    {
+      title: 'Sedi',
+      description: 'Gestione sedi',
+      route: '/liste/sedi',
+      icon: cilBuilding
     },
     {
       title: 'Utenti',
@@ -28,12 +34,6 @@ export class ListeHomeComponent {
       route: '/liste/utenti',
       icon: cilUser
     },
-    {
-      title: 'Sedi',
-      description: 'Gestione sedi',
-      route: '/liste/sedi',
-      icon: cilNotes
-    }
   ]);
 
 }

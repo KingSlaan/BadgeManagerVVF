@@ -134,3 +134,39 @@ function buildFiltersFromStoredState(
         storedFilters[field.field],
     }));
 }
+
+export function buildUrlQueryParamsFromRequest(
+  searchConfig: DataGridSearchConfig,
+  request: DataGridRequest
+): Record<string, any> {
+  const queryParams: Record<string, any> = {};
+
+  searchConfig.fields.forEach(field => {
+    const filter = request.filters.find(f => f.field === field.field);
+
+    if (!filter) {
+      return;
+    }
+
+    const value = filter.value;
+
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        queryParams[field.field] = value.join(',');
+      }
+
+      return;
+    }
+
+    if (field.type === 'checkbox') {
+      queryParams[field.field] = value === true ? true : null;
+      return;
+    }
+
+    if (value !== null && value !== undefined && value !== '') {
+      queryParams[field.field] = value;
+    }
+  });
+
+  return queryParams;
+}

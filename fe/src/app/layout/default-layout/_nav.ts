@@ -12,24 +12,31 @@ export const navItems: INavData[] = [
     }
   },
   {
-    name: 'Gestione Tessere',
-    url: '/liste/tessere',
-    iconComponent: { name: 'cil-calculator' },
-  },
-  {
-    name: 'Sedi',
-    url: '/liste/sedi',
+    name: 'Liste',
+    url: '/liste',
     iconComponent: { name: 'cil-notes' },
-  },
-  {
-    name: 'Utenti',
-    url: '/liste/utenti',
-    iconComponent: { name: 'cil-user' },
+    children: [
+      {
+        name: 'Tessere',
+        url: '/liste/tessere',
+        iconComponent: { name: 'cil-credit-card' },
+      },
+      {
+        name: 'Sedi',
+        url: '/liste/sedi',
+        iconComponent: { name: 'cil-building' },
+      },
+      {
+        name: 'Utenti',
+        url: '/liste/utenti',
+        iconComponent: { name: 'cil-user' },
+      }
+    ]
   },
   {
     name: 'Stampa Documenti',
     url: '/stampa-documenti',
-    iconComponent: { name: 'cil-cursor' },
+    iconComponent: { name: 'cil-print' },
   },
   {
     name: 'Logs',
