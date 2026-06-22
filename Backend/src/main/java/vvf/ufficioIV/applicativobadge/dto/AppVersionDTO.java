@@ -5,10 +5,11 @@ public class AppVersionDTO {
     private String appName;
     private String version;
     private String buildDate;
+    private String codename;
 
     public AppVersionDTO() {}
 
-    public AppVersionDTO(String appName, String version, String buildDate) {
+    public AppVersionDTO(String appName, String version, String buildDate, String codename) {
         this.appName = appName;
         this.version = version;
         this.buildDate = buildDate;
@@ -22,4 +23,11 @@ public class AppVersionDTO {
 
     public String getBuildDate() { return buildDate; }
     public void setBuildDate(String buildDate) { this.buildDate = buildDate; }
+    
+    public String getCodename() {
+        return codename;
+    }
+    public void setCodename(String codename) {
+        this.codename = codename;
+    }
 }
