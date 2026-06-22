@@ -19,22 +19,26 @@ public class StatisticheTessereDTO {
     // Classe innestata per mappare esattamente la struttura JSON richiesta
     public static class Generale {
         private int totali;
-        private int assegnati;
-        private int nonAssegnati;
-        private int inutilizzabili;
+        private int occupate;
+        private int libere;
+        private int indisponibili;
+        private int nd;
 
         public Generale() {}
 
         public int getTotali() { return totali; }
         public void setTotali(int totali) { this.totali = totali; }
 
-        public int getAssegnati() { return assegnati; }
-        public void setAssegnati(int assegnati) { this.assegnati = assegnati; }
+        public int getOccupate() { return occupate; }
+        public void setOccupate(int occupate) { this.occupate = occupate; }
 
-        public int getNonAssegnati() { return nonAssegnati; }
-        public void setNonAssegnati(int nonAssegnati) { this.nonAssegnati = nonAssegnati; }
+        public int getLibere() { return libere; }
+        public void setLibere(int libere) { this.libere = libere; }
 
-        public int getInutilizzabili() { return inutilizzabili; }
-        public void setInutilizzabili(int inutilizzabili) { this.inutilizzabili = inutilizzabili; }
+        public int getIndisponibili() { return indisponibili; }
+        public void setIndisponibili(int indisponibili) { this.indisponibili = indisponibili; }
+
+        public int getNd() { return nd; }
+        public void setNd(int nd) { this.nd = nd; }
     }
 }

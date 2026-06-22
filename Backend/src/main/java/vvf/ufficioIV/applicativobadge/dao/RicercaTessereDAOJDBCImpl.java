@@ -405,21 +405,19 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         StatisticheTessereDTO.Generale generale = new StatisticheTessereDTO.Generale();
 
         /*
-         * SPIEGAZIONE DELLA QUERY:
-         * 1. JOIN con una subquery che estrae SOLO l'ultima assegnazione per ogni tessera (rn = 1)
-         * 2. totali: Conto tutte le righe di TESSERA1
-         * 3. inutilizzabili: Sommo 1 se la data indisponibilità è passata (<= CURRENT_TIMESTAMP)
-         * 4. assegnati: La tessera è valida (> CURRENT_TIMESTAMP) E c'è un'assegnazione in corso (data fine > oggi)
-         * 5. nonAssegnati: La tessera è valida (> CURRENT_TIMESTAMP) MA l'assegnazione non c'è o è scaduta
+         * SPIEGAZIONE DELLA QUERY AGGIORNATA:
+         * Calcola le statistiche riflettendo i 4 nuovi stati del sistema.
+         * Le condizioni nei CASE WHEN sono la traduzione esatta del metodo Java 'calcolaStatoTessera'
          */
         String sql = "SELECT " +
                      "  COUNT(t.IDTESSERA) AS totali, " +
-                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS inutilizzabili, " +
+                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
                      "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
-                     "            AND tp.CODFISDIP IS NOT NULL " +
-                     "            AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS assegnati, " +
+                     "            AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
+                     "            AND tp.CODFISDIP IS NOT NULL THEN 1 ELSE 0 END) AS occupate, " +
                      "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
-                     "            AND (tp.CODFISDIP IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP) THEN 1 ELSE 0 END) AS nonAssegnati " +
+                     "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR tp.CODFISDIP IS NULL) THEN 1 ELSE 0 END) AS libere, " +
+                     "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL THEN 1 ELSE 0 END) AS nd " +
                      "FROM TESSERA1 t " +
                      "LEFT JOIN ( " +
                      "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
@@ -432,9 +430,10 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
 
             if (rs.next()) {
                 generale.setTotali(rs.getInt("totali"));
-                generale.setInutilizzabili(rs.getInt("inutilizzabili"));
-                generale.setAssegnati(rs.getInt("assegnati"));
-                generale.setNonAssegnati(rs.getInt("nonAssegnati"));
+                generale.setIndisponibili(rs.getInt("indisponibili"));
+                generale.setOccupate(rs.getInt("occupate"));
+                generale.setLibere(rs.getInt("libere"));
+                generale.setNd(rs.getInt("nd"));
             }
         } catch (SQLException e) {
             System.err.println("Errore getStatisticheGenerali: " + e.getMessage());
