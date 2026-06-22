@@ -319,18 +319,18 @@ public class DocumentoRispostaBadgeUtil {
         }
         
         
-        /* VERSIONE PDF - COMMENTARE/SCOMMENTARE
+        /* VERSIONE PDF - COMMENTARE/SCOMMENTARE */
         // 4. Convertiamo in PDF
         fr.opensagres.poi.xwpf.converter.pdf.PdfOptions options = fr.opensagres.poi.xwpf.converter.pdf.PdfOptions.create();
         fr.opensagres.poi.xwpf.converter.pdf.PdfConverter.getInstance().convert(masterDoc, out, options);
         masterDoc.close();
-        */
         
-        /* VERSIONE WORD - COMMENTARE/SCOMMENTARE */
+        
+        /* VERSIONE WORD - COMMENTARE/SCOMMENTARE 
         // 4. Salviamo direttamente il documento Word unito nell'OutputStream
         masterDoc.write(out);
         masterDoc.close();
-        /**/
+        */
     }
 
     /**

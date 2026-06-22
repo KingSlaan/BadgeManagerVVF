@@ -85,17 +85,17 @@ public class StampaBadgeServlet extends HttpServlet {
         // 3. Generazione del PDF e Stream verso il Client
         try {
         	
-        	/* VERSIONE PDF - COMMENTARE/SCOMMENTARE
+        	/* VERSIONE PDF - COMMENTARE/SCOMMENTARE*/
             // Impostiamo il content type come PDF e l'apertura "inline" per attivare la dialog di stampa del browser
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=\"Stampa_Badge_Massiva.pdf\"");
-			*/
+			
         	
-        	/*VERSIONE DOCX*/
+        	/*VERSIONE DOCX
             // Indica che è un file Word (.docx) e forza il download
             response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
             response.setHeader("Content-Disposition", "attachment; filename=\"Stampa_Badge_Massiva.docx\"");
-            /**/
+            */
             
             DocumentoRispostaBadgeUtil.generaStampaMassiva(nominativi, response.getOutputStream());
             

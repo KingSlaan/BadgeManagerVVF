@@ -3,13 +3,15 @@
   
   <groupId>ApplicativoBadgeVVF</groupId>
   <artifactId>ApplicativoBadgeVVF</artifactId>
-  <version>3.1.2</version>
-  <name>TESSERACT - Applicativo Badge VVF</name>
+  <version>3.2.0</version>
   <packaging>war</packaging>
   
   <properties>
 	    <maven.build.timestamp.format>dd/MM/yyyy HH:mm:ss</maven.build.timestamp.format>
 	    <my.build.date>${maven.build.timestamp}</my.build.date> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  		
+  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      	<app.codename>Apollo</app.codename>
   </properties>
   
   <dependencies>

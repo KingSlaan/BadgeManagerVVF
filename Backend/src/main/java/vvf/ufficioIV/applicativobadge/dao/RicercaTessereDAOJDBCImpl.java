@@ -114,6 +114,39 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         }
         return where.toString();
     }
+    
+    /**
+     * Traduzione della logica Frontend in Java.
+     * Calcola lo stato della tessera basandosi sui Timestamp del Database.
+     */
+    private String calcolaStatoTessera(Timestamp tsIndisp, Timestamp tsFine, String codiceFiscale) {
+        // Otteniamo il timestamp attuale in millisecondi (equivalente al Date.now() di JS)
+        long now = System.currentTimeMillis();
+
+        // 1. Logica isIndisponibile()
+        // Se la data di indisponibilità è passata (<= now)
+        if (tsIndisp != null && tsIndisp.getTime() <= now) {
+            return "indisponibile";
+        }
+
+        // 2. Logica isOccupata()
+        // Se la data di fine assegnazione è nel futuro (> now) E c'è un codice fiscale
+        if (tsFine != null && tsFine.getTime() > now && codiceFiscale != null && !codiceFiscale.trim().isEmpty()) {
+            return "occupata";
+        }
+
+        // 3. Logica isLibera()
+        // Se arriviamo qui, significa che le condizioni precedenti (Occupata/Indisponibile) sono FALSE.
+        // Verifichiamo solo che la tessera sia integra (data di indisponibilità nel futuro, es: anno 9999)
+        if (tsIndisp != null && tsIndisp.getTime() > now) {
+            return "libera";
+        }
+
+        // 4. Paracadute "N/D"
+        // Questo stato si raggiunge solo se i dati sul DB sono gravemente corrotti 
+        // (es. tsIndisp è NULL, cosa che teoricamente non dovrebbe mai accadere con i vostri default).
+        return "n/d";
+    }
 
     // 1. Manteniamo la FROM clause con la JOIN a DIPARTIMENTO1 per recuperare la descrizione
     private String getFromClause() {
@@ -177,14 +210,19 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     dto.setNome(rs.getString("NOME"));
                     dto.setCognome(rs.getString("COGNOME"));
 
-                    // Formattazione Date
+                    
+                    // ESTAZIONE TIMESTAMP NATIVI
                     Timestamp tsIndisp = rs.getTimestamp("DATAORAINDISPONIBILITA");
-                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
-
                     Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
-                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
-
                     Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
+
+                    // CALCOLO STATO
+                    String statoCalcolato = calcolaStatoTessera(tsIndisp, tsFine, dto.getCodiceFiscale());
+                    dto.setStato(statoCalcolato);
+                    
+                    // Formattazione Date
+                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
+                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
                     if (tsFine != null) dto.setDataOraFineAssegnazione(tsFine.toLocalDateTime().format(formatter));
 
                     result.add(dto);
@@ -250,14 +288,18 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     dto.setCodiceFiscale(rs.getString("CODFISDIP"));
                     dto.setNome(rs.getString("NOME"));
                     dto.setCognome(rs.getString("COGNOME"));
-
+                    
+                    // ESTRAZIONE TIMESTAMP
                     Timestamp tsIndisp = rs.getTimestamp("DATAORAINDISPONIBILITA");
-                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
-
                     Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
-                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
-
                     Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
+
+                    // CALCOLO STATO 
+                    String statoCalcolato = calcolaStatoTessera(tsIndisp, tsFine, dto.getCodiceFiscale());
+                    dto.setStato(statoCalcolato);
+
+                    if (tsIndisp != null) dto.setDataOraIndisponibilita(tsIndisp.toLocalDateTime().format(formatter));
+                    if (tsInizio != null) dto.setDataOraInizioAssegnazione(tsInizio.toLocalDateTime().format(formatter));
                     if (tsFine != null) dto.setDataOraFineAssegnazione(tsFine.toLocalDateTime().format(formatter));
 
                     return dto;

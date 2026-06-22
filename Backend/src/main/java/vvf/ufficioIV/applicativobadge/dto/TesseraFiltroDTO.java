@@ -12,8 +12,8 @@ public class TesseraFiltroDTO {
     private String codiceInterno = "";
     private String dataOraInizioAssegnazione = "";
     private String dataOraFineAssegnazione = "";
+    private String stato = "";
 
-    // Il campo boolean disuso è stato rimosso
 
     public TesseraFiltroDTO() {}
 
@@ -65,5 +65,12 @@ public class TesseraFiltroDTO {
     public String getDataOraFineAssegnazione() { return dataOraFineAssegnazione; }
     public void setDataOraFineAssegnazione(String dataOraFineAssegnazione) { 
         this.dataOraFineAssegnazione = (dataOraFineAssegnazione == null) ? "" : dataOraFineAssegnazione; 
+    }
+    
+    public String getStato() {
+        return stato;
+    }
+    public void setStato(String stato) {
+        this.stato = stato;
     }
 }
