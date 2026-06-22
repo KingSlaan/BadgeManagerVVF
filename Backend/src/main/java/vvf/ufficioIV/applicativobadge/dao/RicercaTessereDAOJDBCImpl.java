@@ -28,7 +28,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
     }
 
     
- // Metodo helper per costruire la clausola WHERE in base ai filtri
+    // Metodo helper per costruire la clausola WHERE in base ai filtri
     private String buildWhereClause(JsonArray filters, List<Object> params) {
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
         if (filters != null) {
@@ -43,10 +43,57 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                 JsonElement valueElement = filter.has("value") ? filter.get("value") : null;
 
                 // --- INIZIO GESTIONE FILTRI SPECIALI ---
+                
+                // 1. Filtro speciale: "soloNonAssegnate"
                 if ("soloNonAssegnate".equals(field)) {
                     // Controlliamo che sia una primitiva prima di estrarre come stringa
                     if (valueElement != null && valueElement.isJsonPrimitive() && "true".equalsIgnoreCase(valueElement.getAsString())) {
                         where.append(" AND tp.CODFISDIP IS NULL ");
+                    }
+                    continue; // Gestito, passa al prossimo filtro
+                }
+
+                // 2. NUOVO FILTRO SPECIALE: "stato"
+                if ("stato".equals(field)) {
+                    List<String> statiRichiesti = new ArrayList<>();
+                    
+                    // Supporto operatore "in" (es. se da Frontend inviano ['libera', 'occupata'])
+                    if ("in".equalsIgnoreCase(operator) && valueElement.isJsonArray()) {
+                        JsonArray valueArray = valueElement.getAsJsonArray();
+                        for (int i = 0; i < valueArray.size(); i++) {
+                            statiRichiesti.add(valueArray.get(i).getAsString().trim().toLowerCase());
+                        }
+                    } 
+                    // Supporto operatore "equals" (es. se da Frontend inviano 'libera')
+                    else if ("equals".equalsIgnoreCase(operator) && valueElement.isJsonPrimitive()) {
+                        statiRichiesti.add(valueElement.getAsString().trim().toLowerCase());
+                    }
+                    
+                    // Se abbiamo trovato stati validi da filtrare, costruiamo la logica SQL
+                    if (!statiRichiesti.isEmpty()) {
+                        List<String> sqlConditions = new ArrayList<>();
+                        for (String stato : statiRichiesti) {
+                            switch (stato) {
+                                case "indisponibile":
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP)");
+                                    break;
+                                case "occupata":
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP AND tp.CODFISDIP IS NOT NULL)");
+                                    break;
+                                case "libera":
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR tp.CODFISDIP IS NULL))");
+                                    break;
+                                case "n/d":
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL)");
+                                    break;
+                            }
+                        }
+                        
+                        // Uniamo tutte le condizioni di stato con un OR, racchiudendole tra parentesi 
+                        // per non interferire con il resto degli AND globali
+                        if (!sqlConditions.isEmpty()) {
+                            where.append(" AND (").append(String.join(" OR ", sqlConditions)).append(") ");
+                        }
                     }
                     continue; // Gestito, passa al prossimo filtro
                 }
@@ -68,8 +115,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     case "codTipoTessera": dbColumn = "t.CODTIPOTESSERA"; break;
                     case "sede": dbColumn = "t.SEDE"; break; // <-- FILTRO APPLICATO SUL CODICE UNIVOCO
                     default: 
-                    	System.out.println("[DEBUG] filtri ignorati o non riconosciuti");
-                    	continue; // ignora filtri non riconosciuti o gestiti male
+                        System.out.println("[DEBUG] filtri ignorati o non riconosciuti");
+                        continue; // ignora filtri non riconosciuti o gestiti male
                 }
 
                 // --- GESTIONE NUOVO OPERATORE "in" (Valore Array) ---
@@ -114,6 +161,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         }
         return where.toString();
     }
+    
     
     /**
      * Traduzione della logica Frontend in Java.
