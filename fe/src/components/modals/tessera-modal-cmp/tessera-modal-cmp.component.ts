@@ -1,7 +1,6 @@
 import { ToastService } from './../../../app/services/toast.service';
-import { UtilsService } from './../../../app/services/utils.service';
 import { ACTION_CONSTANTS } from './../../../constants/action.constants';
-import { Component, EventEmitter, inject, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
 import { IconDirective } from '@coreui/icons-angular';
 import {
   ButtonDirective,
@@ -53,7 +52,6 @@ import { AutocompleteSelectComponent } from '../../autocomplete-select/autocompl
 })
 export class TesseraModalCmpComponent {
   private tessereService = inject(TessereService);
-  private utilsService = inject(UtilsService);
   private toast = inject(ToastService);
 
   @Input() visible = false;
@@ -150,23 +148,15 @@ export class TesseraModalCmpComponent {
     switch (mode) {
       case ACTION_CONSTANTS.ASSIGN_SEDE:
         return "Cambia Sede"
-        break;
       case ACTION_CONSTANTS.ASSIGN:
         return "Assegna Tessera"
-        break;
-      case ACTION_CONSTANTS.EDIT:
-        return "Modifica Tessera"
-        break;
       case ACTION_CONSTANTS.REMOVE:
-        return "Revoca Tessera"
-        break;
+        return "Validità Tessera"
       case ACTION_CONSTANTS.DISABLED:
-        return "Invalida Tessera"
-        break;
+        return "Indisponibilità Tessera"
 
       default:
         return "Modifica Tessera"
-        break;
     }
   }
 
@@ -174,23 +164,15 @@ export class TesseraModalCmpComponent {
     switch (mode) {
       case ACTION_CONSTANTS.ASSIGN_SEDE:
         return "Cambia Sede"
-        break;
       case ACTION_CONSTANTS.ASSIGN:
         return "Assegna"
-        break;
-      case ACTION_CONSTANTS.EDIT:
-        return "Salva"
-        break;
       case ACTION_CONSTANTS.REMOVE:
-        return "Revoca"
-        break;
+        return "Cambia Validità"
       case ACTION_CONSTANTS.DISABLED:
-        return "Invalida"
-        break;
+        return "Cambia Indisponibilità"
 
       default:
         return "Salva"
-        break;
     }
   }
 
@@ -260,8 +242,6 @@ export class TesseraModalCmpComponent {
         });
 
         break;
-      // case ACTION_CONSTANTS.EDIT:
-      //   break;
       case ACTION_CONSTANTS.REMOVE:
         request = {
           dataOraFineAssegnazione: this.formTessera.controls.dataOraFineAssegnazione.value

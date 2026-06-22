@@ -53,6 +53,8 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   search = signal('');
   selectedValue = signal<any>(null);
   selectedValues = signal<any[]>([]);
+  selectedOptions = signal<AutocompleteOption[]>([]);
+
   isOpen = signal(false);
   disabled = signal(false);
 
@@ -114,16 +116,25 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
 
   selectOption(option: AutocompleteOption): void {
     if (this.multiple()) {
-      const current = this.selectedValues();
+      const exists = this.selectedOptions().some(
+        opt => opt.value === option.value
+      );
 
-      const next = current.includes(option.value)
-        ? current.filter(v => v !== option.value)
-        : [...current, option.value];
+      if (exists) {
+        this.search.set('');
+        this.isOpen.set(true);
+        return;
+      }
 
-      this.selectedValues.set(next);
-      this.onChange(next);
+      const nextOptions = [...this.selectedOptions(), option];
+
+      this.selectedOptions.set(nextOptions);
+      this.selectedValues.set(nextOptions.map(opt => opt.value));
+      this.onChange(nextOptions.map(opt => opt.value));
+
       this.search.set('');
       this.isOpen.set(true);
+
       return;
     }
 
@@ -135,9 +146,16 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   }
 
   removeSelected(value: any): void {
-    const next = this.selectedValues().filter(v => v !== value);
-    this.selectedValues.set(next);
-    this.onChange(next);
+    const nextOptions = this.selectedOptions().filter(
+      opt => opt.value !== value
+    );
+
+    this.selectedOptions.set(nextOptions);
+
+    const nextValues = nextOptions.map(opt => opt.value);
+    this.selectedValues.set(nextValues);
+
+    this.onChange(nextValues);
   }
 
   getAllOptions(): AutocompleteOption[] {
@@ -147,13 +165,14 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   }
 
   getSelectedOptions(): AutocompleteOption[] {
-    return this.getAllOptions().filter(opt =>
-      this.selectedValues().includes(opt.value)
-    );
+    return this.multiple()
+      ? this.selectedOptions()
+      : this.getAllOptions().filter(opt => opt.value === this.selectedValue());
   }
 
   clear(): void {
     if (this.multiple()) {
+      this.selectedOptions.set([]);
       this.selectedValues.set([]);
       this.search.set('');
       this.onChange([]);
