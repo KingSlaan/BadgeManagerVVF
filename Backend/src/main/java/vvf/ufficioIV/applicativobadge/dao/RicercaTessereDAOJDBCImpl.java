@@ -126,26 +126,26 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         // 1. Logica isIndisponibile()
         // Se la data di indisponibilità è passata (<= now)
         if (tsIndisp != null && tsIndisp.getTime() <= now) {
-            return "Indisponibile";
+            return "indisponibile";
         }
 
         // 2. Logica isOccupata()
         // Se la data di fine assegnazione è nel futuro (> now) E c'è un codice fiscale
         if (tsFine != null && tsFine.getTime() > now && codiceFiscale != null && !codiceFiscale.trim().isEmpty()) {
-            return "Occupata";
+            return "occupata";
         }
 
         // 3. Logica isLibera()
         // Se arriviamo qui, significa che le condizioni precedenti (Occupata/Indisponibile) sono FALSE.
         // Verifichiamo solo che la tessera sia integra (data di indisponibilità nel futuro, es: anno 9999)
         if (tsIndisp != null && tsIndisp.getTime() > now) {
-            return "Libera";
+            return "libera";
         }
 
         // 4. Paracadute "N/D"
         // Questo stato si raggiunge solo se i dati sul DB sono gravemente corrotti 
         // (es. tsIndisp è NULL, cosa che teoricamente non dovrebbe mai accadere con i vostri default).
-        return "N/D";
+        return "n/d";
     }
 
     // 1. Manteniamo la FROM clause con la JOIN a DIPARTIMENTO1 per recuperare la descrizione

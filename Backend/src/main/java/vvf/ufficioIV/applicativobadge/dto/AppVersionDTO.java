@@ -13,6 +13,7 @@ public class AppVersionDTO {
         this.appName = appName;
         this.version = version;
         this.buildDate = buildDate;
+        this.codename = codename;
     }
 
     public String getAppName() { return appName; }
