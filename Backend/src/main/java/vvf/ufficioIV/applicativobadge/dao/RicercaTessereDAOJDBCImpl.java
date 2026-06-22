@@ -83,7 +83,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                                 case "libera":
                                     sqlConditions.add("(t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR tp.CODFISDIP IS NULL))");
                                     break;
-                                case "n/d":
+                                case "nd":
                                     sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL)");
                                     break;
                             }
@@ -190,10 +190,10 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
             return "libera";
         }
 
-        // 4. Paracadute "N/D"
+        // 4. Paracadute "nd"
         // Questo stato si raggiunge solo se i dati sul DB sono gravemente corrotti 
         // (es. tsIndisp è NULL, cosa che teoricamente non dovrebbe mai accadere con i vostri default).
-        return "n/d";
+        return "nd";
     }
 
     // 1. Manteniamo la FROM clause con la JOIN a DIPARTIMENTO1 per recuperare la descrizione
