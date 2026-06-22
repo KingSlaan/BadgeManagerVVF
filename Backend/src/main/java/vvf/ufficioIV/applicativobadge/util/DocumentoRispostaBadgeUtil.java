@@ -247,13 +247,13 @@ public class DocumentoRispostaBadgeUtil {
     }
     
     
-    //------------
+  //------------
     //STAMPA BADGE
     //-----------
     /**
-     * Genera un unico file PDF contenente n pagine (una per ogni badge).
+     * Genera un unico file (PDF o DOCX) contenente n pagine (una per ogni badge).
      */
-    public static void generaStampaMassiva(List<NominativoDTO> nominativi, OutputStream out) throws Exception {
+    public static void generaStampaMassiva(List<NominativoDTO> nominativi, OutputStream out, boolean isWord) throws Exception {
         String templateName = "/STAMPA_TEMPLATE.docx";
         
         // 1. Carichiamo il template in memoria
@@ -318,20 +318,19 @@ public class DocumentoRispostaBadgeUtil {
             }
         }
         
+        // 4. Esportazione finale dinamica
+        if (isWord) {
+            // Salva direttamente il documento Word unito nell'OutputStream
+            masterDoc.write(out);
+        } else {
+            // Converte in PDF
+            fr.opensagres.poi.xwpf.converter.pdf.PdfOptions options = fr.opensagres.poi.xwpf.converter.pdf.PdfOptions.create();
+            fr.opensagres.poi.xwpf.converter.pdf.PdfConverter.getInstance().convert(masterDoc, out, options);
+        }
         
-        /* VERSIONE PDF - COMMENTARE/SCOMMENTARE */
-        // 4. Convertiamo in PDF
-        fr.opensagres.poi.xwpf.converter.pdf.PdfOptions options = fr.opensagres.poi.xwpf.converter.pdf.PdfOptions.create();
-        fr.opensagres.poi.xwpf.converter.pdf.PdfConverter.getInstance().convert(masterDoc, out, options);
         masterDoc.close();
-        
-        
-        /* VERSIONE WORD - COMMENTARE/SCOMMENTARE 
-        // 4. Salviamo direttamente il documento Word unito nell'OutputStream
-        masterDoc.write(out);
-        masterDoc.close();
-        */
     }
+    
 
     /**
      * Metodo di supporto che "spezza" dinamicamente le righe: isola il dato 
