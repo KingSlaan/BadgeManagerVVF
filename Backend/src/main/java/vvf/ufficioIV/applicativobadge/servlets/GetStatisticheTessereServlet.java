@@ -40,10 +40,10 @@ import java.util.Properties;
  * "data": {
  * "generale": {
  * "totali": <numero>,
- * "assegnati": <numero>,
- * "nonAssegnati": <numero>,
- * "inutilizzabili": <numero>
- * }
+ * "occupate": <numero>,
+ * "libere": <numero>,
+ * "indisponibili": <numero>,
+ * "nd": <numero>
  * }
  * }
  *
