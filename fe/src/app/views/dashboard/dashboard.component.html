@@ -28,7 +28,7 @@
       color="success"
       inverse
       (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.LIBERA })"
-      [value]="this.statistiche().generale.assegnati"
+      [value]="this.statistiche().generale.libere"
       class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">
@@ -41,7 +41,7 @@
           white
           [value]="
             calPerc(
-              this.statistiche().generale.assegnati,
+              this.statistiche().generale.libere,
               this.statistiche().generale.totali
             )
           "
@@ -55,7 +55,7 @@
       [title]="tessereStatusMsg.OCCUPATA_DESC_PLU"
       color="warning"
       inverse
-      [value]="this.statistiche().generale.nonAssegnati"
+      [value]="this.statistiche().generale.occupate"
       (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.OCCUPATA })"
       class="shadow-card"
     >
@@ -69,7 +69,7 @@
           white
           [value]="
             calPerc(
-              this.statistiche().generale.nonAssegnati,
+              this.statistiche().generale.occupate,
               this.statistiche().generale.totali
             )
           "
@@ -84,7 +84,7 @@
       color="danger"
       inverse
       (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.INDISPONIBILE })"
-      [value]="this.statistiche().generale.inutilizzabili"
+      [value]="this.statistiche().generale.indisponibili"
       class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">
@@ -97,7 +97,7 @@
           white
           [value]="
             calPerc(
-              this.statistiche().generale.inutilizzabili,
+              this.statistiche().generale.indisponibili,
               this.statistiche().generale.totali
             )
           "
@@ -112,7 +112,7 @@
       color="secondary"
       inverse
       (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.ND })"
-      [value]="this.statistiche().generale.nd"
+      [value]="this.statistiche().generale.nd || 0"
       class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">

@@ -5,7 +5,7 @@
   size="lg"
 >
   <c-modal-header style="justify-content: space-between !important">
-    <h5 cModalTitle>X</h5>
+    <h5 cModalTitle>{{ getTitle(mode) }}</h5>
 
     <button
       (click)="close()"
@@ -18,9 +18,77 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-
+    <form [formGroup]="form" [gutter]="3" cForm cRow>
+      @if (mode == "cambia-sede") {
+        <c-col xs="12">
+          <label cLabel class="visually-hidden" for="sede"> Sede </label>
+          <app-autocomplete-select
+            formControlName="sede"
+            [options]="sediList"
+            placeholder="Select sede"
+          />
+        </c-col>
+      }
+      @if (mode == "cambia-validita") {
+        <c-col xs="12">
+          <label cLabel class="visually-hidden" for="dataInizioAssegnazione">
+            Data Inizio Assegnazione
+          </label>
+          <app-datepicker
+            cFormControl
+            id="dataInizioAssegnazione"
+            formControlName="dataOraInizioAssegnazione"
+            placeholder="Data Inizio Assegnazione"
+            min="1900-01-01"
+            max="9999-12-31"
+            [showTodayButton]="true"
+            todayButtonLabel="Oggi"
+          />
+        </c-col>
+        <c-col xs="12">
+          <label cLabel class="visually-hidden" for="dataFineAssegnazione">
+            Data Fine Assegnazione
+          </label>
+          <app-datepicker
+            cFormControl
+            id="dataFineAssegnazione"
+            formControlName="dataOraFineAssegnazione"
+            placeholder="Data Fine Assegnazione"
+            min="1900-01-01"
+            max="9999-12-31"
+            [showTodayButton]="true"
+            [showSpecificDateButton]="true"
+            specificDateValue="31/12/9999 00:00:00"
+            todayButtonLabel="Oggi"
+            specificDateButtonLabel="Fine validità"
+          />
+        </c-col>
+      }
+      @if (mode == "indisponibilita") {
+        <c-col xs="12">
+          <label cLabel class="visually-hidden" for="dataInvalidità">
+            Data Invalidità
+          </label>
+          <app-datepicker
+            cFormControl
+            id="dataInvalidita"
+            formControlName="dataOraIndisponibilita"
+            placeholder="Data Invalidità"
+            min="1900-01-01"
+            max="9999-12-31"
+            [showTodayButton]="true"
+            [showSpecificDateButton]="true"
+            specificDateValue="31/12/9999 00:00:00"
+            todayButtonLabel="Oggi"
+            specificDateButtonLabel="Fine validità"
+          />
+        </c-col>
+      }
+    </form>
   </c-modal-body>
-  <!-- <c-modal-footer>
-    <button cButton color="danger" (click)="confirm()">Chiudi</button>
-  </c-modal-footer> -->
+  <c-modal-footer>
+    <button cButton color="success" (click)="confirm()" [disabled]="!form.valid">
+      Aggiorna Massivo
+    </button>
+  </c-modal-footer>
 </c-modal>

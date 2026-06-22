@@ -39,6 +39,9 @@
 
 <app-tessera-update-multiplo
   [(visible)]="isModalMulUpdOpen"
+  [mode]="mode"
+  [sediList]="sedi()"
+  (saved)="refresh()"
 ></app-tessera-update-multiplo>
 
 <app-tessera-stampa

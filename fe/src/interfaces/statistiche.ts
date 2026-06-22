@@ -9,8 +9,8 @@ export interface StatisticheSedeChart {
 
 export interface StatisticheGenerali {
   totali: number;
-  assegnati: number;
-  nonAssegnati: number;
-  inutilizzabili: number;
+  libere: number;
+  occupate: number;
+  indisponibili: number;
   nd: number;
 }
