@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective } from '@coreui/angular';
+import { ButtonDirective, ColComponent, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective } from '@coreui/angular';
 import { cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { TessereService } from 'src/app/services/tessere.service';
@@ -18,14 +18,12 @@ import { Tessera } from 'src/interfaces/tessere';
     ModalFooterComponent,
     ModalTitleDirective,
     IconDirective,
-    TableDirective,
     FormSelectDirective,
     GutterDirective,
     RowDirective,
     ReactiveFormsModule,
     FormsModule,
     ColComponent,
-    FormControlDirective,
     FormDirective,
     FormLabelDirective,
   ],

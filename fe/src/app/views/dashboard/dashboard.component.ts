@@ -37,9 +37,9 @@ export class DashboardComponent implements OnInit {
     {
       generale: {
         totali: 0,
-        assegnati: 0,
-        nonAssegnati: 0,
-        inutilizzabili: 0,
+        libere: 0,
+        occupate: 0,
+        indisponibili: 0,
         nd: 0,
       }
     });

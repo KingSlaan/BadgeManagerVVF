@@ -117,7 +117,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     () => this.exportCsv(),
     () => this.importCsv(),
     (rows) => this.openModalStampaUpdate(rows, 'multi'),
-    (rows) => this.openBulkUpdate(rows),
+    (mode) => this.openBulkUpdate(mode),
   )
 
   loadingConfig: DataGridLoadingConfig = TESSERE_LOADING_STATE_CONFIG;
@@ -163,9 +163,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.selectedTessere.set(event.selectedRows);
   }
 
-  openBulkUpdate(rows: Tessera[]): void {
-    console.log(rows)
-    this.openModalMultiUpdate();
+  openBulkUpdate(mode:string): void {
+    this.openModalMultiUpdate(mode);
   }
 
   actionsArray = [
@@ -343,7 +342,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.isModalAggiungiOpen = true;
   }
 
-  openModalMultiUpdate() {
+  openModalMultiUpdate(mode:string) {
+    this.mode = mode;
     this.isModalMulUpdOpen = true;
   }
 

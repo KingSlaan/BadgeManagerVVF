@@ -95,8 +95,8 @@ export function createGridToolbar(
   openModalAggiungi: () => void,
   exportCsv: () => void,
   importCsv: () => void,
-  bulkPrint: (rows: Tessera[]) => void,
-  openBulkUpdate: (rows: Tessera[]) => void,
+  openStampa: (rows: Tessera[]) => void,
+  openBulkUpdate: (mode:string) => void,
 ): DataGridToolbarConfig {
   return {
     enabled: true,
@@ -127,7 +127,7 @@ export function createGridToolbar(
         color: 'secondary',
         visible: (ctx) => ctx.selectedRows.filter(item => item.stato === TESSERE_STATUS_MESSAGES.OCCUPATA).length !== 0,
         action: (ctx) => {
-          bulkPrint(ctx.selectedRows);
+          openStampa(ctx.selectedRows);
         },
       },
       {
@@ -136,7 +136,7 @@ export function createGridToolbar(
         color: 'info',
         visible: (ctx) => ctx.selectedRows.filter(item => item.stato !== TESSERE_STATUS_MESSAGES.INDISPONIBILE).length !== 0,
         action: (ctx) => {
-          openBulkUpdate(ctx.selectedRows);
+          openBulkUpdate('cambia-sede');
         },
       },
       {
@@ -145,7 +145,7 @@ export function createGridToolbar(
         color: 'warning',
         visible: (ctx) => ctx.selectedRows.filter(item => item.stato === TESSERE_STATUS_MESSAGES.OCCUPATA).length !== 0,
         action: (ctx) => {
-          openBulkUpdate(ctx.selectedRows);
+          openBulkUpdate('cambia-validita');
         },
       },
       {
@@ -154,7 +154,7 @@ export function createGridToolbar(
         color: 'danger',
         visible: (ctx) => ctx.selectedRows.length !== 0,
         action: (ctx) => {
-          openBulkUpdate(ctx.selectedRows);
+          openBulkUpdate('indisponibilita');
         },
       },
     ],
