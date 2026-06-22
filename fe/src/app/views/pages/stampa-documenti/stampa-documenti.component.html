@@ -45,7 +45,7 @@
         <app-autocomplete-select
           formControlName="sede"
           [options]="sediOptions()"
-          placeholder="Select sede"
+          placeholder="Seleziona Sede"
         />
       </c-col>
       <c-col xs="12" lg="12">
@@ -54,7 +54,7 @@
         </label>
         <app-autocomplete-select
           formControlName="utenti"
-          placeholder="Select Utenti"
+          placeholder="Seleziona Utenti"
           [multiple]="true"
           [minSearchLength]="0"
           [debounceMs]="500"
@@ -93,15 +93,20 @@
   <div class="d-flex justify-content-between align-items-center w-100">
     <div>
       <div class="fw-semibold">
+        <span
+          [class]="
+            'status-dot status-dot--' +
+            this.utilsService.getStatusColor(option.data)
+          "
+        ></span>
+
         {{ option.data.cognome }} {{ option.data.nome }}
       </div>
 
-      <small class="text-body-secondary">
-        CF: {{ option.data.codiceFiscale }} ·
-         Sede: {{ option.data.sede }} ·
-         Tessera {{ option.data.idTessera }}
+      <small>
+        <strong>CF</strong>: {{ option.data.codiceFiscale }} | <strong>Sede</strong>: {{ option.data.sede }} |
+        <strong>Tessera</strong>: <i>{{ option.data.idTessera }}</i>
       </small>
-
     </div>
 
     @if (selected) {

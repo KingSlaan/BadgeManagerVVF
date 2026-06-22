@@ -17,6 +17,6 @@ export const TESSERE_STATUS_MESSAGES = {
   OCCUPATA: 'occupata',
   OCCUPATA_DESC: 'Occupata',
   OCCUPATA_DESC_PLU: 'Occupate',
-  ND: 'nd',
+  ND: 'n/d',
   ND_DESC: 'N/D',
 };

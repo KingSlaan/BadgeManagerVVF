@@ -2,6 +2,8 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONSTANTS } from '../../constants/api.constants';
+import { Tessera } from 'src/interfaces/tessere';
+import { TESSERE_STATUS_COLORS, TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -105,6 +107,41 @@ export class UtilsService {
     } catch {
       return null;
     }
+  }
+
+  getStatusColor(row: Tessera) {
+    if (row) {
+      switch (row.stato) {
+        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
+          return TESSERE_STATUS_COLORS.INDISPONIBILE;
+        case TESSERE_STATUS_MESSAGES.OCCUPATA:
+          return TESSERE_STATUS_COLORS.OCCUPATA;
+        case TESSERE_STATUS_MESSAGES.LIBERA:
+          return TESSERE_STATUS_COLORS.LIBERA;
+
+        default:
+          return TESSERE_STATUS_COLORS.ND
+      }
+    }
+    return TESSERE_STATUS_COLORS.ND;
+  }
+
+  getStatusTooltip(row: Tessera) {
+    if (row) {
+      switch (row.stato) {
+        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
+          return TESSERE_STATUS_MESSAGES.INDISPONIBILE_DESC;
+        case TESSERE_STATUS_MESSAGES.OCCUPATA:
+          return TESSERE_STATUS_MESSAGES.OCCUPATA_DESC;
+        case TESSERE_STATUS_MESSAGES.LIBERA:
+          return TESSERE_STATUS_MESSAGES.LIBERA_DESC;
+
+        default:
+          return TESSERE_STATUS_MESSAGES.ND_DESC;
+      }
+    }
+    return TESSERE_STATUS_COLORS.ND;
+
   }
 
 

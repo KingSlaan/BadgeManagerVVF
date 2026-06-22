@@ -11,15 +11,15 @@ import {
   DropdownToggleDirective,
   ListGroupDirective,
   ListGroupItemDirective,
-  RowComponent,
   TooltipDirective
 } from '@coreui/angular';
 import { IconDirective } from '@coreui/icons-angular';
-import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint } from '@coreui/icons';
-import { DataGridColumn, DataGridContextMenuConfig, DataGridFilter, DataGridFilterValue, DataGridLoadingConfig, DataGridPageEvent, DataGridSearchConfig, DataGridSortingConfig, DataGridState, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
+import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, cilBan, cilOptions, cilBuilding, cilPrint, cilAvTimer } from '@coreui/icons';
+import { DataGridColumn, DataGridContextMenuConfig, DataGridLoadingConfig, DataGridPageEvent, DataGridSearchConfig, DataGridSortingConfig, DataGridState, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
 import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
+import { TesseraUpdateMultiploComponent } from './../../../../components/modals/tessera-update-multiplo/tessera-update-multiplo.component';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
 import { ACTION_CONSTANTS } from '../../../../constants/action.constants';
@@ -49,7 +49,8 @@ import { ToastService } from 'src/app/services/toast.service';
     ListGroupDirective,
     ListGroupItemDirective,
     TooltipDirective,
-    BadgeModule
+    BadgeModule,
+    TesseraUpdateMultiploComponent
   ],
   templateUrl: './lista-tessere.component.html',
   styleUrl: './lista-tessere.component.scss',
@@ -64,10 +65,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private toast = inject(ToastService);
 
-  icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
+  icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding, cilAvTimer };
 
   isModalOpen = false;
   isModalAggiungiOpen = false;
+  isModalMulUpdOpen = false;
   isModalHistoryOpen = false;
   mode = ACTION_CONSTANTS.ADD;
   datagridLoading = signal(false);
@@ -112,7 +114,8 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     () => this.openModalAggiungi(),
     () => this.exportCsv(),
     () => this.importCsv(),
-    (rows) => this.bulkPrint(rows)
+    (rows) => this.bulkPrint(rows),
+    (rows) => this.openBulkUpdate(rows),
   )
 
   loadingConfig: DataGridLoadingConfig = TESSERE_LOADING_STATE_CONFIG;
@@ -199,6 +202,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     });
   }
 
+  openBulkUpdate(rows: Tessera[]): void  {
+    console.log(rows)
+    this.openModalMultiUpdate();
+  }
+
   actionsArray = [
     {
       name: "assegna-dipendente",
@@ -218,7 +226,17 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-info",
       icon: this.icons.cilBuilding,
       title: "Cambia Sede",
-      visibility: () => true
+      visibility: (row: Tessera) => row.stato !== TESSERE_STATUS_MESSAGES.INDISPONIBILE
+    },
+    {
+      name: "cambia-validità",
+      do: (row: any) => {
+        this.openModal(this.action_const.REMOVE, row.idTessera)
+      },
+      color: "text-warning",
+      icon: this.icons.cilAvTimer,
+      title: "Cambia Validità",
+      visibility: (row: any) => row.stato == TESSERE_STATUS_MESSAGES.OCCUPATA
     },
     {
       name: "disuso",
@@ -229,16 +247,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       icon: this.icons.cilBan,
       title: "Indisponibilità",
       visibility: () => true
-    },
-    {
-      name: "cambia-validità",
-      do: (row: any) => {
-        this.openModal(this.action_const.REMOVE, row.idTessera)
-      },
-      color: "text-danger",
-      icon: this.icons.cilDelete,
-      title: "Cambia Validità",
-      visibility: (row: any) => row.stato == TESSERE_STATUS_MESSAGES.OCCUPATA && row.stato == !TESSERE_STATUS_MESSAGES.INDISPONIBILE
     },
     {
       name: "cronologia",
@@ -258,7 +266,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-secondary",
       icon: this.icons.cilPrint,
       title: "Stampa Tessera",
-      visibility: (row: any) => row.stato ==  TESSERE_STATUS_MESSAGES.OCCUPATA
+      visibility: (row: any) => row.stato == TESSERE_STATUS_MESSAGES.OCCUPATA
     },
   ];
 
@@ -374,6 +382,10 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.isModalAggiungiOpen = true;
   }
 
+  openModalMultiUpdate() {
+    this.isModalMulUpdOpen = true;
+  }
+
   openHistoryModal(idTessera: string) {
     this.tessereService.getTessereHistory(idTessera).subscribe({
       next: (data: any) => {
@@ -397,40 +409,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
 
-  getStatusColor(row: Tessera) {
-    if (row) {
-      switch (row.stato) {
-        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
-          return TESSERE_STATUS_COLORS.INDISPONIBILE;
-        case TESSERE_STATUS_MESSAGES.OCCUPATA:
-          return TESSERE_STATUS_COLORS.OCCUPATA;
-        case TESSERE_STATUS_MESSAGES.LIBERA:
-          return TESSERE_STATUS_COLORS.LIBERA;
 
-        default:
-          return TESSERE_STATUS_COLORS.ND
-      }
-    }
-    return TESSERE_STATUS_COLORS.ND;
-  }
-
-  getStatusTooltip(row: Tessera) {
-    if (row) {
-      switch (row.stato) {
-        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
-          return TESSERE_STATUS_MESSAGES.INDISPONIBILE_DESC;
-        case TESSERE_STATUS_MESSAGES.OCCUPATA:
-          return TESSERE_STATUS_MESSAGES.OCCUPATA_DESC;
-        case TESSERE_STATUS_MESSAGES.LIBERA:
-          return TESSERE_STATUS_MESSAGES.LIBERA_DESC;
-
-        default:
-          return TESSERE_STATUS_MESSAGES.ND_DESC;
-      }
-    }
-    return TESSERE_STATUS_COLORS.ND;
-
-  }
 
   private getInitialState(): DataGridState {
     return buildDataGridState(

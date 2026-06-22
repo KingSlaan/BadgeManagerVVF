@@ -76,42 +76,42 @@ export class ToastService {
       case 400:
         this.error(
           message || 'Bad request',
-          '400 Error'
+          '400 Errore'
         );
         break;
 
       case 401:
         this.error(
           message || 'Unauthorized',
-          '401 Error'
+          '401 Errore'
         );
         break;
 
       case 403:
         this.error(
           message || 'Access denied',
-          '403 Error'
+          '403 Errore'
         );
         break;
 
       case 404:
         this.error(
           message || 'Resource not found',
-          '404 Error'
+          '404 Errore'
         );
         break;
 
       case 500:
         this.error(
           message || 'Internal server error',
-          '500 Error'
+          '500 Errore'
         );
         break;
 
       default:
         this.error(
           message || 'Unexpected error occurred',
-          `Error ${status}`
+          `Errore ${status}`
         );
     }
   }

@@ -766,17 +766,50 @@ body,
 .shadow-card {
   border-radius: 1rem;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, .08),
-    0 1px 3px rgba(0, 0, 0, .05);
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.05);
 
-  transition: .2s ease;
+  transition: 0.2s ease;
 }
 
 .shadow-card:hover {
   transform: translateY(-4px);
 
   box-shadow:
-    0 12px 28px rgba(0, 0, 0, .15),
-    0 4px 10px rgba(0, 0, 0, .08);
-    cursor: pointer;
+    0 12px 28px rgba(0, 0, 0, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.status-dot--success {
+  background-color: var(--cui-success);
+}
+
+.status-dot--warning {
+  background-color: var(--cui-warning);
+}
+
+.status-dot--danger {
+  background-color: var(--cui-danger);
+}
+
+.status-cell {
+  height: 100%;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.status-container {
+  min-height: 40px; // same or close to your table row height
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }

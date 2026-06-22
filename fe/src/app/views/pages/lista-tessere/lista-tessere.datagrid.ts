@@ -7,8 +7,8 @@ import {
   DataGridLoadingConfig,
   DataGridToolbarConfig,
 } from '../../../../interfaces/datagrid';
-import { Tessera, Tessere } from '../../../../interfaces/tessere';
-import { cilCloudDownload, cilCloudUpload, cilPlus, cilPrint } from '@coreui/icons';
+import { Tessera } from '../../../../interfaces/tessere';
+import { cilAvTimer, cilBan, cilBuilding, cilCloudDownload, cilCloudUpload, cilPlus, cilPrint } from '@coreui/icons';
 import { AutocompleteOption } from '../../../../components/autocomplete-select/autocomplete-select.component';
 import { TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
 
@@ -99,7 +99,8 @@ export function createGridToolbar(
   openModalAggiungi: () => void,
   exportCsv: () => void,
   importCsv: () => void,
-  bulkPrint: (rows: Tessera[]) => void
+  bulkPrint: (rows: Tessera[]) => void,
+  openBulkUpdate: (rows: Tessera[]) => void,
 ): DataGridToolbarConfig {
   return {
     enabled: true,
@@ -127,26 +128,39 @@ export function createGridToolbar(
       {
         label: 'Stampa Tessere',
         icon: cilPrint,
-        color: 'info',
-        disabled: (ctx) => ctx.selectedRows.length === 0,
+        color: 'secondary',
+        visible: (ctx) => ctx.selectedRows.filter(item => item.stato === TESSERE_STATUS_MESSAGES.OCCUPATA).length !== 0,
         action: (ctx) => {
           bulkPrint(ctx.selectedRows);
         },
-      }
-      // {
-      //   label: 'Delete Selected',
-      //   icon: cilPlus,
-      //   color: 'danger',
-      //   visible: () => {
-      //     return true;
-      //   },
-      //   disabled: () => {
-      //     return this.loading.isLoading;
-      //   },
-      //   action: () => {
-      //     this.importCsv();
-      //   },
-      // },
+      },
+      {
+        label: 'Cambia Sede',
+        icon: cilBuilding,
+        color: 'info',
+        visible: (ctx) => ctx.selectedRows.filter(item => item.stato !== TESSERE_STATUS_MESSAGES.INDISPONIBILE).length !== 0,
+        action: (ctx) => {
+          openBulkUpdate(ctx.selectedRows);
+        },
+      },
+      {
+        label: 'Cambia Validità',
+        icon: cilAvTimer,
+        color: 'warning',
+        visible: (ctx) => ctx.selectedRows.filter(item => item.stato === TESSERE_STATUS_MESSAGES.OCCUPATA).length !== 0,
+        action: (ctx) => {
+          openBulkUpdate(ctx.selectedRows);
+        },
+      },
+      {
+        label: 'Indisponibilità',
+        icon: cilBan,
+        color: 'danger',
+        visible: (ctx) => ctx.selectedRows.length !== 0,
+        action: (ctx) => {
+          openBulkUpdate(ctx.selectedRows);
+        },
+      },
     ],
   };
 }

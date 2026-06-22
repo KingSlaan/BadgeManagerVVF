@@ -33,7 +33,7 @@ export class StampaDocumentiComponent implements OnInit {
 
   private sediState = inject(SediStateService);
   private tessereService = inject(TessereService);
-  private utilsService = inject(UtilsService);
+  public utilsService = inject(UtilsService);
 
   sediOptions = this.sediState.sediOptionsValue;
 
@@ -139,17 +139,17 @@ export class StampaDocumentiComponent implements OnInit {
     };
 
     return this.tessereService.getTessere(request).pipe(
-      tap(tessere => console.log('SEDI API RESULT:', tessere.data)),
+      // tap(tessere => console.log('SEDI API RESULT:', tessere.data)),
       map(tessere =>
         tessere.data.map((tessera: any) => ({
           label: `${tessera.cognome} ${tessera.nome}`,
-          value: tessera,
+          value: tessera.idTessera,
 
           // optional, useful for template
           data: tessera
         }))
       ),
-      tap(options => console.log('AUTOCOMPLETE OPTIONS:', options))
+      // tap(options => console.log('AUTOCOMPLETE OPTIONS:', options))
     );
   };
 

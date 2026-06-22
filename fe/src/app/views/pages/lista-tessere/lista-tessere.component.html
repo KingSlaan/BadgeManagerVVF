@@ -18,6 +18,7 @@
   />
 }
 
+<!-- MODALI -->
 <app-tessera-modal-cmp
   [(visible)]="isModalOpen"
   [mode]="mode"
@@ -35,6 +36,11 @@
   [(visible)]="isModalHistoryOpen"
   [tesseraSelectedHistory]="tesseraHistory()"
 ></app-tessera-history>
+
+<app-tessera-update-multiplo
+  [(visible)]="isModalMulUpdOpen"
+></app-tessera-update-multiplo>
+<!-- FINE MODALI -->
 
 <ng-template #actionTemplate let-row let-selectedRows="selectedRows">
   <c-dropdown>
@@ -87,10 +93,14 @@
 <ng-template #statusTemplate let-row>
   <div
     class="status-container"
-    [cTooltip]="getStatusTooltip(row)"
+    [cTooltip]="this.utilsService.getStatusTooltip(row)"
     cTooltipPlacement="top"
   >
-    <span [class]="'status-dot status-dot--' + getStatusColor(row)"></span>
+    <span
+      [class]="
+        'status-dot status-dot--' + this.utilsService.getStatusColor(row)
+      "
+    ></span>
   </div>
 </ng-template>
 
