@@ -18,6 +18,15 @@
   </c-modal-header>
   <c-modal-body>
     <form [formGroup]="formTessera" [gutter]="3" cForm cRow>
+      <c-col xs="12">
+        <span
+          [class]="
+            'status-dot status-dot--' +
+            this.utilsService.getStatusColor(tesseraSelected)
+          "
+        ></span>
+        {{formTessera.controls.stato.value | titlecase }}
+      </c-col>
       <c-col xs="6">
         <label cLabel class="visually-hidden" for="idTessera">
           Id Tessera
@@ -151,6 +160,8 @@
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm(mode)">{{getConfirmText(mode)}}</button>
+    <button cButton color="success" (click)="confirm(mode)">
+      {{ getConfirmText(mode) }}
+    </button>
   </c-modal-footer>
 </c-modal>

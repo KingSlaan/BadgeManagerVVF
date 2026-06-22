@@ -12,4 +12,5 @@ export interface StatisticheGenerali {
   assegnati: number;
   nonAssegnati: number;
   inutilizzabili: number;
+  nd: number;
 }

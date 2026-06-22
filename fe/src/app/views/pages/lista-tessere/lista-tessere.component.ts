@@ -18,7 +18,7 @@ import { cilPlus, cilDelete, cilPencil, cilSearch, cilActionUndo, cilHistory, ci
 import { DataGridColumn, DataGridContextMenuConfig, DataGridLoadingConfig, DataGridPageEvent, DataGridSearchConfig, DataGridSortingConfig, DataGridState, DataGridToolbarConfig } from '../../../../interfaces/datagrid';
 import { TesseraAggiungiComponent } from './../../../../components/modals/tessera-aggiungi/tessera-aggiungi.component';
 import { TesseraModalCmpComponent } from './../../../../components/modals/tessera-modal-cmp/tessera-modal-cmp.component';
-import { TesseraHistoryComponent } from './../../../../components/modals/tessera-history/tessera-history/tessera-history.component';
+import { TesseraHistoryComponent } from '../../../../components/modals/tessera-history/tessera-history.component';
 import { TesseraUpdateMultiploComponent } from './../../../../components/modals/tessera-update-multiplo/tessera-update-multiplo.component';
 import { DataGridComponent } from '../../../../components/data-grid/data-grid.component';
 import { Tessera, tesseraEmpty, Tessere } from '../../../../interfaces/tessere';
@@ -31,6 +31,7 @@ import { SediService } from '../../../services/sedi.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { buildDataGridState, buildUrlQueryParamsFromState } from '../../../../components/data-grid/data-grid-utils';
 import { ToastService } from 'src/app/services/toast.service';
+import { TesseraStampaComponent } from '@docs-components/modals/tessera-stampa/tessera-stampa.component';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -50,7 +51,8 @@ import { ToastService } from 'src/app/services/toast.service';
     ListGroupItemDirective,
     TooltipDirective,
     BadgeModule,
-    TesseraUpdateMultiploComponent
+    TesseraUpdateMultiploComponent,
+    TesseraStampaComponent,
   ],
   templateUrl: './lista-tessere.component.html',
   styleUrl: './lista-tessere.component.scss',
@@ -63,13 +65,13 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   public utilsService = inject(UtilsService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private toast = inject(ToastService);
 
   icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding, cilAvTimer };
 
   isModalOpen = false;
   isModalAggiungiOpen = false;
   isModalMulUpdOpen = false;
+  isModalStampaOpen = false;
   isModalHistoryOpen = false;
   mode = ACTION_CONSTANTS.ADD;
   datagridLoading = signal(false);
@@ -114,7 +116,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     () => this.openModalAggiungi(),
     () => this.exportCsv(),
     () => this.importCsv(),
-    (rows) => this.bulkPrint(rows),
+    (rows) => this.openModalStampaUpdate(rows, 'multi'),
     (rows) => this.openBulkUpdate(rows),
   )
 
@@ -127,6 +129,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   tessere = signal<Tessere>([]);
   sedi = signal<Sedi>([]);
 
+  tessereToPrint = signal<Tessera[]>([]);
   tesseraSelected = signal<Tessera>(tesseraEmpty);
   tesseraHistory = signal<any>([]);
 
@@ -160,49 +163,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.selectedTessere.set(event.selectedRows);
   }
 
-  bulkPrint(rows: Tessera[]): void {
-    let indispArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.INDISPONIBILE);
-    let indispArrId = indispArr.map(item => item.idTessera);
-
-    let libereArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.LIBERA);
-    let libereArrId = libereArr.map(item => item.idTessera);
-
-    if (indispArr.length > 0 || libereArr.length > 0) {
-
-      let tessereIndStr = indispArr.length > 0 ? '<br/><strong> Tessere indisponibili: ' + indispArrId.join(" , ") + '</strong>' : '';
-      let tessereLibStr = libereArr.length > 0 ? '<br/><strong> Tessere libere: ' + libereArrId.join(" , ") + '</strong>' : '';
-
-      this.toast.error(`Nella lista sono presenti tessere indisponibili o libere. ${tessereIndStr} ${tessereLibStr}`);
-      return;
-    }
-
-    this.tessereService.stampaTessere(rows, 'WORD').subscribe({
-      next: response => {
-        const blob = response.body!;
-
-        let fileName = 'DocumentoRisposta.pdf';
-
-        const disposition = response.headers.get('Content-Disposition');
-        if (disposition) {
-          const match = disposition.match(/filename="?([^"]+)"?/);
-          if (match) {
-            fileName = match[1];
-          }
-        }
-
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.click();
-
-        window.URL.revokeObjectURL(url);
-      }
-    });
-  }
-
-  openBulkUpdate(rows: Tessera[]): void  {
+  openBulkUpdate(rows: Tessera[]): void {
     console.log(rows)
     this.openModalMultiUpdate();
   }
@@ -261,7 +222,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     {
       name: "stampa-tessera",
       do: (row: any) => {
-        this.bulkPrint([row])
+        this.openModalStampaUpdate([row], 'single')
       },
       color: "text-secondary",
       icon: this.icons.cilPrint,
@@ -386,6 +347,26 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.isModalMulUpdOpen = true;
   }
 
+  openModalStampaUpdate(rows: Tessera[], mode: 'single' | 'multi') {
+    this.mode = mode
+
+    if (mode === 'single') {
+      this.tessereService.getTesseraById(rows[0].idTessera).subscribe({
+        next: (data: any) => {
+          this.isModalStampaOpen = true;
+
+          this.tessereToPrint.set([data.data]);
+        },
+        error: (err: any) => {
+          console.error('Error loading tessere', err);
+        },
+      });
+    } else {
+      this.tessereToPrint.set(this.selectedTessere())
+      this.isModalStampaOpen = true;
+    }
+  }
+
   openHistoryModal(idTessera: string) {
     this.tessereService.getTessereHistory(idTessera).subscribe({
       next: (data: any) => {
@@ -407,9 +388,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       this.loadData(this.gridState());
     }
   }
-
-
-
 
   private getInitialState(): DataGridState {
     return buildDataGridState(

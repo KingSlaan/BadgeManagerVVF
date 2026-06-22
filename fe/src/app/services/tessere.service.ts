@@ -51,14 +51,14 @@ export class TessereService {
     return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
   }
 
-  stampaTessere(dipendentiSelezionati: any[], formato: 'PDF' | 'WORD'): Observable<HttpResponse<Blob>> {
+  stampaTessere(dipendentiSelezionati: any[], formato: string): Observable<HttpResponse<Blob>> {
     const payload = dipendentiSelezionati.map(d => ({
       nome: d.nome,
       cognome: d.cognome
     }));
 
     return this.http.post(
-      `${this.apiUrl}/stampaBadgeServlet`,
+      `${this.apiUrl}/stampaBadgeServlet?formato=${formato}`,
       payload,
       {
         observe: 'response',

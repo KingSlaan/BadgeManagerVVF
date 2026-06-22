@@ -23,6 +23,8 @@ import { DatepickerComponent } from '../../datepicker/datepicker.component';
 import { TessereService } from './../../../app/services/tessere.service';
 import { MESSAGES_CONSTANTS } from '../../../constants/messages.constants';
 import { AutocompleteSelectComponent } from '../../autocomplete-select/autocomplete-select.component';
+import { UtilsService } from 'src/app/services/utils.service';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-tessera-modal-cmp',
@@ -45,13 +47,15 @@ import { AutocompleteSelectComponent } from '../../autocomplete-select/autocompl
     FormsModule,
     DatepickerComponent,
     FormSelectDirective,
-    AutocompleteSelectComponent
+    AutocompleteSelectComponent,
+    TitleCasePipe
   ],
   templateUrl: './tessera-modal-cmp.component.html',
   styleUrl: './tessera-modal-cmp.component.scss',
 })
 export class TesseraModalCmpComponent {
   private tessereService = inject(TessereService);
+  public utilsService = inject(UtilsService);
   private toast = inject(ToastService);
 
   @Input() visible = false;
@@ -63,6 +67,7 @@ export class TesseraModalCmpComponent {
 
   formTessera = new FormGroup({
     idTessera: new FormControl(''),
+    stato: new FormControl(''),
     codiceInterno: new FormControl(''),
     codiceFiscale: new FormControl(''),
     nome: new FormControl(''),
