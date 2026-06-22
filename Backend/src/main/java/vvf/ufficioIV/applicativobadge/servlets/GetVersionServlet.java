@@ -44,18 +44,18 @@ public class GetVersionServlet extends HttpServlet {
         String appName = props.getProperty("app.name", "Applicativo Badge VVF");
         String version = props.getProperty("app.version", "N/D");
         String buildDate = props.getProperty("app.build.date", "N/D");
-        String codename = props.getProperty("app.codename", "N/D"); 
+        String codeName = props.getProperty("app.codeName", "N/D"); 
 
         // --- MIGLIORIA PER ECLIPSE (DEV MODE) ---
         // Se leggiamo il placeholder letterale, significa che Eclipse ha bypassato Maven
         if (version.startsWith("${")) {
             version = "(Dev Mode locale)";
             buildDate = "Sviluppo in corso";
-            codename = "Olympus-Dev"; // Codename di fallback temporaneo per lo sviluppo
+            codeName = "Olympus-Dev"; // Codename di fallback temporaneo per lo sviluppo
         }
         
         // Popoliamo il DTO esistente
-        AppVersionDTO versionDTO = new AppVersionDTO(appName, version, buildDate, codename);
+        AppVersionDTO versionDTO = new AppVersionDTO(appName, version, buildDate, codeName);
 
         // Rispondiamo al frontend sfruttando la tua utility standard JSON
         ResponseUtil.sendOk(response, "Informazioni di versione recuperate con successo.", versionDTO);
