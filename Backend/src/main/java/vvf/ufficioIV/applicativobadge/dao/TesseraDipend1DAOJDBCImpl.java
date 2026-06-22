@@ -110,17 +110,19 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     
     @Override
     public boolean revocaAssegnazioneAttiva(String idTessera, LocalDateTime dataOraFine) throws SQLException {
-        // La logica è: aggiorno la data di fine solo per il record di quella tessera 
-        // che attualmente è "aperto" (es. data fine nel 9999 o comunque > di adesso)
-        // Per sicurezza, ordiniamo e prendiamo la più recente (se ce ne fosse più di una aperta)
+        // La logica è: aggiorno la data di fine per l'assegnazione attualmente attiva...
+        // NUOVA REGOLA: ...ma SOLO SE la data di fine attuale è MAGGIORE della nuova data di indisponibilità!
         String sql = "UPDATE TESSERADIPEND1 " +
                      "SET DATAORAFINEASSEGNAZIONE = ? " +
-                     "WHERE IDTESSERA = ? AND DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP";
+                     "WHERE IDTESSERA = ? " +
+                     "AND DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
+                     "AND DATAORAFINEASSEGNAZIONE > ?"; // <-- Il nuovo vincolo SQL
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(dataOraFine));
             ps.setString(2, idTessera);
-            return ps.executeUpdate() > 0; // Può aggiornare 0 righe se non ci sono assegnazioni attive
+            ps.setTimestamp(3, Timestamp.valueOf(dataOraFine)); // Passiamo il parametro per il check
+            return ps.executeUpdate() > 0; // Se la condizione è falsa, aggiornerà 0 righe (comportamento desiderato)
         }
     }
 
