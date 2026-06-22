@@ -44,7 +44,7 @@ public class GetVersionServlet extends HttpServlet {
         String appName = props.getProperty("app.name", "Applicativo Badge VVF");
         String version = props.getProperty("app.version", "N/D");
         String buildDate = props.getProperty("app.build.date", "N/D");
-        String codeName = props.getProperty("app.codeName", "N/D"); 
+        String codeName = props.getProperty("app.codename", "N/D"); 
 
         // --- MIGLIORIA PER ECLIPSE (DEV MODE) ---
         // Se leggiamo il placeholder letterale, significa che Eclipse ha bypassato Maven

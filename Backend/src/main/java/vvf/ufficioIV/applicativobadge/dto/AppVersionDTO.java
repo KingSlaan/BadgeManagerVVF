@@ -28,7 +28,7 @@ public class AppVersionDTO {
     public String getCodeName() {
         return codeName;
     }
-    public void setCodeName(String codename) {
-        this.codeName = codename;
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
     }
 }
