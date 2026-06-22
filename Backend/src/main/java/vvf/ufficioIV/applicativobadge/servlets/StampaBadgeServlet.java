@@ -28,6 +28,11 @@ import java.util.List;
  * DESCRIZIONE  : Riceve una lista di nominativi JSON e restituisce un pdf/word
  * ottimizzato millimetricamente per la stampante badge HID FARGO C50.
  * ==========================================================================================
+ * 📥 REQUEST (Cosa deve inviare il Frontend)
+ * ------------------------------------------------------------------------------------------
+ * Query Params : ?formato=pdf (default) OPPURE ?formato=docx
+ * Body         : Array JSON di NominativoDTO [ { "nome": "...", "cognome": "..." } ]
+ * ==========================================================================================
  */
 @WebServlet("/stampaBadgeServlet")
 public class StampaBadgeServlet extends HttpServlet {
@@ -37,6 +42,10 @@ public class StampaBadgeServlet extends HttpServlet {
             throws ServletException, IOException {
 
         System.out.println("[StampaBadgeServlet] >>> Inizio elaborazione stampa massiva...");
+
+        // 0. Leggiamo il formato desiderato dal Frontend (default a PDF se non specificato)
+        String formatoRichiesto = request.getParameter("formato");
+        boolean isWord = "docx".equalsIgnoreCase(formatoRichiesto) || "word".equalsIgnoreCase(formatoRichiesto);
 
         // 1. Lettura del Body JSON inviato da Angular
         StringBuilder sb = new StringBuilder();
@@ -75,31 +84,30 @@ public class StampaBadgeServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("[StampaBadgeServlet] Tessere da generare totali: " + nominativi.size());
+        System.out.println("[StampaBadgeServlet] Tessere da generare totali: " + nominativi.size() + " in formato: " + (isWord ? "DOCX" : "PDF"));
 
         if (nominativi.isEmpty()) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Nessun nominativo selezionato per la stampa.");
             return;
         }
 
-        // 3. Generazione del PDF e Stream verso il Client
+        // 3. Generazione del file e Stream verso il Client
         try {
-        	
-        	/* VERSIONE PDF - COMMENTARE/SCOMMENTARE*/
-            // Impostiamo il content type come PDF e l'apertura "inline" per attivare la dialog di stampa del browser
-            response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "inline; filename=\"Stampa_Badge_Massiva.pdf\"");
-			
-        	
-        	/*VERSIONE DOCX
-            // Indica che è un file Word (.docx) e forza il download
-            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            response.setHeader("Content-Disposition", "attachment; filename=\"Stampa_Badge_Massiva.docx\"");
-            */
             
-            DocumentoRispostaBadgeUtil.generaStampaMassiva(nominativi, response.getOutputStream());
+            if (isWord) {
+                // VERSIONE DOCX (Download forzato)
+                response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                response.setHeader("Content-Disposition", "attachment; filename=\"Stampa_Badge_Massiva.docx\"");
+            } else {
+                // VERSIONE PDF (Apertura inline nel browser per facilitare la stampa diretta)
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "inline; filename=\"Stampa_Badge_Massiva.pdf\"");
+            }
             
-            System.out.println("[StampaBadgeServlet] >>> Generazione PDF completata con successo.");
+            // ATTENZIONE: Passiamo il parametro booleano "isWord" alla utility
+            DocumentoRispostaBadgeUtil.generaStampaMassiva(nominativi, response.getOutputStream(), isWord);
+            
+            System.out.println("[StampaBadgeServlet] >>> Generazione " + (isWord ? "DOCX" : "PDF") + " completata con successo.");
 
         } catch (Exception e) {
             System.err.println("[StampaBadgeServlet] Errore critico durante la stampa: " + e.getMessage());
