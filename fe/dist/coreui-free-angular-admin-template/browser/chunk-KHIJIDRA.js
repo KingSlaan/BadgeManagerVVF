@@ -1,1 +1,0 @@
-var I={LIBERA:"success",INDISPONIBILE:"danger",OCCUPATA:"warning",ND:"secondary"},S={LIBERA:"libera",LIBERA_DESC:"Libera",LIBERA_DESC_PLU:"Libere",INDISPONIBILE:"indisponibile",INDISPONIBILE_DESC:"Indisponibile",INDISPONIBILE_DESC_PLU:"Indisponibili",OCCUPATA:"occupata",OCCUPATA_DESC:"Occupata",OCCUPATA_DESC_PLU:"Occupate",ND:"n/d",ND_DESC:"N/D"};export{I as a,S as b};

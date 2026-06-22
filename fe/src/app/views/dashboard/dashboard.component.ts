@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
         assegnati: 0,
         nonAssegnati: 0,
         inutilizzabili: 0,
+        nd: 0,
       }
     });
 

@@ -1,0 +1,44 @@
+<c-modal
+  [visible]="visible"
+  backdrop="static"
+  (visibleChange)="visibleChange.emit($event)"
+  size="lg"
+>
+  <c-modal-header style="justify-content: space-between !important">
+    <h5 cModalTitle>Stampa</h5>
+
+    <button
+      (click)="close()"
+      variant="ghost"
+      shape="rounded-pill"
+      cButton
+      color="danger"
+    >
+      <svg [cIcon]="icons.cilX"></svg>
+    </button>
+  </c-modal-header>
+  <c-modal-body>
+    <form [formGroup]="form" [gutter]="3" cForm cRow>
+      <c-col xs="12">
+        <label cLabel class="visually-hidden" for="tipoStampa">
+          Tipo Stampa
+        </label>
+        <select
+          cSelect
+          cFormControl
+          id="tipoStampa"
+          placeholder="Tipo Stampa"
+          formControlName="tipoStampa"
+        >
+          <option value="pdf">PDF</option>
+          <option value="docx">Word</option>
+        </select>
+      </c-col>
+    </form>
+  </c-modal-body>
+  <c-modal-footer>
+    <button cButton color="success" (click)="bulkPrint(tessereToPrint)" [disabled]="!form.valid">
+      Stampa
+    </button>
+  </c-modal-footer>
+</c-modal>

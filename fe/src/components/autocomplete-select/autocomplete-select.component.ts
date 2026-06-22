@@ -97,14 +97,26 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
 
   writeValue(value: any): void {
     if (this.multiple()) {
-      this.selectedValues.set(Array.isArray(value) ? value : []);
+      const values = Array.isArray(value) ? value : [];
+
+      this.selectedValues.set(values);
+
+      const selectedOptions = this.getAllOptions().filter(option =>
+        values.includes(option.value)
+      );
+
+      this.selectedOptions.set(selectedOptions);
+
       this.search.set('');
       return;
     }
 
     this.selectedValue.set(value);
 
-    const selected = this.getAllOptions().find(opt => opt.value === value);
+    const selected = this.getAllOptions().find(
+      opt => opt.value === value
+    );
+
     this.search.set(selected?.label ?? '');
   }
 

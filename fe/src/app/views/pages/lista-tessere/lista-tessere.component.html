@@ -40,6 +40,12 @@
 <app-tessera-update-multiplo
   [(visible)]="isModalMulUpdOpen"
 ></app-tessera-update-multiplo>
+
+<app-tessera-stampa
+  [(visible)]="isModalStampaOpen"
+  [mode]="mode"
+  [tessereToPrint]="tessereToPrint()"
+></app-tessera-stampa>
 <!-- FINE MODALI -->
 
 <ng-template #actionTemplate let-row let-selectedRows="selectedRows">

@@ -59,10 +59,6 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '4', operator: 'contains' },
       { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
-      // { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
-      // { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
-      // { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
-
     ]
   }
 };
