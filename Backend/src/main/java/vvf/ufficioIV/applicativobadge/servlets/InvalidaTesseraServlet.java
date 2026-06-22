@@ -147,12 +147,14 @@ public class InvalidaTesseraServlet extends HttpServlet {
                 return;
             }
 
-            // B. VERIFICA STATO TESSERA
+            
+            /* B. VERIFICA STATO TESSERA
             if (tessera.getDataOraIndisponibilita() != null && !tessera.getDataOraIndisponibilita().isAfter(LocalDateTime.now())) {
                 // La tessera ha già una data di indisponibilità nel passato o presente
                 ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "La tessera risulta già invalidata a sistema.");
                 return;
             }
+            */
 
             // C. PROTEZIONE PARADOSSI TEMPORALI SULLE ASSEGNAZIONI
             // Verifichiamo che la data di invalidazione non sia precedente all'inizio dell'assegnazione corrente
