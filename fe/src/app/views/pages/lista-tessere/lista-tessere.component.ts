@@ -3,6 +3,7 @@ import { DATAGRID_CONSTANTS } from './../../../../constants/datagrid.constants';
 import { Component, inject, OnInit, AfterViewInit, TemplateRef, ViewChild, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
+  BadgeModule,
   ButtonDirective,
   DropdownComponent,
   DropdownItemDirective,
@@ -29,6 +30,7 @@ import { Sedi } from './../../../../interfaces/sedi';
 import { SediService } from '../../../services/sedi.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { buildDataGridState, buildUrlQueryParamsFromState } from '../../../../components/data-grid/data-grid-utils';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -46,7 +48,8 @@ import { buildDataGridState, buildUrlQueryParamsFromState } from '../../../../co
     DropdownToggleDirective,
     ListGroupDirective,
     ListGroupItemDirective,
-    TooltipDirective
+    TooltipDirective,
+    BadgeModule
   ],
   templateUrl: './lista-tessere.component.html',
   styleUrl: './lista-tessere.component.scss',
@@ -59,6 +62,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   public utilsService = inject(UtilsService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toast = inject(ToastService);
 
   icons = { cilPrint, cilBan, cilPlus, cilDelete, cilPencil, cilActionUndo, cilSearch, cilHistory, cilOptions, cilBuilding };
 
@@ -87,6 +91,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     static: true,
   })
   statusTemplate!: TemplateRef<any>;
+
+  @ViewChild('selectedBadge', {
+    static: true
+  })
+  selectedBadge!: TemplateRef<any>;
 
   searchConfig: DataGridSearchConfig = {
     enabled: true,
@@ -137,7 +146,10 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   urlStateConfig = TESSERE_URL_STATE_CONFIG;
 
-  selectionSummaryConfig = TESSERE_SELECTION_SUMMARY_CONFIG;
+  selectionSummaryConfig = {
+    ...TESSERE_SELECTION_SUMMARY_CONFIG,
+    template: this.selectedBadge,
+  };
 
   selectedTessere = signal<Tessera[]>([]);
 
@@ -146,6 +158,21 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
   }
 
   bulkPrint(rows: Tessera[]): void {
+    let indispArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.INDISPONIBILE);
+    let indispArrId = indispArr.map(item => item.idTessera);
+
+    let libereArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.LIBERA);
+    let libereArrId = libereArr.map(item => item.idTessera);
+
+    if (indispArr.length > 0 || libereArr.length > 0) {
+
+      let tessereIndStr = indispArr.length > 0 ? '<br/><strong> Tessere indisponibili: ' + indispArrId.join(" , ") + '</strong>' : '';
+      let tessereLibStr = libereArr.length > 0 ? '<br/><strong> Tessere libere: ' + libereArrId.join(" , ") + '</strong>' : '';
+
+      this.toast.error(`Nella lista sono presenti tessere indisponibili o libere. ${tessereIndStr} ${tessereLibStr}`);
+      return;
+    }
+
     this.tessereService.stampaTessere(rows, 'WORD').subscribe({
       next: response => {
         const blob = response.body!;
@@ -181,7 +208,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-info",
       icon: this.icons.cilActionUndo,
       title: "Assegna Dipendente",
-      visibility: (row: Tessera) => this.isLibera(row)
+      visibility: (row: Tessera) => row.stato == TESSERE_STATUS_MESSAGES.LIBERA
     },
     {
       name: "cambia-sede",
@@ -211,7 +238,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-danger",
       icon: this.icons.cilDelete,
       title: "Cambia Validità",
-      visibility: (row: any) => this.isOccupata(row) && !this.isIndisponibile(row)
+      visibility: (row: any) => row.stato == TESSERE_STATUS_MESSAGES.OCCUPATA && row.stato == !TESSERE_STATUS_MESSAGES.INDISPONIBILE
     },
     {
       name: "cronologia",
@@ -231,7 +258,7 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       color: "text-secondary",
       icon: this.icons.cilPrint,
       title: "Stampa Tessera",
-      visibility: (row: any) => this.isOccupata(row)
+      visibility: (row: any) => row.stato ==  TESSERE_STATUS_MESSAGES.OCCUPATA
     },
   ];
 
@@ -280,6 +307,11 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     this.contextMenuConfig = {
       enabled: true,
       template: this.contextActionTemplate,
+    };
+
+    this.selectionSummaryConfig = {
+      ...TESSERE_SELECTION_SUMMARY_CONFIG,
+      template: this.selectedBadge,
     };
   }
 
@@ -364,39 +396,19 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     }
   }
 
-  isLibera(row: Tessera) {
-    return !this.isOccupata(row) && !this.isIndisponibile(row)
-  }
-
-  isOccupata(row: Tessera) {
-    const now = Date.now();
-    const timestampFine = row.dataOraFineAssegnazione ? this.utilsService.parseItalianDate(row.dataOraFineAssegnazione).getTime() : null;
-
-    if (timestampFine > now && row.codiceFiscale) {
-      return true;
-    }
-    return false;
-  }
-
-  isIndisponibile(row: Tessera): boolean {
-    const now = Date.now();
-    const timestampIndisp = row.dataOraIndisponibilita ? this.utilsService.parseItalianDate(row.dataOraIndisponibilita).getTime() : null;
-
-    if (timestampIndisp <= now) {
-      return true
-    }
-    return false;
-  }
-
 
   getStatusColor(row: Tessera) {
     if (row) {
-      if (this.isIndisponibile(row)) {
-        return TESSERE_STATUS_COLORS.INDISPONIBILE;
-      } else if (this.isOccupata(row)) {
-        return TESSERE_STATUS_COLORS.OCCUPATA;
-      } else {
-        return TESSERE_STATUS_COLORS.LIBERA;
+      switch (row.stato) {
+        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
+          return TESSERE_STATUS_COLORS.INDISPONIBILE;
+        case TESSERE_STATUS_MESSAGES.OCCUPATA:
+          return TESSERE_STATUS_COLORS.OCCUPATA;
+        case TESSERE_STATUS_MESSAGES.LIBERA:
+          return TESSERE_STATUS_COLORS.LIBERA;
+
+        default:
+          return TESSERE_STATUS_COLORS.ND
       }
     }
     return TESSERE_STATUS_COLORS.ND;
@@ -404,13 +416,16 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   getStatusTooltip(row: Tessera) {
     if (row) {
-      if (this.isIndisponibile(row)) {
-        return TESSERE_STATUS_MESSAGES.INDISPONIBILE;
-      }
-      else if (this.isOccupata(row)) {
-        return TESSERE_STATUS_MESSAGES.OCCUPATA;
-      } else {
-        return TESSERE_STATUS_MESSAGES.LIBERA;
+      switch (row.stato) {
+        case TESSERE_STATUS_MESSAGES.INDISPONIBILE:
+          return TESSERE_STATUS_MESSAGES.INDISPONIBILE_DESC;
+        case TESSERE_STATUS_MESSAGES.OCCUPATA:
+          return TESSERE_STATUS_MESSAGES.OCCUPATA_DESC;
+        case TESSERE_STATUS_MESSAGES.LIBERA:
+          return TESSERE_STATUS_MESSAGES.LIBERA_DESC;
+
+        default:
+          return TESSERE_STATUS_MESSAGES.ND_DESC;
       }
     }
     return TESSERE_STATUS_COLORS.ND;

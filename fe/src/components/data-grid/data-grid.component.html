@@ -259,17 +259,30 @@
 
         <div class="d-flex flex-wrap gap-2">
           @for (row of selectedRows(); track getRowKey(row)) {
-            <span class="datagrid-selection-chip">
-              {{ getSelectionLabel(row) }}
+            @if (selectionSummaryConfig()?.template) {
+              <ng-container
+                *ngTemplateOutlet="
+                  selectionSummaryConfig()!.template;
+                  context: {
+                    $implicit: row,
+                    row: row,
+                    remove: removeSelectedRow.bind(this),
+                  }
+                "
+              />
+            } @else {
+              <span class="datagrid-selection-chip">
+                {{ getSelectionLabel(row) }}
 
-              <button
-                type="button"
-                class="datagrid-selection-chip-close"
-                (click)="removeSelectedRow(row)"
-              >
-                ×
-              </button>
-            </span>
+                <button
+                  type="button"
+                  class="datagrid-selection-chip-close"
+                  (click)="removeSelectedRow(row)"
+                >
+                  ×
+                </button>
+              </span>
+            }
           }
         </div>
       </div>

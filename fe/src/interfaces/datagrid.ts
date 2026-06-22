@@ -14,9 +14,10 @@ export interface DataGridState {
 export interface DataGridSelectionSummaryConfig<T = any> {
   enabled: boolean;
   label?: string;
-  displayField: keyof T | string;
+  displayField?: keyof T | string;
   maxHeight?: string;
   clearButton?: boolean;
+  template?: TemplateRef<any>;
 }
 
 export type DataGridFilterValue =

@@ -64,14 +64,14 @@
   }
 
   &:disabled {
-    background: var(--cui-secondary-bg);
+    background: var(--cui-secondary-bg) !important;
     color: var(--cui-secondary-color);
     cursor: not-allowed;
     -webkit-text-fill-color: var(--cui-secondary-color);
   }
 
   &.is-readonly:not(:disabled) {
-    background: var(--cui-secondary-bg);
+    background: var(--cui-secondary-bg) !important;
   }
 }
 

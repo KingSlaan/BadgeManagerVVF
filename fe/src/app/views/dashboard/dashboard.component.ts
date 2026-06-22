@@ -1,3 +1,4 @@
+import { TESSERE_STATUS_MESSAGES } from '../../../constants/tessere-status.constants';
 import { DashboardService } from './../../services/dashboard.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
@@ -28,6 +29,7 @@ export class DashboardComponent implements OnInit {
 
   private statisticheService = inject(DashboardService);
   private router = inject(Router);
+  public tessereStatusMsg = TESSERE_STATUS_MESSAGES;
 
   icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
 

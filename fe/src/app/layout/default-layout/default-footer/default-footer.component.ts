@@ -28,6 +28,7 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
   versionInfoBE = signal<VersionInfoBE>({
     "appName": "Applicativo Badge VVF",
     "version": "0.0.0",
+    "codeName": "",
     "buildDate": ""
   });
 

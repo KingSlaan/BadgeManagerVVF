@@ -10,21 +10,19 @@ import {
 import { Tessera, Tessere } from '../../../../interfaces/tessere';
 import { cilCloudDownload, cilCloudUpload, cilPlus, cilPrint } from '@coreui/icons';
 import { AutocompleteOption } from '../../../../components/autocomplete-select/autocomplete-select.component';
+import { TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
 
 export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataGridSearchConfig {
   return {
     enabled: true,
 
     fields: [
-      { field: 'idTessera', label: 'Id Tessera', type: 'text', size: '3', operator: 'contains' },
-      { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '3', operator: 'contains' },
-      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
-      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
-      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '4', operator: 'in', options: sediList, multiple: true },
+      { field: 'idTessera', label: 'ID Tessera', type: 'text', size: '2', operator: 'contains' },
+      { field: 'sede', label: 'Sede Tessera', type: 'autocomplete', size: '5', operator: 'in', options: sediList, multiple: true },
       {
         field: 'codTipoTessera',
-        label: 'Codice Tipo Tessera',
-        type: 'select',
+        label: 'Tipo Tessera',
+        type: 'autocomplete',
         operator: 'equals',
         options: [
           {
@@ -35,12 +33,32 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
             label: 'Dipendente',
             value: 'D',
           },
-
         ],
+        size: '2'
       },
       {
-        field: 'soloNonAssegnate', label: 'Solo non Assegnate', type: 'checkbox', operator: 'equals', size: '3'
-      }
+        field: 'stato', label: 'Stato', type: 'autocomplete', size: '3', operator: 'in', options: [
+          {
+            label: TESSERE_STATUS_MESSAGES.LIBERA_DESC,
+            value: TESSERE_STATUS_MESSAGES.LIBERA,
+          },
+          {
+            label: TESSERE_STATUS_MESSAGES.OCCUPATA_DESC,
+            value: TESSERE_STATUS_MESSAGES.OCCUPATA,
+          },
+          {
+            label: TESSERE_STATUS_MESSAGES.INDISPONIBILE_DESC,
+            value: TESSERE_STATUS_MESSAGES.INDISPONIBILE,
+          },
+          {
+            label: TESSERE_STATUS_MESSAGES.ND_DESC,
+            value: TESSERE_STATUS_MESSAGES.ND,
+          },
+        ], multiple: true
+      },
+      { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '4', operator: 'contains' },
+      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
+      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
       // { field: 'dataIndisponibilità', label: 'Data Indisponibilità', type: 'date', size: '3' },
       // { field: 'dataOraInizioAssegnazione', label: 'Inizio Assegnazione', type: 'date', size: '3' },
       // { field: 'dataOraFineAssegnazione', label: 'Fine Assegnazione', type: 'date', size: '3' },
@@ -133,7 +151,7 @@ export function createGridToolbar(
   };
 }
 
-export function createGridColumn(actionTemplate: TemplateRef<any>,statusTemplate: TemplateRef<any>): DataGridColumn<Tessera>[] {
+export function createGridColumn(actionTemplate: TemplateRef<any>, statusTemplate: TemplateRef<any>): DataGridColumn<Tessera>[] {
   return [
     {
       field: 'idTessera',
@@ -188,9 +206,9 @@ export function createGridColumn(actionTemplate: TemplateRef<any>,statusTemplate
         `,
       width: "350px"
     },
-        {
-      field: 'status',
-      header: '',
+    {
+      field: 'stato',
+      header: 'Stato',
       template: statusTemplate,
     },
     {
@@ -200,78 +218,3 @@ export function createGridColumn(actionTemplate: TemplateRef<any>,statusTemplate
     }
   ];
 }
-
-export const TESSERE_MOCK: Tessere = [
-  {
-    idTessera: "0000090801",
-    codTipoTessera: "D",
-    sede: "RO",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "Luca",
-    cognome: "Cropoli",
-    codiceFiscale: "CRPLCU00L19A783Q",
-    codiceInterno: "0005121205",
-    dataOraInizioAssegnazione: "19/06/2024 06:00:00",
-    dataOraFineAssegnazione: "31/12/9999 23:59:59",
-  },
-  {
-    idTessera: "0000090802",
-    codTipoTessera: "D",
-    sede: "001",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "Pluto",
-    cognome: "ABC",
-    codiceFiscale: "ABCD",
-    codiceInterno: "ABCD",
-    dataOraInizioAssegnazione: "10/11/1994",
-    dataOraFineAssegnazione: "31/12/9999 23:59:59",
-  },
-  {
-    idTessera: "0000090803",
-    codTipoTessera: "D",
-    sede: "001",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "Pluto",
-    cognome: "ABC",
-    codiceFiscale: "ABCD",
-    codiceInterno: "ABCD",
-    dataOraInizioAssegnazione: "10/11/1994",
-    dataOraFineAssegnazione: "31/12/9999 23:59:59",
-  },
-  {
-    idTessera: "0000090804",
-    codTipoTessera: "",
-    sede: "",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "",
-    cognome: "",
-    codiceFiscale: "",
-    codiceInterno: "ABCD",
-    dataOraInizioAssegnazione: "",
-    dataOraFineAssegnazione: "",
-  },
-  {
-    idTessera: "0000090805",
-    codTipoTessera: "",
-    sede: "",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "",
-    cognome: "",
-    codiceFiscale: "",
-    codiceInterno: "ABCD",
-    dataOraInizioAssegnazione: "",
-    dataOraFineAssegnazione: "",
-  },
-  {
-    idTessera: "0000090806",
-    codTipoTessera: "",
-    sede: "",
-    dataOraIndisponibilita: "10/11/1994 23:59:59",
-    nome: "",
-    cognome: "",
-    codiceFiscale: "",
-    codiceInterno: "ABCD",
-    dataOraInizioAssegnazione: "",
-    dataOraFineAssegnazione: "",
-  },
-];

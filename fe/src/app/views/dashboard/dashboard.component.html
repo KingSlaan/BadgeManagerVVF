@@ -1,5 +1,5 @@
 <!-- <c-container> -->
-<h3>Statistiche Badge</h3>
+<h3>Statistiche Tessere</h3>
 <c-row>
   <c-col lg="3" xs="6">
     <c-widget-stat-c
@@ -21,10 +21,12 @@
 
   <c-col lg="3" xs="6">
     <c-widget-stat-c
-      [title]="'Utilizzabii Assegnati'"
+      [title]="tessereStatusMsg.LIBERA_DESC_PLU"
       color="success"
       inverse
+      (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.LIBERA })"
       [value]="this.statistiche().generale.assegnati"
+      class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">
         <svg cIcon height="25" name="cilUserFollow"></svg>
@@ -47,11 +49,11 @@
 
   <c-col lg="3" xs="6">
     <c-widget-stat-c
-      [title]="'Utilizzabii Non Assegnati'"
+      [title]="tessereStatusMsg.OCCUPATA_DESC_PLU"
       color="warning"
       inverse
       [value]="this.statistiche().generale.nonAssegnati"
-      (click)="goTo('/liste/tessere', { soloNonAssegnate: true })"
+      (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.OCCUPATA })"
       class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">
@@ -75,10 +77,12 @@
 
   <c-col lg="3" xs="6">
     <c-widget-stat-c
-      [title]="'Inutilizzabili'"
+      [title]="tessereStatusMsg.INDISPONIBILE_DESC_PLU"
       color="danger"
       inverse
+      (click)="goTo('/liste/tessere', { stato: tessereStatusMsg.INDISPONIBILE })"
       [value]="this.statistiche().generale.inutilizzabili"
+      class="shadow-card"
     >
       <ng-template cTemplateId="widgetIconTemplate">
         <svg cIcon height="25" name="cilTrash"></svg>

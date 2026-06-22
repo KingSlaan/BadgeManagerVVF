@@ -93,3 +93,25 @@
     <span [class]="'status-dot status-dot--' + getStatusColor(row)"></span>
   </div>
 </ng-template>
+
+<ng-template #selectedBadge let-row let-remove="remove">
+  <c-badge
+    color="secondary"
+    shape="rounded-pill"
+    class="d-inline-flex align-items-center"
+  >
+    <div class="d-flex flex-column align-items-center text-center px-1">
+      <strong>{{ row.idTessera }}</strong>
+
+      <small class="opacity-75">
+        {{ row.sede }}
+      </small>
+    </div>
+
+    <button
+      type="button"
+      class="btn-close btn-close-white ms-2"
+      (click)="remove(row)"
+    ></button>
+  </c-badge>
+</ng-template>

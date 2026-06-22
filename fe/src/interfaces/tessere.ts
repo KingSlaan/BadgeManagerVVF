@@ -9,6 +9,7 @@ export interface Tessera {
   cognome: string;
   codiceInterno: string;
   codiceFiscale: string;
+  stato: string;
 }
 
 export type Tessere = Tessera[];
@@ -24,4 +25,5 @@ export const tesseraEmpty: Tessera = {
   cognome: "",
   codiceInterno: "",
   codiceFiscale: "",
+  stato: "",
 }

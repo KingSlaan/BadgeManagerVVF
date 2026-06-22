@@ -7,7 +7,6 @@ const boardGames = [
   'Catan',
   'Gloomhaven',
   'TerraformingMars',
-  'Carcassonne',
   'Azul',
   'Pandemic',
   'Wingspan',
@@ -25,7 +24,6 @@ const boardGames = [
   'PuertoRico',
   'SpiritIsland',
   'Civolution',
-  'Dixit',
   'ResArcana',
   'MachiKoro',
   'GreatWesternTrail',
@@ -42,6 +40,10 @@ const boardGames = [
   'Cascadia',
   'Lisboa',
   'Arcs',
+  'Calico',
+  'WorldOrder',
+  'ArkNova',
+  'Seti',
 ];
 
 const bumpType = process.argv[2] || 'patch';

@@ -6,5 +6,6 @@ export interface VersionInfo {
 export interface VersionInfoBE {
   version: string;
   appName: string;
+  codeName: string;
   buildDate: string;
 }

@@ -7,16 +7,16 @@ export const TESSERE_STATUS_COLORS: Record<TesseraStatus, string> = {
   ND: 'secondary',
 };
 
-export const TESSERE_STATUS_MESSAGES: Record<TesseraStatus, string> = {
-  LIBERA: 'Libera',
-  INDISPONIBILE: 'Indisponibile',
-  OCCUPATA: 'Occupata',
-  ND: 'ND',
+export const TESSERE_STATUS_MESSAGES = {
+  LIBERA: 'libera',
+  LIBERA_DESC: 'Libera',
+  LIBERA_DESC_PLU: 'Libere',
+  INDISPONIBILE: 'indisponibile',
+  INDISPONIBILE_DESC: 'Indisponibile',
+  INDISPONIBILE_DESC_PLU: 'Indisponibili',
+  OCCUPATA: 'occupata',
+  OCCUPATA_DESC: 'Occupata',
+  OCCUPATA_DESC_PLU: 'Occupate',
+  ND: 'nd',
+  ND_DESC: 'N/D',
 };
-
-// verde = libera --> indisponibilità attiva e non assegnata ;
-  // Assegna, Cambia Sede, Cambia Validità, Cronologia
-// rosso = data indisponibilità superata -->
-  //
-// giallo=occupata con indisponibilità attiva ma assegnata ATTUALMENTE a qualcuno ; -->
-  // Disuso, Cambia Sede, Cambia Validità, Cronologia, Stampa
