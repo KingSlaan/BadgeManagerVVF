@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -115,6 +117,22 @@ public class RevocaTesseraServlet extends HttpServlet {
         try {
             daoAssegnaz = new TesseraDipend1DAOJDBCImpl(props.getProperty("db.ip"), props.getProperty("db.port"), props.getProperty("db.name"), props.getProperty("db.user"), props.getProperty("db.password"));
 
+            // 23/06/2026 LOGICA
+            // Controlliamo che la data di fine non sia antecedente alla data di inizio
+            List<TesseraDipend1> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+            for (TesseraDipend1 ass : assegnazioni) {
+                // Troviamo l'assegnazione attualmente attiva (che non è ancora finita)
+                if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
+                    if (dataFine.isBefore(ass.getDataOraInizioAssegnazione())) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, 
+                            "Operazione bloccata: La data di fine assegnazione non può essere antecedente alla data in cui la tessera è stata assegnata (" 
+                            + ass.getDataOraInizioAssegnazione().format(formatter) + ").");
+                        return; // Interrompiamo tutto
+                    }
+                }
+            }
+            // 23/06/26
+            
             // Revoca: modifichiamo solo l'assegnazione
             boolean aggiornato = daoAssegnaz.revocaAssegnazioneAttiva(idTessera, dataFine);
 
