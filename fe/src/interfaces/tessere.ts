@@ -27,3 +27,11 @@ export const tesseraEmpty: Tessera = {
   codiceFiscale: "",
   stato: "",
 }
+
+export interface TessereMassiva {
+  idTessere: string[];
+  sede?: string;
+  dataOraIndisponibilita?: string;
+  dataOraInizioAssegnazione?: string;
+  dataOraFineAssegnazione?: string;
+}

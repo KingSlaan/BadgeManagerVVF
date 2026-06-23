@@ -1,6 +1,6 @@
 import { API_CONSTANTS } from './../../constants/api.constants';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Tessera, Tessere } from './../../interfaces/tessere';
+import { Tessera, Tessere, TessereMassiva } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DataGridState } from './../../interfaces/datagrid';
@@ -49,6 +49,10 @@ export class TessereService {
 
   invalidaTessera(id: string, tessera: any): any {
     return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
+  }
+
+  invalidaMassivo(body: TessereMassiva): any {
+    return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessereMassivo`, body);
   }
 
   stampaTessere(dipendentiSelezionati: any[], formato: string): Observable<HttpResponse<Blob>> {
