@@ -25,7 +25,7 @@
             this.utilsService.getStatusColor(tesseraSelected)
           "
         ></span>
-        {{formTessera.controls.stato.value | titlecase }}
+        {{ formTessera.controls.stato.value | titlecase }}
       </c-col>
       <c-col xs="6">
         <label cLabel class="visually-hidden" for="idTessera">
@@ -115,8 +115,10 @@
           id="dataInizioAssegnazione"
           formControlName="dataOraInizioAssegnazione"
           placeholder="Data Inizio Assegnazione"
-          min="1900-01-01"
-          max="9999-12-31"
+          min="01/01/1900 00:00:00"
+          [max]="
+            formTessera.controls.dataOraFineAssegnazione.value ?? undefined
+          "
           [showTodayButton]="true"
           todayButtonLabel="Oggi"
         />
@@ -130,8 +132,12 @@
           id="dataFineAssegnazione"
           formControlName="dataOraFineAssegnazione"
           placeholder="Data Fine Assegnazione"
-          min="1900-01-01"
-          max="9999-12-31"
+          [min]="
+            formTessera.controls.dataOraInizioAssegnazione.value ?? undefined
+          "
+          [max]="
+            formTessera.controls.dataOraIndisponibilita.value ?? undefined
+          "
           [showTodayButton]="true"
           [showSpecificDateButton]="true"
           specificDateValue="31/12/9999 00:00:00"
@@ -148,8 +154,10 @@
           id="dataInvalidita"
           formControlName="dataOraIndisponibilita"
           placeholder="Data Invalidità"
-          min="1900-01-01"
-          max="9999-12-31"
+          [min]="
+            formTessera.controls.dataOraInizioAssegnazione.value ?? undefined
+          "
+          max="31/12/9999 00:00:00"
           [showTodayButton]="true"
           [showSpecificDateButton]="true"
           specificDateValue="31/12/9999 00:00:00"
@@ -157,6 +165,11 @@
           specificDateButtonLabel="Fine validità"
         />
       </c-col>
+      @if (getErrorMessage().length > 0) {
+        <c-col xs="12">
+          <c-alert color="warning">{{ getErrorMessage() }} </c-alert>
+        </c-col>
+      }
     </form>
   </c-modal-body>
   <c-modal-footer>

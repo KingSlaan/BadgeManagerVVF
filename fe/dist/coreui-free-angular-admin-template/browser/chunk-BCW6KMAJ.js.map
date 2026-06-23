@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/views/pages/logs-viewer/logs-viewer.component.ts", "src/app/views/pages/logs-viewer/logs-viewer.component.html"],
-  "sourcesContent": ["import { Component } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-logs-viewer',\r\n  imports: [],\r\n  templateUrl: './logs-viewer.component.html',\r\n  styleUrl: './logs-viewer.component.scss',\r\n})\r\nexport class LogsViewerComponent {\r\n\r\n}\r\n", "<p>logs-viewer To be released!</p>\r\n"],
-  "mappings": ";;;;;;;;;;;;AAQM,IAAO,sBAAP,MAAO,qBAAmB;;;uCAAnB,sBAAmB;IAAA;EAAA;;yEAAnB,sBAAmB,WAAA,CAAA,CAAA,iBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,6BAAA,IAAA,KAAA;AAAA,UAAA,KAAA,GAAA;ACRhC,QAAA,4BAAA,GAAA,GAAA;AAAG,QAAA,iBAAA,GAAA,6BAAA;AAA2B,QAAA,0BAAA;;;;;;sEDQjB,qBAAmB,CAAA;UAN/B;uBACW,mBAAiB,SAClB,CAAA,GAAE,UAAA,yCAAA,CAAA;;;;6EAIA,qBAAmB,EAAA,WAAA,uBAAA,UAAA,4DAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}
