@@ -39,4 +39,14 @@
     <servlet-name>StampaBadgeServlet</servlet-name>
     <url-pattern>/StampaBadgeServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>InvalidaTessereMassivoServlet</display-name>
+    <servlet-name>InvalidaTessereMassivoServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.InvalidaTessereMassivoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InvalidaTessereMassivoServlet</servlet-name>
+    <url-pattern>/InvalidaTessereMassivoServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
