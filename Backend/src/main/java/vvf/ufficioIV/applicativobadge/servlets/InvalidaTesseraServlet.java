@@ -180,13 +180,21 @@ public class InvalidaTesseraServlet extends HttpServlet {
             }
 
             // Step 2: Revoca assegnazioni attive
-            // Nota: daoAssegnaz.revocaAssegnazioneAttiva restituisce true/false, ma potrebbe giustamente 
-            // restituire false se NON ci sono assegnazioni attive. Non deve essere un errore bloccante.
-            daoAssegnaz.revocaAssegnazioneAttiva(idTesseraUrl, dataIndisp);
+            // Catturiamo il boolean: se è true, significa che l'assegnazione in corso 
+            // aveva una fine "nel futuro" ed è stata anticipata alla data di indisponibilità (REGOLA C)
+            boolean assegnazioneAccorciata = daoAssegnaz.revocaAssegnazioneAttiva(idTesseraUrl, dataIndisp);
 
             //  COMMIT: Conferma tutte le modifiche
             conn.commit();
-            ResponseUtil.sendOkNoData(response, "Tessera invalidata e relativa assegnazione (se presente) revocata con successo.");
+            
+            // ---> INIZIO MODIFICA: REGOLA DI BUSINESS (C) - Risposta Dinamica <---
+            if (assegnazioneAccorciata) {
+                ResponseUtil.sendOkNoData(response, "Tessera invalidata con successo. Attenzione: la data di fine dell'assegnazione in corso è stata anticipata alla data di indisponibilità.");
+            } else {
+                ResponseUtil.sendOkNoData(response, "Tessera invalidata con successo. Nessuna assegnazione attiva ha subito variazioni.");
+            }
+            // ---> FINE MODIFICA <---
+            
             System.out.println("[InvalidaTesseraServlet] <<< Completato con successo");
 
         } catch (Exception e) {

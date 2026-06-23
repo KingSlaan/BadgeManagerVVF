@@ -156,6 +156,10 @@ public class AssegnaTesseraServlet extends HttpServlet {
         if (dataFine == null) {
             dataFine = LocalDateTime.of(9999, 12, 31, 23, 59, 59); // Data fittizia "infinito"
         }
+        
+        if(dataFine.isBefore(dataInizio)){
+        	ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Data fine assegnazione non può essere antecedente alla data di inizio");
+        }
 
         if (dataInizio == null) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data inizio non valido.");
