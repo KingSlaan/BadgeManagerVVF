@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/constants/tessere-status.constants.ts"],
-  "sourcesContent": ["export type TesseraStatus = 'LIBERA' | 'INDISPONIBILE' | 'OCCUPATA' | 'ND';\r\n\r\nexport const TESSERE_STATUS_COLORS: Record<TesseraStatus, string> = {\r\n  LIBERA: 'success',\r\n  INDISPONIBILE: 'danger',\r\n  OCCUPATA: 'warning',\r\n  ND: 'secondary',\r\n};\r\n\r\nexport const TESSERE_STATUS_MESSAGES = {\r\n  LIBERA: 'libera',\r\n  LIBERA_DESC: 'Libera',\r\n  LIBERA_DESC_PLU: 'Libere',\r\n  INDISPONIBILE: 'indisponibile',\r\n  INDISPONIBILE_DESC: 'Indisponibile',\r\n  INDISPONIBILE_DESC_PLU: 'Indisponibili',\r\n  OCCUPATA: 'occupata',\r\n  OCCUPATA_DESC: 'Occupata',\r\n  OCCUPATA_DESC_PLU: 'Occupate',\r\n  ND: 'nd',\r\n  ND_DESC: 'N/D',\r\n};\r\n"],
-  "mappings": ";AAEO,IAAM,wBAAuD;EAClE,QAAQ;EACR,eAAe;EACf,UAAU;EACV,IAAI;;AAGC,IAAM,0BAA0B;EACrC,QAAQ;EACR,aAAa;EACb,iBAAiB;EACjB,eAAe;EACf,oBAAoB;EACpB,wBAAwB;EACxB,UAAU;EACV,eAAe;EACf,mBAAmB;EACnB,IAAI;EACJ,SAAS;;",
-  "names": []
-}

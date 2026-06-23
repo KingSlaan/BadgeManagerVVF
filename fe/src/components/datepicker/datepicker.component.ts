@@ -58,6 +58,14 @@ export class DatepickerComponent implements ControlValueAccessor {
   private onChange: (value: string | null) => void = () => { };
   private onTouched: () => void = () => { };
 
+  get nativeMin(): string | undefined {
+    return this.min ? this.toNativeDateTime(this.min) : undefined;
+  }
+
+  get nativeMax(): string | undefined {
+    return this.max ? this.toNativeDateTime(this.max) : undefined;
+  }
+
   writeValue(value: string | null): void {
     if (!value) {
       this.value = null;
@@ -103,17 +111,31 @@ export class DatepickerComponent implements ControlValueAccessor {
   onValueChange(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    this.value = input.value;
+    let value = input.value;
 
-    if (!this.showTime) {
-      const [year, month, day] = input.value.split('-');
-
-      this.onChange(`${day}/${month}/${year}`);
-    } else {
-      this.onChange(this.toDisplayFormat(input.value));
+    if (this.nativeMin && value < this.nativeMin) {
+      value = this.nativeMin;
     }
 
+    if (this.nativeMax && value > this.nativeMax) {
+      value = this.nativeMax;
+    }
+
+    input.value = value;
+    this.value = value;
+
+    this.onChange(
+      this.showTime
+        ? this.toDisplayFormat(value)
+        : this.toDisplayDate(value)
+    );
+
     this.onTouched();
+  }
+
+  private toDisplayDate(value: string): string {
+    const [year, month, day] = value.split('-');
+    return `${day}/${month}/${year}`;
   }
 
   setToday(): void {
@@ -152,15 +174,14 @@ export class DatepickerComponent implements ControlValueAccessor {
   }
 
   private toNativeDateTime(value: string): string {
-    const [datePart, timePart] = value.split(' ');
-
+    const [datePart, timePart] = value.trim().split(' ');
     const [day, month, year] = datePart.split('/');
 
     if (!this.showTime) {
       return `${year}-${month}-${day}`;
     }
 
-    const [hours, minutes] = timePart.split(':');
+    const [hours = '00', minutes = '00'] = (timePart ?? '00:00:00').split(':');
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }

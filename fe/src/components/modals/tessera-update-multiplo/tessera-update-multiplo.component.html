@@ -18,6 +18,7 @@
     </button>
   </c-modal-header>
   <c-modal-body>
+    <p>Le seguenti tessere saranno mandate in stampa: {{tessereSelected.map(item => item.idTessera).join(' , ')}}</p>
     <form [formGroup]="form" [gutter]="3" cForm cRow>
       @if (mode == "cambia-sede") {
         <c-col xs="12">

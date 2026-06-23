@@ -14,7 +14,8 @@ import {
   ColComponent,
   GutterDirective,
   RowDirective,
-  FormSelectDirective
+  FormSelectDirective,
+  AlertComponent
 } from '@coreui/angular';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { cilX } from '@coreui/icons';
@@ -48,7 +49,8 @@ import { TitleCasePipe } from '@angular/common';
     DatepickerComponent,
     FormSelectDirective,
     AutocompleteSelectComponent,
-    TitleCasePipe
+    TitleCasePipe,
+    AlertComponent
   ],
   templateUrl: './tessera-modal-cmp.component.html',
   styleUrl: './tessera-modal-cmp.component.scss',
@@ -89,6 +91,10 @@ export class TesseraModalCmpComponent {
     }
 
     this.applyModeRules();
+  }
+
+  debug() {
+    console.log("formTessere",this.formTessera)
   }
 
   private applyModeRules(): void {
@@ -148,6 +154,35 @@ export class TesseraModalCmpComponent {
       this.formTessera.get(field)?.disable({ emitEvent: false });
     });
   }
+
+  getErrorMessage() {
+    let errorMessageStr = '';
+
+    if (this.formTessera) {
+
+      const dataFine = this.formTessera.controls.dataOraFineAssegnazione?.value;
+      const dataIndisp = this.formTessera.controls.dataOraIndisponibilita?.value;
+
+      const timestampFine = dataFine
+        ? this.utilsService.parseItalianDate(dataFine).getTime()
+        : null;
+
+      const timestampIndisp = dataIndisp
+        ? this.utilsService.parseItalianDate(dataIndisp).getTime()
+        : null;
+
+      if (
+        timestampIndisp !== null &&
+        timestampFine !== null &&
+        timestampIndisp < timestampFine
+      ) {
+        errorMessageStr += 'La tessera è assegnata, rendendola indisponibile l\'assegnazione viene conclusa';
+      }
+    }
+
+    return errorMessageStr;
+  }
+
 
   getTitle(mode: string) {
     switch (mode) {

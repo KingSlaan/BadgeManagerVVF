@@ -32,7 +32,7 @@ export class TesseraUpdateMultiploComponent {
 
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Input() tesseraSelectedHistory: any = [];
+  @Input() tessereSelected: any = [];
   @Input() sediList: any = [];
   @Output() saved = new EventEmitter<void>();
 
