@@ -114,7 +114,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
 
   toolbarConfig: DataGridToolbarConfig = createGridToolbar(
     () => this.openModalAggiungi(),
-    () => this.exportCsv(),
     () => this.importCsv(),
     (rows) => this.openModalStampaUpdate(rows, 'multi'),
     (mode) => this.openBulkUpdate(mode),
