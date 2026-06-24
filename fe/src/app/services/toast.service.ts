@@ -38,7 +38,7 @@ export class ToastService {
     });
   }
 
-  error(message: string, title = 'Error') {
+  error(message: string, title = 'Errore') {
     this.show({
       title,
       message,

@@ -93,7 +93,6 @@ export const TESSERE_URL_STATE_CONFIG = {
 
 export function createGridToolbar(
   openModalAggiungi: () => void,
-  exportCsv: () => void,
   importCsv: () => void,
   openStampa: (rows: Tessera[]) => void,
   openBulkUpdate: (mode:string) => void,
@@ -106,13 +105,6 @@ export function createGridToolbar(
         icon: cilPlus,
         color: 'success',
         action: openModalAggiungi
-      },
-      {
-        label: 'Export CSV',
-        icon: cilCloudDownload,
-        color: 'primary',
-        action: exportCsv,
-        disabled: () => true
       },
       {
         label: 'Import CSV',

@@ -6,7 +6,7 @@ import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ChartData } from 'chart.js';
-import { Statistiche, StatisticheSedeChart } from '../../../interfaces/statistiche';
+import { Statistiche } from '../../../interfaces/statistiche';
 import { Router } from '@angular/router';
 
 @Component({
@@ -33,6 +33,11 @@ export class DashboardComponent implements OnInit {
 
   icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
 
+  get chartHeight(): number {
+    const labels = this.chartBarTessereData().labels ?? [];
+    return Math.max(900, labels.length * 35);
+  }
+
   statistiche = signal<Statistiche>(
     {
       generale: {
@@ -46,8 +51,28 @@ export class DashboardComponent implements OnInit {
 
   options = {
     responsive: true,
-    indexAxis: 'y' as const,
     maintainAspectRatio: false,
+    indexAxis: 'y' as const,
+
+    layout: {
+      padding: {
+        left: 20
+      }
+    },
+
+    scales: {
+      y: {
+        ticks: {
+          autoSkip: false,
+          font: {
+            size: 11
+          }
+        },
+        afterFit(scale: any) {
+          scale.width = 300;
+        }
+      }
+    }
   };
 
   chartBarTessereData = signal<ChartData>({
