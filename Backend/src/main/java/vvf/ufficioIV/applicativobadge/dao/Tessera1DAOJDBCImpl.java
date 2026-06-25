@@ -1,6 +1,6 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -34,7 +34,7 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
 
     @Override
     public boolean updateSede(String idTessera, String nuovaSede) throws SQLException {
-        String sql = "UPDATE TESSERA1 SET SEDE = ? WHERE IDTESSERA = ?";
+        String sql = "UPDATE tessera SET SEDE = ? WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nuovaSede);
             ps.setString(2, idTessera);
@@ -42,16 +42,16 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
         }
     }
     
-    public Tessera1 getTesseraByIdForUpdate(String idTessera) {
+    public Tessera getTesseraByIdForUpdate(String idTessera) {
         // Il "FOR UPDATE" dice al DB: "Blocca questa riga in scrittura per gli altri, la sto modificando io"
         String sql = "SELECT IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE " +
-                     "FROM TESSERA1 WHERE IDTESSERA = ? FOR UPDATE";
+                     "FROM tessera WHERE IDTESSERA = ? FOR UPDATE";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Tessera1 t = new Tessera1();
+                    Tessera t = new Tessera();
                     t.setIdTessera(rs.getString("IDTESSERA"));
                     t.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
                     t.setSede(rs.getString("SEDE"));
@@ -73,8 +73,8 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     }
     
     @Override
-    public boolean insertTessera(Tessera1 t) throws SQLException {
-        String sql = "INSERT INTO TESSERA1 (IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE) " +
+    public boolean insertTessera(Tessera t) throws SQLException {
+        String sql = "INSERT INTO tessera (IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE) " +
                      "VALUES (?, ?, ?, ?, ?)";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -97,16 +97,16 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     }
 
     @Override
-    public Tessera1 getTesseraById(String idTessera) {
+    public Tessera getTesseraById(String idTessera) {
         String sql = "SELECT IDTESSERA, CODTIPOTESSERA, SEDE, DATAORAINDISPONIBILITA, TESSERA_ATE " +
-                     "FROM TESSERA1 WHERE IDTESSERA = ?";
+                     "FROM tessera WHERE IDTESSERA = ?";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Tessera1 t = new Tessera1();
+                    Tessera t = new Tessera();
                     t.setIdTessera(rs.getString("IDTESSERA"));
                     t.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
                     t.setSede(rs.getString("SEDE"));
@@ -128,15 +128,15 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     }
 
     @Override
-    public List<Tessera1> getAllTessere() {
-        List<Tessera1> results = new ArrayList<>();
-        String sql = "SELECT * FROM TESSERA1 ORDER BY DATAORAINDISPONIBILITA DESC";
+    public List<Tessera> getAllTessere() {
+        List<Tessera> results = new ArrayList<>();
+        String sql = "SELECT * FROM tessera ORDER BY DATAORAINDISPONIBILITA DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             
             while (rs.next()) {
-                Tessera1 t = new Tessera1();
+                Tessera t = new Tessera();
                 t.setIdTessera(rs.getString("IDTESSERA"));
                 t.setCodTipoTessera(rs.getString("CODTIPOTESSERA"));
                 t.setSede(rs.getString("SEDE"));
@@ -158,7 +158,7 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
 
     @Override
     public boolean deleteTesseraById(String idTessera) throws SQLException {
-        String sql = "DELETE FROM TESSERA1 WHERE IDTESSERA = ?";
+        String sql = "DELETE FROM tessera WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             int rows = ps.executeUpdate();
@@ -168,7 +168,7 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     
     @Override
     public boolean invalidaTessera(String idTessera, LocalDateTime dataOraIndisponibilita) throws SQLException {
-        String sql = "UPDATE TESSERA1 SET DATAORAINDISPONIBILITA = ? WHERE IDTESSERA = ?";
+        String sql = "UPDATE tessera SET DATAORAINDISPONIBILITA = ? WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(dataOraIndisponibilita));
             ps.setString(2, idTessera);
@@ -178,7 +178,7 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     
     @Override
     public boolean updateCodTipoTessera(String idTessera, String codTipoTessera) throws SQLException {
-        String sql = "UPDATE TESSERA1 SET CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
+        String sql = "UPDATE tessera SET CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codTipoTessera);
             ps.setString(2, idTessera);
@@ -189,7 +189,7 @@ public class Tessera1DAOJDBCImpl implements Tessera1DAO {
     @Override
     public boolean updateSedeECodTipo(String idTessera, String nuovaSede, String codTipoTessera) throws SQLException {
         // Unica query di UPDATE per modificare entrambi i campi contemporaneamente
-        String sql = "UPDATE TESSERA1 SET SEDE = ?, CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
+        String sql = "UPDATE tessera SET SEDE = ?, CODTIPOTESSERA = ? WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, nuovaSede);
             ps.setString(2, codTipoTessera);

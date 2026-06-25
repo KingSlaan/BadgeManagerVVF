@@ -17,8 +17,8 @@ import vvf.ufficioIV.applicativobadge.dao.TesseraDecode1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDecode1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDecodeHexDAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDecodeHexDAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDecode1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDecode;
 import vvf.ufficioIV.applicativobadge.entity.TesseraDecodeHex;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
@@ -151,8 +151,8 @@ public class InserimentoTessereServlet extends HttpServlet {
 						"Errore critico: impossibile caricare la tabella T_VALORI_HEX_IDTESSERA dal Database.");
 			}
 
-			List<Tessera1> tessereDaInserire = new ArrayList<>();
-			List<TesseraDecode1> decodeDaInserire = new ArrayList<>();
+			List<Tessera> tessereDaInserire = new ArrayList<>();
+			List<TesseraDecode> decodeDaInserire = new ArrayList<>();
 			List<TesseraDecodeHex> hexDaInserire = new ArrayList<>();
 
 			// ====================================================================================
@@ -225,13 +225,13 @@ public class InserimentoTessereServlet extends HttpServlet {
 				}
 
 				// Verifica Duplicati interni al JSON
-				for (Tessera1 t : tessereDaInserire) {
+				for (Tessera t : tessereDaInserire) {
 					if (t.getIdTessera().equals(idTessera)) {
 						throw new Exception("Payload non valido: La tessera " + idTessera
 								+ " è presente più volte nella richiesta.");
 					}
 				}
-				for (TesseraDecode1 td : decodeDaInserire) {
+				for (TesseraDecode td : decodeDaInserire) {
 					if (td.getCodiceInterno().equals(codiceInterno)) {
 						throw new Exception("Payload non valido: Il codice interno " + codiceInterno
 								+ " è presente più volte nella richiesta.");
@@ -250,12 +250,12 @@ public class InserimentoTessereServlet extends HttpServlet {
 					}
 				}
 
-				tessereDaInserire.add(new Tessera1(idTessera, DEFAULT_COD_TIPO_TESSERA, DEFAULT_SEDE,
+				tessereDaInserire.add(new Tessera(idTessera, DEFAULT_COD_TIPO_TESSERA, DEFAULT_SEDE,
 						DEFAULT_DATA_ORA_INDISP, DEFAULT_TESSERA_ATE));
 
-				// CRITICO: IN TESSERADECODE1 METTIAMO SOLO GLI ULTIMI 10 CARATTERI COME
+				// CRITICO: IN tesseradecode METTIAMO SOLO GLI ULTIMI 10 CARATTERI COME
 				// RICHIESTO!
-				decodeDaInserire.add(new TesseraDecode1(idTessera, suffissoCodice));
+				decodeDaInserire.add(new TesseraDecode(idTessera, suffissoCodice));
 
 				// POPOLIAMO LA NUOVA ENTITY TESSERADECODE_HEX
 				TesseraDecodeHex hexEntity = new TesseraDecodeHex();
@@ -272,8 +272,8 @@ public class InserimentoTessereServlet extends HttpServlet {
 			// ====================================================================================
 			int tessereInserite = 0;
 			for (int i = 0; i < tessereDaInserire.size(); i++) {
-				Tessera1 tessera = tessereDaInserire.get(i);
-				TesseraDecode1 decode = decodeDaInserire.get(i);
+				Tessera tessera = tessereDaInserire.get(i);
+				TesseraDecode decode = decodeDaInserire.get(i);
 				TesseraDecodeHex hex = hexDaInserire.get(i);
 
 				if (!daoTessera.insertTessera(tessera)) {

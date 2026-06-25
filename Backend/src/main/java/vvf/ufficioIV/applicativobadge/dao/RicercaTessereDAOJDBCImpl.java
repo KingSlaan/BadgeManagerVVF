@@ -198,17 +198,17 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         return "nd";
     }
 
-    // 1. Manteniamo la FROM clause con la JOIN a DIPARTIMENTO1 per recuperare la descrizione
+    // 1. Manteniamo la FROM clause con la JOIN a dipartimento per recuperare la descrizione
     private String getFromClause() {
-        return "FROM TESSERA1 t " +
-               "LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
+        return "FROM tessera t " +
+               "LEFT JOIN tesseradecode td ON t.IDTESSERA = td.IDTESSERA " +
                "LEFT JOIN (" +
                "    SELECT IDTESSERA, CODFISDIP, DATAORAINIZIOASSEGNAZIONE, DATAORAFINEASSEGNAZIONE, " +
                "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
-               "    FROM TESSERADIPEND1" +
+               "    FROM tesseradipend" +
                ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-               "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
-               "LEFT JOIN DIPARTIMENTO1 d ON t.SEDE = d.CODSEDE ";
+               "LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
+               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
     }
 
     // 2. Manteniamo l'estrazione di d.DESCRIZIONE aliasandola come SEDE per il DTO
@@ -317,10 +317,10 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                      "  SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
                      "         td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                      "         a.NOME, a.COGNOME " +
-                     "  FROM TESSERA1 t " +
-                     "  LEFT JOIN TESSERADECODE1 td ON t.IDTESSERA = td.IDTESSERA " +
-                     "  LEFT JOIN TESSERADIPEND1 tp ON t.IDTESSERA = tp.IDTESSERA " +
-                     "  LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+                     "  FROM tessera t " +
+                     "  LEFT JOIN tesseradecode td ON t.IDTESSERA = td.IDTESSERA " +
+                     "  LEFT JOIN tesseradipend tp ON t.IDTESSERA = tp.IDTESSERA " +
+                     "  LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
                      "  WHERE t.IDTESSERA = ? " +
                      "  ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC " +
                      ") WHERE ROWNUM = 1";
@@ -370,8 +370,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         // Ordiniamo per data di inizio decrescente (la più recente in cima)
         String sql = "SELECT tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                      "       a.NOME, a.COGNOME " +
-                     "FROM TESSERADIPEND1 tp " +
-                     "LEFT JOIN ANAGRAFICA_CODFISCALE1 a ON tp.CODFISDIP = a.CODFISCALE " +
+                     "FROM tesseradipend tp " +
+                     "LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
                      "WHERE tp.IDTESSERA = ? " +
                      "ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC";
 
@@ -420,11 +420,11 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                 "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
                 "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
                 "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL THEN 1 ELSE 0 END) AS nd " +
-                "FROM TESSERA1 t " +
+                "FROM tessera t " +
                 "LEFT JOIN ( " +
                 "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
                 "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
-                "    FROM TESSERADIPEND1 " +
+                "    FROM tesseradipend " +
                 ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);

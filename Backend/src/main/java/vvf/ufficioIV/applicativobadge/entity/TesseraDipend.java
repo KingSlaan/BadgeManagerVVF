@@ -2,17 +2,17 @@ package vvf.ufficioIV.applicativobadge.entity;
 
 import java.time.LocalDateTime;
 
-public class TesseraDipend1 {
+public class TesseraDipend {
     
     private String idTessera; // PK, FK
     private String codFisDip; // PK
     private LocalDateTime dataOraInizioAssegnazione; // PK
     private LocalDateTime dataOraFineAssegnazione;
 
-    public TesseraDipend1() {
+    public TesseraDipend() {
     }
 
-    public TesseraDipend1(String idTessera, String codFisDip, LocalDateTime dataOraInizioAssegnazione, LocalDateTime dataOraFineAssegnazione) {
+    public TesseraDipend(String idTessera, String codFisDip, LocalDateTime dataOraInizioAssegnazione, LocalDateTime dataOraFineAssegnazione) {
         this.idTessera = idTessera;
         this.codFisDip = codFisDip;
         this.dataOraInizioAssegnazione = dataOraInizioAssegnazione;

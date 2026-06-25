@@ -1,14 +1,14 @@
 package vvf.ufficioIV.applicativobadge.entity;
 
-public class TesseraDecode1 {
+public class TesseraDecode {
     
     private String idTessera; // Primary Key & Foreign Key
     private String codiceInterno; // Unique
 
-    public TesseraDecode1() {
+    public TesseraDecode() {
     }
 
-    public TesseraDecode1(String idTessera, String codiceInterno) {
+    public TesseraDecode(String idTessera, String codiceInterno) {
         this.idTessera = idTessera;
         this.codiceInterno = codiceInterno;
     }

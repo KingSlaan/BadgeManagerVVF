@@ -59,7 +59,7 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
             }
         }
 
-        String sql = "SELECT CODSEDE, DESCRIZIONE FROM DIPARTIMENTO1" + where.toString();
+        String sql = "SELECT CODSEDE, DESCRIZIONE FROM dipartimento" + where.toString();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -90,8 +90,8 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
         
         // La LEFT JOIN assicura che se una sede non ha tessere, esce comunque con COUNT = 0
         String sql = "SELECT d.CODSEDE, d.DESCRIZIONE, COUNT(t.IDTESSERA) AS CONTEGGIO " +
-                     "FROM DIPARTIMENTO1 d " +
-                     "LEFT JOIN TESSERA1 t ON d.CODSEDE = t.SEDE " +
+                     "FROM dipartimento d " +
+                     "LEFT JOIN tessera t ON d.CODSEDE = t.SEDE " +
                      "GROUP BY d.CODSEDE, d.DESCRIZIONE " +
                      "ORDER BY d.DESCRIZIONE";
 

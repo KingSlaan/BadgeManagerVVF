@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -119,8 +119,8 @@ public class RevocaTesseraServlet extends HttpServlet {
 
             // 23/06/2026 LOGICA
             // Controlliamo che la data di fine non sia antecedente alla data di inizio
-            List<TesseraDipend1> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
-            for (TesseraDipend1 ass : assegnazioni) {
+            List<TesseraDipend> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+            for (TesseraDipend ass : assegnazioni) {
                 // Troviamo l'assegnazione attualmente attiva (che non è ancora finita)
                 if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
                     if (dataFine.isBefore(ass.getDataOraInizioAssegnazione())) {

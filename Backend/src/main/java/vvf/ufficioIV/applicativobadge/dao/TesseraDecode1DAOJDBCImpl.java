@@ -1,6 +1,6 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
-import vvf.ufficioIV.applicativobadge.entity.TesseraDecode1;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDecode;
 import java.sql.*;
 
 public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
@@ -24,8 +24,8 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
     }
 
     @Override
-    public boolean insertTesseraDecode(TesseraDecode1 tDecode) throws SQLException {
-        String sql = "INSERT INTO TESSERADECODE1 (IDTESSERA, CODICEINTERNO) VALUES (?, ?)";
+    public boolean insertTesseraDecode(TesseraDecode tDecode) throws SQLException {
+        String sql = "INSERT INTO tesseradecode (IDTESSERA, CODICEINTERNO) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, tDecode.getIdTessera());
             ps.setString(2, tDecode.getCodiceInterno());
@@ -34,13 +34,13 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
     }
 
     @Override
-    public TesseraDecode1 getByIdTessera(String idTessera) {
-        String sql = "SELECT IDTESSERA, CODICEINTERNO FROM TESSERADECODE1 WHERE IDTESSERA = ?";
+    public TesseraDecode getByIdTessera(String idTessera) {
+        String sql = "SELECT IDTESSERA, CODICEINTERNO FROM tesseradecode WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new TesseraDecode1(rs.getString("IDTESSERA"), rs.getString("CODICEINTERNO"));
+                    return new TesseraDecode(rs.getString("IDTESSERA"), rs.getString("CODICEINTERNO"));
                 }
             }
         } catch (SQLException e) {
@@ -50,13 +50,13 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
     }
 
     @Override
-    public TesseraDecode1 getByCodiceInterno(String codiceInterno) {
-        String sql = "SELECT IDTESSERA, CODICEINTERNO FROM TESSERADECODE1 WHERE CODICEINTERNO = ?";
+    public TesseraDecode getByCodiceInterno(String codiceInterno) {
+        String sql = "SELECT IDTESSERA, CODICEINTERNO FROM tesseradecode WHERE CODICEINTERNO = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codiceInterno);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new TesseraDecode1(rs.getString("IDTESSERA"), rs.getString("CODICEINTERNO"));
+                    return new TesseraDecode(rs.getString("IDTESSERA"), rs.getString("CODICEINTERNO"));
                 }
             }
         } catch (SQLException e) {
@@ -67,7 +67,7 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
 
     @Override
     public boolean deleteByIdTessera(String idTessera) throws SQLException {
-        String sql = "DELETE FROM TESSERADECODE1 WHERE IDTESSERA = ?";
+        String sql = "DELETE FROM tesseradecode WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             return ps.executeUpdate() == 1;
@@ -78,7 +78,7 @@ public class TesseraDecode1DAOJDBCImpl implements TesseraDecode1DAO {
     @Override
     public boolean existsByLast10CharsCodiceInterno(String suffix) {
         // La funzione SUBSTR(colonna, -10) in Oracle prende gli ultimi 10 caratteri.
-        String sql = "SELECT 1 FROM TESSERADECODE1 WHERE SUBSTR(CODICEINTERNO, -10) = ?";
+        String sql = "SELECT 1 FROM tesseradecode WHERE SUBSTR(CODICEINTERNO, -10) = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, suffix);
             try (ResultSet rs = ps.executeQuery()) {

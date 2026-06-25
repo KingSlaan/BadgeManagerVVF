@@ -15,8 +15,8 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -203,7 +203,7 @@ public class AssegnaTesseraServlet extends HttpServlet {
             }
 
             // 2. Lock della Tessera (Race Condition Prevention)
-            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
+            Tessera tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
             if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente.");
                 return;
@@ -216,16 +216,16 @@ public class AssegnaTesseraServlet extends HttpServlet {
             }
 
             // 4. Verifica Sovrapposizioni (Usiamo >= e <= per evitare anche l'adiacenza esatta al secondo se richiesto, altrimenti tieni il tuo check)
-            List<TesseraDipend1> assegnazioniTessera = daoAssegnaz.getAssegnazioniByTessera(idTessera);
-            for (TesseraDipend1 ass : assegnazioniTessera) {
+            List<TesseraDipend> assegnazioniTessera = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+            for (TesseraDipend ass : assegnazioniTessera) {
                 if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "La tessera risulta già assegnata nel periodo selezionato.");
                     return;
                 }
             }
 
-            List<TesseraDipend1> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
-            for (TesseraDipend1 ass : assegnazioniDipendente) {
+            List<TesseraDipend> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
+            for (TesseraDipend ass : assegnazioniDipendente) {
                 if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "Il dipendente possiede già una tessera attiva nel periodo selezionato.");
                     return;
@@ -240,10 +240,10 @@ public class AssegnaTesseraServlet extends HttpServlet {
                 throw new SQLException("Errore aggiornamento dati tessera.");
             }
 
-            TesseraDipend1 nuovaAssegnazione = new TesseraDipend1(idTessera, codFiscale, dataInizio, dataFine);
+            TesseraDipend nuovaAssegnazione = new TesseraDipend(idTessera, codFiscale, dataInizio, dataFine);
             boolean assegnazioneInserita = daoAssegnaz.insertAssegnazione(nuovaAssegnazione);
             if (!assegnazioneInserita) {
-                throw new SQLException("Errore inserimento in TESSERADIPEND1.");
+                throw new SQLException("Errore inserimento in tesseradipend.");
             }
 
             // SE ARRIVIAMO QUI, È ANDATO TUTTO BENE: CONFERMIAMO!
