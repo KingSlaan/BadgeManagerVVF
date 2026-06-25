@@ -52,14 +52,14 @@ export class AssegnazioneComponent implements OnInit {
     },
     {
       id: 'review-tessere',
-      label: 'Review Tessere',
+      label: 'Review Assegnazione',
       description: 'Verifica Assegnazione Potenziale',
       canEnter: false,
     },
     {
       id: 'confirm',
       label: 'Conferma',
-      description: 'Conferma',
+      description: 'Assegnazione Avvenuta',
       canEnter: false,
     },
   ];

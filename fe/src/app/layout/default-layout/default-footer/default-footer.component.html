@@ -57,15 +57,28 @@
       }
     </div>
 
-    <div class="version-card">
-      <div class="version-title">Autori</div>
+    <div
+      class="version-card daily-message-card"
+      [class]="
+        'version-card daily-message-card daily-message-' + dailyMessage()?.type
+      "
+    >
+      @if (dailyMessage(); as message) {
+        <div class="daily-message-inline">
+          <div class="daily-message-title">
+            <span>{{ dailyMessageIcon(message.type) }}</span>
+            <span>{{ message.title }}</span>
+          </div>
 
-      <div class="version-number">
-        Powered by
-        <a href="https://frontwars.io" target="_blank">
-          <span> SN, LG, MT, FSC</span>
-        </a>
-      </div>
+          <div class="daily-message-text">
+            {{ message.text }}
+
+            @if (message.author) {
+              <span class="daily-message-author">— {{ message.author }}</span>
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>

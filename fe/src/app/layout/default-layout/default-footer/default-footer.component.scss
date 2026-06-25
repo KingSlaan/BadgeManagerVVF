@@ -40,7 +40,13 @@
 
 .footer-version-section {
   display: flex;
-  gap: 1rem;
+  width: 100%;
+  align-items: stretch;
+  gap: .75rem;
+}
+
+.version-card:not(.daily-message-card) {
+  flex: 0 0 auto;
 }
 
 /* Push authors completely to the right */
@@ -126,4 +132,173 @@
 .weather-today .weather-label {
   font-weight: 800;
   color: var(--cui-primary);
+}
+
+.footer-container {
+  width: 100%;
+}
+
+.footer-version-section {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.version-card {
+  flex: 0 0 auto;
+}
+
+.daily-message-card {
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+}
+
+.daily-message-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.daily-message-title {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--cui-primary);
+  margin-bottom: 0.15rem;
+}
+
+.daily-message-author {
+  margin-top: 0.1rem;
+  font-size: 0.62rem;
+  color: var(--cui-secondary-color);
+  text-align: right;
+}
+
+.sidebar-footer-custom {
+  min-height: 58px;
+  padding: 0.4rem 0.6rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sidebar-authors {
+  line-height: 1.1;
+  overflow: hidden;
+}
+
+.sidebar-authors-title {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--cui-secondary-color);
+}
+
+.sidebar-authors-link {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--cui-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sidebar-authors-link:hover {
+  text-decoration: underline;
+}
+
+.sidebar-toggle-btn {
+  flex: 0 0 auto;
+}
+
+.footer-container {
+  width: 100%;
+}
+
+.footer-version-section {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.version-card:not(.daily-message-card) {
+  flex: 0 0 auto;
+}
+
+.daily-message-card {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  width: auto;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0.45rem 0.9rem;
+}
+
+.daily-message-inline {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.daily-message-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+
+  margin-bottom: .25rem;
+
+  font-size: .62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.daily-message-text {
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+
+.daily-message-author {
+  margin-left: 0.35rem;
+  color: var(--cui-secondary-color);
+}
+
+.daily-message-tip .daily-message-title {
+  color: var(--cui-primary);
+}
+
+.daily-message-quote .daily-message-title {
+  color: var(--cui-success);
+}
+
+.daily-message-safety .daily-message-title {
+  color: var(--cui-warning);
+}
+
+.daily-message-firefighter .daily-message-title {
+  color: var(--cui-danger);
+}
+
+.daily-message-history .daily-message-title,
+.daily-message-curiosity .daily-message-title {
+  color: var(--cui-info);
 }

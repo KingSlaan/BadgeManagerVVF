@@ -61,6 +61,22 @@ export class DefaultLayoutComponent {
     return this.sidebarNarrow() ? 40 : 220;
   });
 
+  readonly visibleNavItems = computed(() => {
+    if (!this.sidebarNarrow()) {
+      return this.navItems;
+    }
+
+    return this.navItems.map(item => {
+      if (!item.children?.length) {
+        return item;
+      }
+
+      const { children, ...parentOnlyItem } = item;
+
+      return parentOnlyItem;
+    });
+  });
+
 
   readonly logoSrc = computed(() => {
     const theme = this.colorMode();

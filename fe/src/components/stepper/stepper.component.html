@@ -42,17 +42,19 @@
 </div>
 
 @if (showFooter) {
-  <div class="stepper-footer">
-    <button
-      cButton
-      color="secondary"
-      variant="outline"
-      type="button"
-      [disabled]="isFirst || !canGoTo(activeIndex - 1)"
-      (click)="back()"
-    >
-      {{ backLabel }}
-    </button>
+  <div class="stepper-footer" [class.finish]="isLast">
+    @if (!(lockPreviousStepsOnFinish && isLast)) {
+      <button
+        cButton
+        color="secondary"
+        variant="outline"
+        type="button"
+        [disabled]="isFirst || !canGoTo(activeIndex - 1)"
+        (click)="back()"
+      >
+        {{ backLabel }}
+      </button>
+    }
 
     <button
       cButton

@@ -59,6 +59,8 @@ export class StepperComponent {
   @Output() stepChange = new EventEmitter<AppStepperStep>();
   @Output() finish = new EventEmitter<void>();
 
+  @Input() lockPreviousStepsOnFinish = false;
+
   @ContentChildren(AppStepperContentDirective)
   contents!: QueryList<AppStepperContentDirective>;
 
@@ -98,7 +100,15 @@ export class StepperComponent {
       return true;
     }
 
-    if (index <= this.activeIndex) {
+    if (index < this.activeIndex) {
+      if (this.lockPreviousStepsOnFinish && this.isLast) {
+        return false;
+      }
+
+      return true;
+    }
+
+    if (index === this.activeIndex) {
       return true;
     }
 

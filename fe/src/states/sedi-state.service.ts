@@ -57,26 +57,26 @@ export class SediStateService {
       });
   }
 
-  loadSediDescValue(forceReload = false): void {
-    if (this._loaded() && !forceReload) {
-      return;
-    }
+  // loadSediDescValue(forceReload = false): void {
+  //   if (this._loaded() && !forceReload) {
+  //     return;
+  //   }
 
-    this._loading.set(true);
+  //   this._loading.set(true);
 
-    this.sediService.getSediList()
-      .pipe(finalize(() => this._loading.set(false)))
-      .subscribe({
-        next: response => {
-          this._sedi.set(response.data ?? []);
-          this._loaded.set(true);
-        },
-        error: () => {
-          this._sedi.set([]);
-          this._loaded.set(false);
-        },
-      });
-  }
+  //   this.sediService.getSediList()
+  //     .pipe(finalize(() => this._loading.set(false)))
+  //     .subscribe({
+  //       next: response => {
+  //         this._sedi.set(response.data ?? []);
+  //         this._loaded.set(true);
+  //       },
+  //       error: () => {
+  //         this._sedi.set([]);
+  //         this._loaded.set(false);
+  //       },
+  //     });
+  // }
 
   refreshSedi(): void {
     this.loadSedi(true);

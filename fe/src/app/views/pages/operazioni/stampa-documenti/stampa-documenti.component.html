@@ -47,7 +47,7 @@
           placeholder="Seleziona Sede"
         />
       </c-col>
-      <c-col xs="12" lg="12">
+      <c-col xs="9" lg="9">
         <label cLabel class="visually-hidden" for="tipoTemplate">
           Utenti Selezionati
         </label>
@@ -61,12 +61,34 @@
           [loadOnOpen]="true"
           [itemTemplate]="utenteItem"
           [selectedItemTemplate]="utenteChip"
+          [optionKeyFn]="utenteKey"
         />
+      </c-col>
+      <c-col xs="3" lg="3">
+        <label
+          cButton
+          color="primary"
+          class="mb-0"
+          variant="ghost"
+          shape="rounded-pill"
+        >
+          <svg [cIcon]="icons.cilCloudUpload" title="Ricerca"></svg>
+          Seleziona file XLSX
+          <input
+            type="file"
+            accept=".xlsx"
+            hidden
+            (change)="onFileSelected($event)"
+          />
+        </label>
       </c-col>
     </form>
   </c-card-body>
   <c-card-footer>
     <div class="d-flex justify-content-end mt-3 flex-wrap gap-3">
+      <button cButton color="success" type="submit" (click)="debug()">
+        Debug
+      </button>
       <button
         cButton
         color="danger"
@@ -103,7 +125,8 @@
       </div>
 
       <small>
-        <strong>CF</strong>: {{ option.data.codiceFiscale }} | <strong>Sede</strong>: {{ option.data.sede }} |
+        <strong>CF</strong>: {{ option.data.codiceFiscale }} |
+        <strong>Sede</strong>: {{ option.data.sede }} |
         <strong>Tessera</strong>: <i>{{ option.data.idTessera }}</i>
       </small>
     </div>
