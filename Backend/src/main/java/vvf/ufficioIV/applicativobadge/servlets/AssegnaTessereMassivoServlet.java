@@ -119,7 +119,7 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
         // ── 3. Pre-Validazione Formale dell'Array (Fail-Fast) ──────────────────
         for (JsonElement el : tessereArray) {
             JsonObject item = el.getAsJsonObject();
-            String cf = getStringSafe(item, "cf");
+            String cf = getStringSafe(item, "codFiscale");
             String idT = getStringSafe(item, "idTessera");
 
             if (isBlank(cf) || isBlank(idT)) {
@@ -164,7 +164,7 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             
             for (JsonElement el : tessereArray) {
                 JsonObject item = el.getAsJsonObject();
-                String cf = getStringSafe(item, "cf").toUpperCase();
+                String cf = getStringSafe(item, "codFiscale").toUpperCase();
                 String idTessera = getStringSafe(item, "idTessera").toUpperCase();
                 //OLD String sede = getStringSafe(item, "sede").toUpperCase();
                 
