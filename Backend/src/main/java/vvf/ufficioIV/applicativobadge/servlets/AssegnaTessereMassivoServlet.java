@@ -72,7 +72,7 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             return;
         }
 
-        // ── 2. Estrazione e Validazione Globale ────────────────────────────────
+     // ── 2. Estrazione e Validazione Globale ────────────────────────────────
         if (!json.has("tessere") || !json.get("tessere").isJsonArray()) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametro 'tessere' mancante o non è un array.");
             return;
@@ -84,11 +84,17 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             return;
         }
 
+        String sedeGlobale = getStringSafe(json, "sede");
         String dataInizioStr = getStringSafe(json, "dataInizioAssegnazione");
         String dataFineStr   = getStringSafe(json, "dataFineAssegnazione");
 
-        if (isBlank(dataInizioStr)) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametro 'dataInizioAssegnazione' obbligatorio mancante.");
+        if (isBlank(sedeGlobale) || isBlank(dataInizioStr)) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametri 'sede' e 'dataInizioAssegnazione' obbligatori mancanti.");
+            return;
+        }
+        
+        if (sedeGlobale.length() > 7) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Codice Sede supera i 7 caratteri consentiti.");
             return;
         }
 
@@ -115,10 +121,9 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             JsonObject item = el.getAsJsonObject();
             String cf = getStringSafe(item, "cf");
             String idT = getStringSafe(item, "idTessera");
-            String sede = getStringSafe(item, "sede");
 
-            if (isBlank(cf) || isBlank(idT) || isBlank(sede)) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "In ogni oggetto dell'array i campi 'cf', 'idTessera' e 'sede' sono obbligatori.");
+            if (isBlank(cf) || isBlank(idT)) {
+                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "In ogni oggetto dell'array i campi 'cf' e 'idTessera' sono obbligatori.");
                 return;
             }
             if (cf.length() != 16 || !cf.toUpperCase().matches("^[A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z]$")) {
@@ -127,10 +132,6 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             }
             if (idT.length() > 10) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "ID Tessera supera i 10 caratteri consentiti per la tessera: " + idT);
-                return;
-            }
-            if (sede.length() > 7) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Codice Sede supera i 7 caratteri consentiti per il CF: " + cf);
                 return;
             }
         }
@@ -158,11 +159,14 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
             int contatoreAssegnazioni = 0;
 
             // ── 5. Ciclo di Business Logic ─────────────────────────────────────
+            
+            String sedeUpperCase = sedeGlobale.toUpperCase();
+            
             for (JsonElement el : tessereArray) {
                 JsonObject item = el.getAsJsonObject();
                 String cf = getStringSafe(item, "cf").toUpperCase();
                 String idTessera = getStringSafe(item, "idTessera").toUpperCase();
-                String sede = getStringSafe(item, "sede").toUpperCase();
+                //OLD String sede = getStringSafe(item, "sede").toUpperCase();
                 
                 // Forza il tipo tessera a Dipendente come da requisito
                 String codTipoTesseraForzato = "D";
@@ -200,7 +204,7 @@ public class AssegnaTessereMassivoServlet extends HttpServlet {
                 }
 
                 // ── Esecuzione Aggiornamenti ──
-                boolean tesseraAggiornata = daoTessera.updateSedeECodTipo(idTessera, sede, codTipoTesseraForzato);
+                boolean tesseraAggiornata = daoTessera.updateSedeECodTipo(idTessera, sedeUpperCase, codTipoTesseraForzato);
                 if (!tesseraAggiornata) {
                     throw new SQLException("Errore fatale in aggiornamento anagrafica per la tessera: " + idTessera);
                 }

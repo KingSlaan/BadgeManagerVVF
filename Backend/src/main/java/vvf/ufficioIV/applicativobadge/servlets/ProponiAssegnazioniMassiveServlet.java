@@ -154,7 +154,7 @@ public class ProponiAssegnazioniMassiveServlet extends HttpServlet {
                 dipendenteProp.addProperty("codFiscale", getStringSafe(dipendenteReq, "codFiscale"));
                 dipendenteProp.addProperty("nome", getStringSafe(dipendenteReq, "nome"));
                 dipendenteProp.addProperty("cognome", getStringSafe(dipendenteReq, "cognome"));
-                dipendenteProp.addProperty("idTesseraProposta", idTesseraProposta);
+                dipendenteProp.addProperty("idTessera", idTesseraProposta);
                 
                 responseData.add(dipendenteProp);
             }
