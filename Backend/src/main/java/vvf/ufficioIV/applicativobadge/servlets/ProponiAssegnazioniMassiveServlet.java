@@ -118,7 +118,7 @@ public class ProponiAssegnazioniMassiveServlet extends HttpServlet {
                     "  ) tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
                     "  WHERE t.IDTESSERA <= ? " +
                     "    AND t.DATAORAINDISPONIBILITA > SYSDATE" +
-                    "    AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) " +
+                    "    AND (tp.DATAORAFINEASSEGNAZIONE < SYSTIMESTAMP)" +
                     "  ORDER BY t.IDTESSERA DESC " +
                     ") WHERE ROWNUM <= ?";
 
