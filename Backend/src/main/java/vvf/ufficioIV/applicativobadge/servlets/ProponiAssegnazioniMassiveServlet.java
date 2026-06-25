@@ -86,6 +86,9 @@ public class ProponiAssegnazioniMassiveServlet extends HttpServlet {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "L'ID Tessera di partenza supera i 10 caratteri consentiti.");
             return;
         }
+        
+        numeroPartenzaTopDown = "0".repeat(10 - numeroPartenzaTopDown.length()) + numeroPartenzaTopDown;
+        System.out.println("[DEBUG] numeroPartenzaTopDown = "+numeroPartenzaTopDown);
 
         int quantitaRichiesta = dipendentiArray.size();
         System.out.println("[ProponiAssegnazioniMassiveServlet] Richieste " + quantitaRichiesta + " tessere a partire da: " + numeroPartenzaTopDown);
