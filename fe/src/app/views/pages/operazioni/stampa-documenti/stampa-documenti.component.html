@@ -1,0 +1,124 @@
+<c-card>
+  <c-card-body>
+    <form cForm [formGroup]="form" [gutter]="3" cRow>
+      <c-col xs="6" lg="6">
+        <label cLabel class="visually-hidden" for="oggetto"> Oggetto </label>
+        <input
+          cFormControl
+          id="oggetto"
+          formControlName="oggetto"
+          placeholder="Oggetto"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="6" lg="6">
+        <label cLabel class="visually-hidden" for="onumProtocolloggetto">
+          # Protocollo
+        </label>
+        <input
+          cFormControl
+          id="numProtocollo"
+          formControlName="numProtocollo"
+          placeholder="# Protocollo"
+          type="text"
+        />
+      </c-col>
+      <c-col xs="4" lg="4">
+        <label cLabel class="visually-hidden" for="dataProtocollo">
+          Data Protocollo
+        </label>
+        <app-datepicker
+          cFormControl
+          id="dataProtocollo"
+          formControlName="dataProtocollo"
+          placeholder="Data Protocollo"
+          min="01/01/1900 00:00:00"
+          max="31/12/9999 00:00:00"
+          [showTodayButton]="true"
+          todayButtonLabel="Oggi"
+          [showTime]="false"
+        />
+      </c-col>
+      <c-col xs="8" lg="8">
+        <label cLabel class="visually-hidden" for="sede"> Sede </label>
+        <app-autocomplete-select
+          formControlName="sede"
+          [options]="sediOptions()"
+          placeholder="Seleziona Sede"
+        />
+      </c-col>
+      <c-col xs="12" lg="12">
+        <label cLabel class="visually-hidden" for="tipoTemplate">
+          Utenti Selezionati
+        </label>
+        <app-autocomplete-select
+          formControlName="utenti"
+          placeholder="Seleziona Utenti"
+          [multiple]="true"
+          [minSearchLength]="0"
+          [debounceMs]="500"
+          [serverSearchFn]="searchTessere"
+          [loadOnOpen]="true"
+          [itemTemplate]="utenteItem"
+          [selectedItemTemplate]="utenteChip"
+        />
+      </c-col>
+    </form>
+  </c-card-body>
+  <c-card-footer>
+    <div class="d-flex justify-content-end mt-3 flex-wrap gap-3">
+      <button
+        cButton
+        color="danger"
+        type="submit"
+        (click)="creaFileRispostaPDF()"
+      >
+        Crea Risposta PDF
+      </button>
+      <button
+        cButton
+        color="info"
+        type="submit"
+        [disabled]="false"
+        (click)="creaFileRispostaWord()"
+      >
+        Crea Risposta Word
+      </button>
+    </div>
+  </c-card-footer>
+</c-card>
+
+<ng-template #utenteItem let-option let-selected="selected">
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <div>
+      <div class="fw-semibold">
+        <span
+          [class]="
+            'status-dot status-dot--' +
+            this.utilsService.getStatusColor(option.data)
+          "
+        ></span>
+
+        {{ option.data.cognome }} {{ option.data.nome }}
+      </div>
+
+      <small>
+        <strong>CF</strong>: {{ option.data.codiceFiscale }} | <strong>Sede</strong>: {{ option.data.sede }} |
+        <strong>Tessera</strong>: <i>{{ option.data.idTessera }}</i>
+      </small>
+    </div>
+
+    @if (selected) {
+      <span class="badge bg-success">Selected</span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #utenteChip let-option>
+  <span class="d-inline-flex align-items-center gap-1">
+    <small>
+      {{ option.data.cognome }} {{ option.data.nome }}
+      <i>({{ option.data.idTessera }})</i>
+    </small>
+  </span>
+</ng-template>

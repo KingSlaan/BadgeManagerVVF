@@ -1,0 +1,12 @@
+<div class="cards-grid">
+  @for (card of cards(); track card.route) {
+    <div class="menu-card" [routerLink]="card.route">
+      <div class="menu-icon-container">
+        <svg [cIcon]="card.icon" class="menu-icon"></svg>
+      </div>
+
+      <h4>{{ card.title }}</h4>
+      <p>{{ card.description }}</p>
+    </div>
+  }
+</div>

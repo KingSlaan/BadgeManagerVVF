@@ -38,6 +38,7 @@ import {
   cilChevronRight,
   cilCloudDownload,
   cilCode,
+  cilColumns,
   cilCommentSquare,
   cilContrast,
   cilCreditCard,
@@ -68,6 +69,7 @@ import {
   cilMediaRecord,
   cilMenu,
   cilMoon,
+  cilNoteAdd,
   cilNotes,
   cilOptions,
   cilPaperclip,
@@ -75,6 +77,7 @@ import {
   cilPen,
   cilPencil,
   cilPeople,
+  cilPlus,
   cilPrint,
   cilPuzzle,
   cilReportSlash,
@@ -199,6 +202,9 @@ export const iconSubset = {
   cilUserFemale,
   cilUserFollow,
   cilUserUnfollow,
+  cilColumns,
+  cilPlus,
+  cilNoteAdd,
   logo,
   signet
 };

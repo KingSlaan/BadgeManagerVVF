@@ -1,0 +1,124 @@
+<form [gutter]="3" cForm cRow [formGroup]="listaBadgeForm">
+  <p>
+    Inserire l'id della prima e l'ultima tessera di cui si vuole leggere il
+    codice interno. Range Iniziale e Finale
+  </p>
+
+  <c-col xs="6">
+    <input
+      cFormControl
+      formControlName="badgeValueStart"
+      id="idTesseraRangeStart"
+      placeholder="Id Tessera Iniziale"
+      type="number"
+      min="0"
+      (keydown)="preventNegative($event)"
+    />
+  </c-col>
+
+  <c-col xs="6">
+    <input
+      cFormControl
+      formControlName="badgeValueEnd"
+      id="idTesseraRangeEnd"
+      placeholder="Id Tessera Finale"
+      type="number"
+      min="0"
+      (keydown)="preventNegative($event)"
+    />
+  </c-col>
+
+  <c-col xs="12">
+    <textarea
+      cFormControl
+      formControlName="listaBadgeString"
+      placeholder="Inserisci lista di codici interni (numerico) suddivisi da invio - (01234567890987654321)"
+    ></textarea>
+  </c-col>
+
+  <c-col xs="12">
+    <button
+      cButton
+      color="success"
+      type="button"
+      (click)="createBadgeList()"
+      [disabled]="checkImportDisabled()"
+    >
+      Importa Tessere
+    </button>
+  </c-col>
+
+  @if (badgeListArrayFinal.length > 0) {
+    <c-col xs="12">
+      <table cTable>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Id Tessera</th>
+            <th scope="col">Codice Interno</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (tessera of badgeListArrayFinal; track tessera.idTessera; let i = $index) {
+            <tr>
+              <td>{{ i }}</td>
+              <td>{{ tessera.idTessera }}</td>
+              <td>{{ tessera.codiceInterno }}</td>
+              <td>
+                @if (tessera.options.valid) {
+                  <c-badge color="success">
+                    <svg [cIcon]="icons.cilCheckAlt" title="Valida"></svg>
+                  </c-badge>
+                } @else {
+                  <c-badge
+                    color="danger"
+                    [cTooltip]="createErrorMessages(tessera.options.errorMessages)"
+                    cTooltipPlacement="right"
+                  >
+                    <svg [cIcon]="icons.cilX" title="Non valida"></svg>
+                  </c-badge>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (badgeListArray.length !== badgeListArrayFinal.length) {
+        <c-alert color="danger">
+          @if (badgeListArray.length > badgeListArrayFinal.length) {
+            Ci sono più codici letti del range di tessere indicate
+          }
+
+          @if (badgeListArrayFinal.length > badgeListArray.length) {
+            Ci sono più tessere dei codici letti
+          }
+
+          :
+          <small>
+            {{ badgeListArray.length }}/{{ badgeListArrayFinal.length }}
+            (Codici/Tessere)
+          </small>
+        </c-alert>
+      }
+
+      @if (beError().length > 0) {
+        <c-alert color="danger">{{ beError() }}</c-alert>
+      }
+    </c-col>
+  }
+
+  <c-col xs="12" class="d-flex justify-content-end">
+    <button
+      cButton
+      color="success"
+      type="button"
+      (click)="confirm()"
+      [disabled]="checkTessereValidity()"
+    >
+      Crea Tessere
+    </button>
+  </c-col>
+</form>

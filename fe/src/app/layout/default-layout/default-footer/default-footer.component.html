@@ -19,7 +19,7 @@
 
       @if (versionInfoBE()) {
         <div class="version-number">
-          {{ versionInfoBE().version }}-{{versionInfoBE().codeName}}
+          {{ versionInfoBE().version }}-{{ versionInfoBE().codeName }}
         </div>
 
         <div class="version-date">
@@ -28,38 +28,41 @@
       }
     </div>
 
-    <div class="version-card">
+    <div class="version-card weather-card">
       <div class="version-title">Meteo</div>
 
       @if (weatherInfo(); as weather) {
         <div class="version-date">📍 {{ weather.city }}</div>
 
-        <div class="version-number">
-          Oggi
-          {{ weatherIcon(weather.todayCode) }}
-          {{ weather.todayTemp }}°C
-        </div>
+        <div class="weather-days">
+          @for (day of weather.days; track day.date) {
+            <div class="weather-day" [class.weather-today]="day.isToday">
+              <div class="weather-main">
+                <span>{{ weatherIcon(day.weatherCode) }}</span>
+                <span>{{ day.temperature }}°</span>
+              </div>
 
-        <div class="version-date">
-          Domani
-          {{ weatherIcon(weather.tomorrowCode) }}
-          {{ weather.tomorrowTemp }}°C
+              <div class="weather-label">
+                {{ day.dayLetter }}
+              </div>
+            </div>
+          }
         </div>
       } @else {
         <div class="version-number">--</div>
         <div class="version-date">Loading...</div>
       }
     </div>
-  </div>
 
-  <div class="version-card">
-    <div class="version-title">Autori</div>
+    <div class="version-card">
+      <div class="version-title">Autori</div>
 
-    <div class="version-number">
-      Powered by
-      <a href="https://frontwars.io" target="_blank">
-        <span> SN, LG, MT, FSC</span>
-      </a>
+      <div class="version-number">
+        Powered by
+        <a href="https://frontwars.io" target="_blank">
+          <span> SN, LG, MT, FSC</span>
+        </a>
+      </div>
     </div>
   </div>
 </div>

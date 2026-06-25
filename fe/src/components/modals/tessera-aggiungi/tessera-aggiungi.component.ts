@@ -1,162 +1,46 @@
-import { TessereService } from './../../../app/services/tessere.service';
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
-import { NgModel, Validators } from '@angular/forms';
-import { AlertComponent, BadgeComponent, ButtonDirective, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective, TooltipDirective } from '@coreui/angular';
-import { cilMinus, cilPlus, cilX, cilCheckAlt } from '@coreui/icons';
+import { TessereInserimentoFormComponent } from './../../tessere-inserimento-form/tessere-inserimento-form.component';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'; import {
+  ButtonDirective,
+  ModalBodyComponent,
+  ModalComponent,
+  ModalHeaderComponent,
+  ModalTitleDirective
+} from '@coreui/angular';
+import { cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ToastService } from '../../../app/services/toast.service';
 
 @Component({
   selector: 'app-tessera-aggiungi',
+  standalone: true,
   imports: [
     ButtonDirective,
     ModalComponent,
     ModalHeaderComponent,
     ModalTitleDirective,
     ModalBodyComponent,
-    ModalFooterComponent,
     IconDirective,
-
-    ColComponent,
-    FormControlDirective,
-    FormDirective,
-    FormLabelDirective,
-    GutterDirective,
-    RowDirective,
-    ReactiveFormsModule,
-    TableDirective,
-    TooltipDirective,
-    BadgeComponent,
-    AlertComponent
+    TessereInserimentoFormComponent
   ],
   templateUrl: './tessera-aggiungi.component.html',
   styleUrl: './tessera-aggiungi.component.scss',
 })
 export class TesseraAggiungiComponent {
-  private tessereService = inject(TessereService);
-  private toast = inject(ToastService);
-
   @Input() visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
-  beError = signal('');
+  @ViewChild(TessereInserimentoFormComponent)
+  formComponent?: TessereInserimentoFormComponent;
 
-  listaBadgeForm = new FormGroup({
-    badgeValueStart: new FormControl(null, [
-      Validators.required,
-      Validators.min(0)
-    ]),
-    badgeValueEnd: new FormControl(null, [
-      Validators.required,
-      Validators.min(0)
-    ]),
-    listaBadgeString: new FormControl('', [Validators.required]),
-  });
+  icons = { cilX };
 
-  icons = { cilX, cilPlus, cilMinus, cilCheckAlt };
-
-  badgeListArray: string[] | undefined = [];
-  badgeListArrayFinal: any = [];
-
-  checkImportDisabled() {
-    return false;
-  }
-
-  close() {
+  close(): void {
+    this.formComponent?.reset();
     this.visibleChange.emit(false);
-    this.badgeListArrayFinal = [];
-    this.badgeListArray = [];
-    this.listaBadgeForm.reset();
   }
 
-  confirm() {
-    this.tessereService.createTessere(this.badgeListArrayFinal).subscribe({
-      next: (data: any) => {
-        this.toast.success('User saved successfully');
-        this.saved.emit();
-      },
-      error: (err: any) => {
-        console.error('Error loading tessere', err);
-        this.beError = err;
-      }
-    });
-    // do something here if needed
-    // this.visibleChange.emit(false);
-  }
-
-  checkTessereValidity() {
-    const invalidNum = this.badgeListArrayFinal?.filter((element: any) => element.options.valid === false);
-    return !(this.badgeListArray?.length === this.badgeListArrayFinal?.length) || invalidNum.length > 0 || this.badgeListArrayFinal?.length === 0 || this.listaBadgeForm.invalid;
-  }
-
-  checkTesseraValid(codInterno: string) {
-    const regex = /^[0-9]{20}$/;
-    let errorMessages: Array<string> = [];
-    let valid = true;
-
-    // if (codInterno.length !== 20) {
-    //   valid = false;
-    //   errorMessages.push("Il codice interno deve essere di lunghezza 20");
-    // }
-    if (!regex.test(codInterno)) {
-      valid = false;
-      errorMessages.push("Il codice interno deve essere composto di 20 numeri");
-    }
-
-    if (this.badgeListArray) {
-      if (this.badgeListArray?.filter(item => item === codInterno).length > 1) {
-        valid = false;
-        const indexesFound = this.getAllIndexes(this.badgeListArray, codInterno);
-        errorMessages.push("Il codice interno è già presente nella lista, quindi è duplicato nei seguenti indici: " + indexesFound.join(","));
-      }
-    }
-
-    return {
-      valid: valid,
-      errorMessages: errorMessages
-    };
-  }
-
-  preventNegative(event: KeyboardEvent) {
-    const blocked = ['-', '+', 'e', 'E'];
-
-    if (blocked.includes(event.key)) {
-      event.preventDefault();
-    }
-  }
-
-  getAllIndexes(arr: Array<string>, val: string) {
-    var indexes = [], i = -1;
-    while ((i = arr.indexOf(val, i + 1)) != -1) {
-      indexes.push(i);
-    }
-    return indexes;
-  }
-
-  createErrorMessages(errorMessages: Array<string>): string {
-    if (errorMessages.length > 0) {
-      return "Sono presenti i seguenti errori: " + errorMessages.join(" | ")
-    }
-    return "";
-  }
-
-  createBadgeList() {
-    this.badgeListArray = this.listaBadgeForm.controls.listaBadgeString.value?.trim().split(/\n/);
-    this.badgeListArrayFinal = [];
-    if (this.listaBadgeForm.controls.badgeValueStart.value !== null && this.listaBadgeForm.controls.badgeValueEnd.value !== null) {
-      let countIndex = 0;
-      for (let index = this.listaBadgeForm.controls.badgeValueStart.value; index <= this.listaBadgeForm.controls.badgeValueEnd.value; index++) {
-        let codInterno = this.badgeListArray?.[countIndex] || "";
-
-        this.badgeListArrayFinal.push({
-          idTessera: index,
-          codiceInterno: codInterno,
-          options: this.checkTesseraValid(codInterno)
-        });
-        countIndex += 1;
-      }
-    }
+  onSaved(): void {
+    this.saved.emit();
+    this.visibleChange.emit(false);
   }
 }

@@ -34,9 +34,26 @@ export const navItems: INavData[] = [
     ]
   },
   {
-    name: 'Stampa Documenti',
-    url: '/stampa-documenti',
-    iconComponent: { name: 'cil-print' },
+    name: 'Operazioni',
+    url: '/operazioni',
+    iconComponent: { name: 'cil-columns' },
+    children: [
+      {
+        name: 'Inserimento',
+        url: '/operazioni/inserimento',
+        iconComponent: { name: 'cil-plus' },
+      },
+      {
+        name: 'Assegnazione',
+        url: '/operazioni/assegnazione',
+        iconComponent: { name: 'cil-note-add' },
+      },
+      {
+        name: 'Stampa Documenti',
+        url: '/operazioni/stampa-documenti',
+        iconComponent: { name: 'cil-print' },
+      },
+    ]
   },
   {
     name: 'Logs',

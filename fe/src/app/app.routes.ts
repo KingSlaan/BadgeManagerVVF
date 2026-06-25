@@ -27,7 +27,15 @@ export const routes: Routes = [
           title: 'Liste'
         },
         loadChildren: () =>
-          import('./views/pages/routes').then(m => m.routes)
+          import('./views/pages/liste/routes').then(m => m.routes)
+      },
+      {
+        path: 'operazioni',
+        data: {
+          title: 'Operazioni'
+        },
+        loadChildren: () =>
+          import('./views/pages/operazioni/routes').then(m => m.routes)
       },
       {
         path: 'user-settings',
@@ -36,14 +44,6 @@ export const routes: Routes = [
         },
         canActivate: [authGuard],
         loadComponent: () => import('./views/pages/user-settings/user-settings.component').then(m => m.UserSettingsComponent)
-      },
-      {
-        path: 'stampa-documenti',
-        data: {
-          title: 'Stampa Documenti'
-        },
-        canActivate: [authGuard],
-        loadComponent: () => import('./views/pages/stampa-documenti/stampa-documenti.component').then(m => m.StampaDocumentiComponent)
       },
       {
         path: 'logs',

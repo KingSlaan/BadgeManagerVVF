@@ -47,3 +47,53 @@
 .footer-container > .version-card:last-child {
   margin-left: auto;
 }
+
+.weather-card {
+  min-width: 320px;
+}
+
+.weather-days {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.weather-day {
+  min-width: 34px;
+  padding: 0.25rem 0.3rem;
+  border-radius: 0.5rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+
+  font-size: 0.72rem;
+}
+
+.weather-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.weather-label {
+  font-size: 0.68rem;
+  color: var(--cui-secondary-color);
+}
+
+.weather-today {
+  background: color-mix(in srgb, var(--cui-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cui-primary) 35%, transparent);
+}
+
+.weather-today .weather-main,
+.weather-today .weather-label {
+  font-weight: 800;
+  color: var(--cui-primary);
+}

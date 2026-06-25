@@ -1,0 +1,1 @@
+import{Gb as s,Hb as t,eb as o,kc as a}from"./chunk-B24GADX7.js";import"./chunk-4CLCTAJ7.js";var i=class n{static{this.\u0275fac=function(e){return new(e||n)}}static{this.\u0275cmp=o({type:n,selectors:[["app-assegnazione"]],decls:2,vars:0,template:function(e,m){e&1&&(s(0,"p"),a(1,"assegnazione works!"),t())},encapsulation:2})}};export{i as AssegnazioneComponent};

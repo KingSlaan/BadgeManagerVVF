@@ -52,12 +52,21 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
 
     this.weatherService.getRomeWeather().subscribe({
       next: (data) => {
+        const days = data.daily.time.map((date, index) => {
+          const parsedDate = new Date(date);
+
+          return {
+            date,
+            temperature: Math.round(data.daily.temperature_2m_max[index]),
+            weatherCode: data.daily.weather_code[index],
+            dayLetter: this.getItalianDayLetter(parsedDate),
+            isToday: index === 0
+          };
+        });
+
         this.weatherInfo.set({
           city: 'Roma',
-          todayTemp: Math.round(data.current.temperature_2m),
-          todayCode: data.current.weather_code,
-          tomorrowTemp: Math.round(data.daily.temperature_2m_max[1]),
-          tomorrowCode: data.daily.weather_code[1]
+          days
         });
       },
       error: (err) => {
@@ -65,6 +74,13 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
       }
     });
 
+  }
+
+  getItalianDayLetter(date: Date): string {
+    return date
+      .toLocaleDateString('it-IT', { weekday: 'short' })
+      .charAt(0)
+      .toUpperCase();
   }
 
   weatherIcon(code: number): string {
