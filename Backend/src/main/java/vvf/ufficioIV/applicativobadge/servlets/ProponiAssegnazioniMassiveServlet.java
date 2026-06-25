@@ -109,18 +109,18 @@ public class ProponiAssegnazioniMassiveServlet extends HttpServlet {
              * di partenza. Limitiamo l'estrazione esattamente al numero di tessere che ci servono tramite ROWNUM.
              */
             String sql = "SELECT IDTESSERA FROM (" +
-                         "  SELECT t.IDTESSERA " +
-                         "  FROM tessera t " +
-                         "  LEFT JOIN ( " +
-                         "      SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
-                         "             ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
-                         "      FROM tesseradipend " +
-                         "  ) tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-                         "  WHERE t.IDTESSERA >= ? " +
-                         "    AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-                         "    AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) " +
-                         "  ORDER BY t.IDTESSERA ASC " +
-                         ") WHERE ROWNUM <= ?";
+                    "  SELECT t.IDTESSERA " +
+                    "  FROM tessera t " +
+                    "  LEFT JOIN ( " +
+                    "      SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
+                    "             ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
+                    "      FROM tesseradipend " +
+                    "  ) tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
+                    "  WHERE t.IDTESSERA <= ? " +
+                    "    AND t.DATAORAINDISPONIBILITA > SYSDATE" +
+                    "    AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) " +
+                    "  ORDER BY t.IDTESSERA DESC " +
+                    ") WHERE ROWNUM <= ?";
 
             List<String> tessereLibereTrovate = new ArrayList<>();
             
