@@ -1,0 +1,89 @@
+<form [formGroup]="form" class="mb-3">
+  <div class="row g-3 align-items-end">
+    <div class="col-12 col-md-4">
+      <label class="form-label">Sede</label>
+
+      <app-autocomplete-select
+        formControlName="sede"
+        [options]="sediList"
+        labelField="descrizione"
+        valueField="codSede"
+        placeholder="Seleziona Sede"
+      />
+
+      @if (
+        form.controls.sede.touched && form.controls.sede.hasError("required")
+      ) {
+        <small class="text-danger">Sede obbligatoria</small>
+      }
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label">Data/Ora Inizio Assegnazione</label>
+
+      <app-datepicker
+        formControlName="dataInizioAssegnazione"
+        label="Data/Ora Inizio Assegnazione"
+        placeholder="gg/mm/aaaa hh:mm:ss"
+        [showTime]="true"
+        min="01/01/1900 00:00:00"
+        max="31/12/9999 00:00:00"
+        [showTodayButton]="true"
+        [showSpecificDateButton]="true"
+        specificDateValue="31/12/9999 00:00:00"
+        todayButtonLabel="Oggi"
+        specificDateButtonLabel="Fine validità"
+      />
+
+      @if (
+        form.controls.dataInizioAssegnazione.touched &&
+        form.controls.dataInizioAssegnazione.hasError("required")
+      ) {
+        <small class="text-danger">Data inizio obbligatoria</small>
+      }
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label">Data/Ora Fine Assegnazione</label>
+
+      <app-datepicker
+        formControlName="dataFineAssegnazione"
+        label="Data/Ora Fine Assegnazione"
+        placeholder="gg/mm/aaaa hh:mm:ss"
+        [showTime]="true"
+        min="01/01/1900 00:00:00"
+        max="31/12/9999 00:00:00"
+        [showTodayButton]="true"
+        [showSpecificDateButton]="true"
+        specificDateValue="31/12/9999 00:00:00"
+        todayButtonLabel="Oggi"
+        specificDateButtonLabel="Fine validità"
+      />
+
+      @if (
+        form.controls.dataFineAssegnazione.touched &&
+        form.controls.dataFineAssegnazione.hasError("required")
+      ) {
+        <small class="text-danger">Data fine obbligatoria</small>
+      }
+    </div>
+
+    <div class="col-12 col-md-auto">
+      <button
+        cButton
+        color="primary"
+        type="button"
+        [disabled]="form.invalid || rows.length === 0 || loading"
+        (click)="confermaReview()"
+      >
+        {{ loading ? "Salvataggio..." : "Conferma Assegnazione" }}
+      </button>
+    </div>
+  </div>
+</form>
+
+<app-datagrid
+  [columns]="columns"
+  [rows]="rows"
+  [loading]="false"
+></app-datagrid>

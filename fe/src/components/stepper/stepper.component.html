@@ -1,0 +1,67 @@
+<div class="stepper-header">
+  @for (step of steps; track step.id; let i = $index) {
+    <div class="stepper-item">
+      <button
+        type="button"
+        class="stepper-step"
+        [class.active]="i === activeIndex"
+        [class.completed]="step.completed"
+        [class.invalid]="step.valid === false"
+        [class.disabled]="!canGoTo(i)"
+        [disabled]="!canGoTo(i)"
+        (click)="goTo(i)"
+      >
+        <span class="stepper-circle">
+          @if (step.completed) {
+            ✓
+          } @else {
+            {{ i + 1 }}
+          }
+        </span>
+
+        <span class="stepper-text">
+          <strong>{{ step.label }}</strong>
+
+          @if (step.description) {
+            <small>{{ step.description }}</small>
+          }
+        </span>
+      </button>
+
+      @if (i < steps.length - 1) {
+        <div class="stepper-line"></div>
+      }
+    </div>
+  }
+</div>
+
+<div class="stepper-content">
+  @if (activeTemplate) {
+    <ng-container *ngTemplateOutlet="activeTemplate"></ng-container>
+  }
+</div>
+
+@if (showFooter) {
+  <div class="stepper-footer">
+    <button
+      cButton
+      color="secondary"
+      variant="outline"
+      type="button"
+      [disabled]="isFirst || !canGoTo(activeIndex - 1)"
+      (click)="back()"
+    >
+      {{ backLabel }}
+    </button>
+
+    <button
+      cButton
+      color="primary"
+      type="button"
+      [disabled]="!canGoNext"
+      (click)="next()"
+    >
+      {{ isLast ? finishLabel : nextLabel }}
+    </button>
+  </div>
+}

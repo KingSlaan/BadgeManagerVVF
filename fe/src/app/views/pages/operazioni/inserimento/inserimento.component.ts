@@ -1,4 +1,4 @@
-import { CardBodyComponent, CardComponent, CardFooterComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent } from '@coreui/angular';
 import { TessereInserimentoFormComponent } from './../../../../../components/tessere-inserimento-form/tessere-inserimento-form.component';
 import { Component } from '@angular/core';
 

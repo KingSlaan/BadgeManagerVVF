@@ -1,0 +1,39 @@
+<form [formGroup]="form" class="mb-3">
+  <div class="row g-3 align-items-end">
+    <div class="col-12 col-md-4">
+      <label class="form-label">ID Tessera iniziale</label>
+
+      <input
+        cFormControl
+        type="text"
+        formControlName="numeroPartenzaTopDown"
+        placeholder="Inserisci ID Tessera"
+      />
+
+      @if (
+        form.controls.numeroPartenzaTopDown.touched &&
+        form.controls.numeroPartenzaTopDown.hasError("required")
+      ) {
+        <small class="text-danger"> ID Tessera iniziale obbligatorio </small>
+      }
+    </div>
+
+    <div class="col-12 col-md-auto">
+      <button
+        cButton
+        color="primary"
+        type="button"
+        [disabled]="form.invalid || loading || rows.length === 0"
+        (click)="proponiAssegnazioni()"
+      >
+        {{ loading ? "Elaborazione..." : "Proponi Assegnazioni" }}
+      </button>
+    </div>
+  </div>
+</form>
+
+<app-datagrid
+  [columns]="columns"
+  [rows]="rows"
+  [loading]="false"
+></app-datagrid>
