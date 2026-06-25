@@ -272,6 +272,13 @@ c-sidebar-nav a.active svg {
    ========================================================= */
 
 /* Solid buttons */
+.btn {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
 
 .btn-primary {
   background-color: var(--app-primary) !important;
@@ -279,7 +286,7 @@ c-sidebar-nav a.active svg {
   color: #ffffff !important;
 }
 
-.btn-secondary {
+.btn-secondary:not(.btn-outline-secondary):not(.btn-ghost-secondary) {
   background-color: var(--app-secondary) !important;
   border-color: var(--app-secondary) !important;
 }
@@ -314,6 +321,24 @@ c-sidebar-nav a.active svg {
   background-color: var(--app-danger) !important;
   border-color: var(--app-danger) !important;
   color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover,
+.btn-warning:hover,
+.btn-danger:hover,
+.btn-secondary:hover {
+  filter: brightness(1.08);
+}
+
+.btn-primary:active,
+.btn-success:active,
+.btn-info:active,
+.btn-warning:active,
+.btn-danger:active,
+.btn-secondary:active {
+  filter: brightness(0.92);
 }
 
 /* Ghost buttons: NO border, transparent background */
@@ -423,6 +448,75 @@ c-sidebar-nav a.active svg {
   border-color: var(--app-danger) !important;
 }
 
+/* =========================================================
+   OUTLINE BUTTON HOVER
+   ========================================================= */
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  background-color: var(--app-secondary) !important;
+  border-color: var(--app-secondary) !important;
+}
+
+[data-coreui-theme="light"] .btn-outline-secondary:hover,
+[data-coreui-theme="light"] .btn-outline-secondary:focus,
+[data-coreui-theme="light"] .btn-outline-secondary:active {
+  color: #ffffff !important;
+}
+
+[data-coreui-theme="dark"] .btn-outline-secondary:hover,
+[data-coreui-theme="dark"] .btn-outline-secondary:focus,
+[data-coreui-theme="dark"] .btn-outline-secondary:active {
+  color: #020617 !important;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+  background-color: var(--app-success) !important;
+  border-color: var(--app-success) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+  background-color: var(--app-info) !important;
+  border-color: var(--app-info) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus,
+.btn-outline-warning:active {
+  background-color: var(--app-warning) !important;
+  border-color: var(--app-warning) !important;
+  color: #111827 !important;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+  background-color: var(--app-danger) !important;
+  border-color: var(--app-danger) !important;
+  color: #ffffff !important;
+}
+
+.btn:disabled,
+.btn.disabled {
+  opacity: .6 !important;
+  cursor: not-allowed;
+}
+
 /* Icon inheritance */
 
 .btn svg,
@@ -438,6 +532,7 @@ c-sidebar-nav a.active svg {
   color: inherit !important;
   fill: currentColor !important;
 }
+
 
 /* Background utilities */
 

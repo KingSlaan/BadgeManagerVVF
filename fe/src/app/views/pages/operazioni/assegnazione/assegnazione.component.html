@@ -1,1 +1,33 @@
-<p>assegnazione works!</p>
+<c-card>
+  <c-card-body>
+    <app-stepper
+      [steps]="steps"
+      [(activeIndex)]="activeStepIndex"
+      [linear]="true"
+      (finish)="save()"
+    >
+      <ng-template appStepperContent="import">
+        <app-import-step (importCompleted)="onImportCompleted($event)" />
+      </ng-template>
+
+      <ng-template appStepperContent="review">
+        <app-review-import-rows
+          [rows]="importedRows"
+          (proposalCompleted)="onProposalCompleted($event)"
+        />
+      </ng-template>
+
+      <ng-template appStepperContent="review-tessere">
+        <app-review-assegnazione-tessere
+          [rows]="proposedRows"
+          [sediList]="sediOptions()"
+          (reviewCompleted)="onReviewTessereCompleted()"
+        />
+      </ng-template>
+
+      <ng-template appStepperContent="confirm">
+        <app-assegnazione-completata />
+      </ng-template>
+    </app-stepper>
+  </c-card-body>
+</c-card>

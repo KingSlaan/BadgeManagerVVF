@@ -9,6 +9,8 @@
 
 .autocomplete-input {
   padding-right: 2.25rem;
+  height: var(--cui-form-control-height, 38px);
+  min-height: var(--cui-form-control-height, 38px);
 }
 
 .clear-btn {

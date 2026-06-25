@@ -11,7 +11,7 @@
   align-items: center;
 
   width: 100%;
-  height: 46px;
+  height: var(--cui-form-control-height, 38px);
 
   border: 1px solid var(--cui-border-color);
   border-radius: 6px;
@@ -49,7 +49,7 @@
 .cui-input {
   flex: 1;
 
-  height: 100%;
+  height: var(--cui-form-control-height, 38px);
 
   border: none;
   outline: none;
@@ -136,6 +136,12 @@
   z-index: 2;
 }
 
+.input-actions {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .action-icon {
   width: 28px;
   height: 28px;
@@ -169,6 +175,16 @@
     width: 16px;
     height: 16px;
   }
+}
+
+.action-icon {
+  width: 32px;
+  height: 100%;
+}
+
+.cui-input {
+  height: 100%;
+  line-height: normal;
 }
 
 :host-context([data-coreui-theme="light"]) .custom-datepicker-input:disabled {

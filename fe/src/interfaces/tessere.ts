@@ -35,3 +35,23 @@ export interface TessereMassiva {
   dataOraInizioAssegnazione?: string;
   dataOraFineAssegnazione?: string;
 }
+
+export interface Dipendente {
+  codFiscale: string[];
+  nome: string;
+  cognome: string;
+  idTessera?: string;
+}
+
+export interface AssegnazioneBody {
+  dipendenti: Dipendente[];
+  numeroPartenzaTopDown: string;
+}
+
+export interface ApplicaAssegnazioneBody {
+  tessere: Dipendente[];
+  sede: string;
+  dataInizioAssegnazione: string;
+  dataFineAssegnazione?: string;
+}
+

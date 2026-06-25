@@ -1,6 +1,6 @@
 import { API_CONSTANTS } from './../../constants/api.constants';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Tessera, Tessere, TessereMassiva } from './../../interfaces/tessere';
+import { ApplicaAssegnazioneBody, AssegnazioneBody, Dipendente, Tessera, Tessere, TessereMassiva } from './../../interfaces/tessere';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { DataGridState } from './../../interfaces/datagrid';
@@ -69,6 +69,27 @@ export class TessereService {
         responseType: 'blob'
       }
     );
+  }
+
+  downloadTemplate() {
+    return this.http.get(`${this.apiUrl}/downloadTemplateExcel`, {
+      responseType: 'blob'
+    });
+  }
+
+  importExcel(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<ApiResponse<Dipendente[]>>(`${this.apiUrl}/validaAnagraficaMassiva`, formData);
+  }
+
+  proponiAssegnazioni(body: AssegnazioneBody) {
+    return this.http.post<ApiResponse<Tessera[]>>(`${this.apiUrl}/proponiAssegnazioniMassive`, body);
+  }
+
+  confermaAssegnazioni(body: ApplicaAssegnazioneBody) {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/assegnaTessereMassivo`, body);
   }
 
   /**

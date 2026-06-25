@@ -29,24 +29,27 @@
     </div>
 
     <div class="version-card weather-card">
-      <div class="version-title">Meteo</div>
-
       @if (weatherInfo(); as weather) {
-        <div class="version-date">📍 {{ weather.city }}</div>
+        <div class="weather-content">
+          <div class="weather-location">
+            <div>METEO</div>
+            <div class="weather-location-city">📍 {{ weather.city }}</div>
+          </div>
 
-        <div class="weather-days">
-          @for (day of weather.days; track day.date) {
-            <div class="weather-day" [class.weather-today]="day.isToday">
-              <div class="weather-main">
-                <span>{{ weatherIcon(day.weatherCode) }}</span>
-                <span>{{ day.temperature }}°</span>
-              </div>
+          <div class="weather-days">
+            @for (day of weather.days; track day.date) {
+              <div class="weather-day" [class.weather-today]="day.isToday">
+                <div class="weather-main">
+                  <span>{{ weatherIcon(day.weatherCode) }}</span>
+                  <span>{{ day.temperature }}°</span>
+                </div>
 
-              <div class="weather-label">
-                {{ day.dayLetter }}
+                <div class="weather-label">
+                  {{ day.dayLetter }}
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
         </div>
       } @else {
         <div class="version-number">--</div>

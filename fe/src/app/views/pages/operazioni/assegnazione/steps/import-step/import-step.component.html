@@ -1,0 +1,46 @@
+<div class="d-flex gap-2 align-items-center mb-3">
+  <button
+    cButton
+    color="secondary"
+    variant="ghost"
+    shape="rounded-pill"
+    type="button"
+    (click)="downloadTemplate()"
+  >
+    <svg [cIcon]="icons.cilCloudDownload" title="Ricerca"></svg>
+    Scarica template XLSX
+  </button>
+
+  <label
+    cButton
+    color="primary"
+    class="mb-0"
+    variant="ghost"
+    shape="rounded-pill"
+  >
+    <svg [cIcon]="icons.cilCloudUpload" title="Ricerca"></svg>
+    Seleziona file XLSX
+    <input
+      type="file"
+      accept=".xlsx"
+      hidden
+      (change)="onFileSelected($event)"
+    />
+  </label>
+</div>
+
+@if (loading()) {
+  <c-spinner size="sm" />
+}
+
+@if (error()) {
+  <div class="text-danger mt-2">
+    {{ error() }}
+  </div>
+}
+
+@if (rows().length > 0) {
+  <div class="alert alert-success mt-3">
+    {{ rows().length }} record importati correttamente.
+  </div>
+}

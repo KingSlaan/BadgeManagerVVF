@@ -1,0 +1,1 @@
+var e={enabled:!0,page:1,pageSize:10,totalItems:10,pageSizes:[5,10,25,50,100],showPageNumbers:!0,showPageSizeSelector:!0,serverSide:!0},t={enabled:!1,page:1,pageSize:999,totalItems:999,pageSizes:[5,10,25,50],showPageNumbers:!0,showPageSizeSelector:!0,serverSide:!0};export{e as a,t as b};
