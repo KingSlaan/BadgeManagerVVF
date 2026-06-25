@@ -1,0 +1,148 @@
+[
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Puoi cliccare sulle statistiche della dashboard per aprire direttamente la lista filtrata."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Premi Invio nei filtri della tabella per avviare subito la ricerca."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "I filtri vengono mantenuti nell'URL e possono essere condivisi."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "La selezione multipla permette di stampare più tessere contemporaneamente."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Usa il tasto destro su una riga per aprire rapidamente il menu azioni."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Ordina le colonne cliccando sull'intestazione della tabella."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Puoi esportare in CSV i risultati filtrati."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Il tema chiaro, scuro o automatico può essere cambiato dall'header."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Verifica sempre i dati prima della stampa definitiva."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Una tessera aggiornata garantisce una gestione più efficiente."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Controlla la validità prima di assegnare una tessera."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "La qualità dei dati riduce gli errori operativi."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "Ogni intervento è il risultato del lavoro di squadra."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "La prevenzione è il primo intervento."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "L'addestramento continuo aumenta la sicurezza di tutti."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "La collaborazione tra sedi è fondamentale per l'efficienza del servizio."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "Il Corpo Nazionale dei Vigili del Fuoco è stato istituito nel 1941."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "Il motto del Corpo è: Nobis Vita, Aliis Salus."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "Le tecnologie digitali migliorano il coordinamento degli interventi."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "Una corretta gestione delle tessere facilita la tracciabilità."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "I Vigili del Fuoco intervengono ogni giorno in scenari molto diversi: incendi, soccorsi tecnici, calamità e prevenzione."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "La qualità non è un atto, è un'abitudine.",
+    "author": "Aristotele"
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Il successo è la somma di piccoli sforzi ripetuti ogni giorno."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "L'eccellenza nasce dalla costanza."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Ogni dettaglio conta."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Prepararsi oggi significa essere pronti domani."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Il lavoro di squadra divide i compiti e moltiplica i risultati."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "L'esperienza è la migliore insegnante."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Ogni miglioramento inizia con un piccolo passo."
+  }
+]

@@ -9,13 +9,6 @@
         formControlName="numeroPartenzaTopDown"
         placeholder="Inserisci ID Tessera"
       />
-
-      @if (
-        form.controls.numeroPartenzaTopDown.touched &&
-        form.controls.numeroPartenzaTopDown.hasError("required")
-      ) {
-        <small class="text-danger"> ID Tessera iniziale obbligatorio </small>
-      }
     </div>
 
     <div class="col-12 col-md-auto">
@@ -29,6 +22,15 @@
         {{ loading ? "Elaborazione..." : "Proponi Assegnazioni" }}
       </button>
     </div>
+
+    <div class="col-12">
+      @if (
+        form.controls.numeroPartenzaTopDown.touched &&
+        form.controls.numeroPartenzaTopDown.hasError("required")
+      ) {
+        <small class="text-danger"> ID Tessera iniziale obbligatorio </small>
+      }
+    </div>
   </div>
 </form>
 
@@ -37,3 +39,15 @@
   [rows]="rows"
   [loading]="false"
 ></app-datagrid>
+
+<ng-template #actionTemplate let-row>
+  <button
+    cButton
+    color="danger"
+    variant="ghost"
+    shape="rounded-pill"
+    (click)="removeRow(row)"
+  >
+    <svg [cIcon]="icons.cilX" title="Rimuovi"></svg>
+  </button>
+</ng-template>

@@ -8,6 +8,10 @@ import { DataGridState } from '../../../../../interfaces/datagrid';
 import { map, Observable, tap } from 'rxjs';
 import { TessereService } from '../../../../services/tessere.service';
 import { UtilsService } from '../../../../services/utils.service';
+import { ToastService } from 'src/app/services/toast.service';
+import { IconDirective } from '@coreui/icons-angular';
+import { cilCloudUpload } from '@coreui/icons';
+
 @Component({
   selector: 'app-stampa-documenti',
   imports: [
@@ -24,16 +28,20 @@ import { UtilsService } from '../../../../services/utils.service';
     RowDirective,
     FormsModule,
     DatepickerComponent,
-    AutocompleteSelectComponent
+    AutocompleteSelectComponent,
+    IconDirective
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
 })
 export class StampaDocumentiComponent implements OnInit {
 
+  icons = { cilCloudUpload };
+
   private sediState = inject(SediStateService);
   private tessereService = inject(TessereService);
   public utilsService = inject(UtilsService);
+  public toastService = inject(ToastService);
 
   sediOptions = this.sediState.sediOptionsValue;
 
@@ -42,11 +50,38 @@ export class StampaDocumentiComponent implements OnInit {
     numProtocollo: new FormControl(''),
     dataProtocollo: new FormControl(''),
     sede: new FormControl(''),
-    utenti: new FormControl<string[]>([]),
+    utenti: new FormControl<AutocompleteOption[]>([]),
   });
 
   ngOnInit(): void {
-    this.sediState.loadSediDescValue();
+    this.sediState.loadSedi();
+  }
+
+  utenteKey = (option: AutocompleteOption): string => {
+    return option.data.idTessera;
+  };
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    this.tessereService.importExcel(file).subscribe({
+      next: rows => {
+        const options = (rows.data ?? []).map((utente: any) =>
+          this.toUtenteOption(utente)
+        );
+
+        this.form.controls.utenti.setValue(options);
+
+        this.toastService.success('File elaborato con successo');
+      }
+    });
+  }
+
+  debug() {
+    console.log("this.form.controls.utenti.value", this.form.controls.utenti.value)
   }
 
   createBodyForDownload() {
@@ -55,10 +90,10 @@ export class StampaDocumentiComponent implements OnInit {
       oggettoMail: this.form.controls.oggetto.value,
       nrProtocollo: this.form.controls.numProtocollo.value,
       data: this.form.controls.dataProtocollo.value,
-      nominativi: this.form.controls.utenti.value?.map((utente: any) => ({
-        cognome: utente.cognome,
-        nome: utente.nome,
-        codFis: utente.codiceFiscale
+      nominativi: this.form.controls.utenti.value?.map(option => ({
+        cognome: option.data.cognome,
+        nome: option.data.nome,
+        codFis: option.data.codiceFiscale
       }))
     };
   }
@@ -126,31 +161,29 @@ export class StampaDocumentiComponent implements OnInit {
     const request: DataGridState = {
       filters: [
         {
-          field: "cognome",
-          operator: "contains",
-          value: term || ""
-        },
+          field: 'cognome',
+          operator: 'contains',
+          value: term || ''
+        }
       ],
       pagination: {
         page: 1,
         pageSize: 50
       },
-       sorting: null,
+      sorting: null
     };
 
     return this.tessereService.getTessere(request).pipe(
-      // tap(tessere => console.log('SEDI API RESULT:', tessere.data)),
-      map(tessere =>
-        tessere.data.map((tessera: any) => ({
-          label: `${tessera.cognome} ${tessera.nome}`,
-          value: tessera.idTessera,
-
-          // optional, useful for template
-          data: tessera
-        }))
-      ),
-      // tap(options => console.log('AUTOCOMPLETE OPTIONS:', options))
+      map(response => response.data.map(tessera => this.toUtenteOption(tessera)))
     );
   };
+
+  private toUtenteOption(tessera: any): AutocompleteOption {
+    return {
+      label: `${tessera.cognome} ${tessera.nome}`,
+      value: tessera.idTessera,
+      data: tessera
+    };
+  }
 
 }

@@ -4,6 +4,7 @@
       [steps]="steps"
       [(activeIndex)]="activeStepIndex"
       [linear]="true"
+      [lockPreviousStepsOnFinish]="true"
       (finish)="save()"
     >
       <ng-template appStepperContent="import">

@@ -49,6 +49,9 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   disabledInput = input<boolean>(false);
   clearable = input<boolean>(true);
   multiple = input<boolean>(false);
+  optionKeyFn = input<(option: AutocompleteOption) => any>(
+    option => option.value
+  );
 
   search = signal('');
   selectedValue = signal<any>(null);
@@ -97,17 +100,12 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
 
   writeValue(value: any): void {
     if (this.multiple()) {
-      const values = Array.isArray(value) ? value : [];
+      const options = Array.isArray(value) ? value : [];
 
-      this.selectedValues.set(values);
-
-      const selectedOptions = this.getAllOptions().filter(option =>
-        values.includes(option.value)
-      );
-
-      this.selectedOptions.set(selectedOptions);
-
+      this.selectedOptions.set(options);
+      this.selectedValues.set(options.map(option => option.value));
       this.search.set('');
+
       return;
     }
 
@@ -121,16 +119,16 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   }
 
   isSelected(option: AutocompleteOption): boolean {
-    return this.multiple()
-      ? this.selectedValues().includes(option.value)
-      : option.value === this.selectedValue();
+    if (this.multiple()) {
+      return this.hasSelectedOption(option);
+    }
+
+    return option.value === this.selectedValue();
   }
 
   selectOption(option: AutocompleteOption): void {
     if (this.multiple()) {
-      const exists = this.selectedOptions().some(
-        opt => opt.value === option.value
-      );
+      const exists = this.hasSelectedOption(option);
 
       if (exists) {
         this.search.set('');
@@ -142,7 +140,8 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
 
       this.selectedOptions.set(nextOptions);
       this.selectedValues.set(nextOptions.map(opt => opt.value));
-      this.onChange(nextOptions.map(opt => opt.value));
+
+      this.onChange(nextOptions);
 
       this.search.set('');
       this.isOpen.set(true);
@@ -167,7 +166,7 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
     const nextValues = nextOptions.map(opt => opt.value);
     this.selectedValues.set(nextValues);
 
-    this.onChange(nextValues);
+    this.onChange(nextOptions);
   }
 
   getAllOptions(): AutocompleteOption[] {
@@ -262,6 +261,18 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
     }
 
     this.isOpen.set(true);
+  }
+
+  private getOptionKey(option: AutocompleteOption): any {
+    return this.optionKeyFn()(option);
+  }
+
+  private hasSelectedOption(option: AutocompleteOption): boolean {
+    const key = this.getOptionKey(option);
+
+    return this.selectedOptions().some(
+      selected => this.getOptionKey(selected) === key
+    );
   }
 
   ngOnInit(): void {

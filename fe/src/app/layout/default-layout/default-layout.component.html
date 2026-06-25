@@ -21,15 +21,30 @@
   </c-sidebar-header>
 
   <ng-scrollbar pointerEventsMethod="scrollbar" visibility="hover">
-    <c-sidebar-nav [navItems]="navItems" dropdownMode="path" compact />
+    <c-sidebar-nav [navItems]="visibleNavItems()" dropdownMode="path" compact />
   </ng-scrollbar>
 
-  <c-sidebar-footer
-    class="border-top d-none d-lg-flex justify-content-center"
-    style="cursor: pointer"
-    (click)="toggleSidebarNarrow()"
-  >
-    <button cSidebarToggler aria-label="Toggle sidebar fold"></button>
+  <c-sidebar-footer class="border-top d-none d-lg-flex sidebar-footer-custom">
+    @if (!sidebarNarrow()) {
+      <div class="sidebar-authors">
+        <div class="sidebar-authors-title">Autori</div>
+
+        <a
+          href="https://frontwars.io"
+          target="_blank"
+          class="sidebar-authors-link"
+        >
+          SN, LG, MT, FSC
+        </a>
+      </div>
+    }
+
+    <button
+      cSidebarToggler
+      aria-label="Toggle sidebar fold"
+      class="sidebar-toggle-btn"
+      (click)="toggleSidebarNarrow()"
+    ></button>
   </c-sidebar-footer>
 </c-sidebar>
 

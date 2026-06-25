@@ -4,6 +4,8 @@ import { FooterComponent } from '@coreui/angular';
 import { VersionInfo, VersionInfoBE } from '../../../../interfaces/version-info';
 import { DatePipe } from '@angular/common';
 import { WeatherService, WeatherInfo } from './../../../services/weather.service';
+import dailyMessages from 'src/assets/daily-message.json';
+import { DailyMessage } from '../../../../interfaces/daily-message';
 
 @Component({
   selector: 'app-default-footer',
@@ -33,8 +35,11 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
   });
 
   weatherInfo = signal<WeatherInfo | null>(null);
+  dailyMessage = signal<DailyMessage | null>(null);
 
   ngAfterViewInit(): void {
+    this.dailyMessage.set(this.getDailyMessage());
+
     this.versionService.getVersion().subscribe(data => {
       setTimeout(() => {
         this.versionInfo.set((data ?? {}));
@@ -76,11 +81,44 @@ export class DefaultFooterComponent extends FooterComponent implements AfterView
 
   }
 
+  private getDailyMessage(): DailyMessage {
+    const messages = dailyMessages as DailyMessage[];
+    const dayOfYear = this.getDayOfYear(new Date());
+
+    return messages[dayOfYear % messages.length];
+  }
+
+  private getDayOfYear(date: Date): number {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date.getTime() - start.getTime();
+
+    return Math.floor(diff / 86400000);
+  }
+
   getItalianDayLetter(date: Date): string {
     return date
       .toLocaleDateString('it-IT', { weekday: 'short' })
       .charAt(0)
       .toUpperCase();
+  }
+
+  dailyMessageIcon(type: DailyMessage['type']): string {
+    switch (type) {
+      case 'tip':
+        return '💡';
+      case 'quote':
+        return '💬';
+      case 'safety':
+        return '🦺';
+      case 'firefighter':
+        return '🚒';
+      case 'history':
+        return '📜';
+      case 'curiosity':
+        return '📚';
+      default:
+        return 'ℹ️';
+    }
   }
 
   weatherIcon(code: number): string {
