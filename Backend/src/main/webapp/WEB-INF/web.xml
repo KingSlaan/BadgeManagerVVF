@@ -49,4 +49,44 @@
     <servlet-name>InvalidaTessereMassivoServlet</servlet-name>
     <url-pattern>/InvalidaTessereMassivoServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>DownloadTemplateExcelServlet</display-name>
+    <servlet-name>DownloadTemplateExcelServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.DownloadTemplateExcelServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DownloadTemplateExcelServlet</servlet-name>
+    <url-pattern>/DownloadTemplateExcelServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ValidaAnagraficaMassivaServlet</display-name>
+    <servlet-name>ValidaAnagraficaMassivaServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.ValidaAnagraficaMassivaServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ValidaAnagraficaMassivaServlet</servlet-name>
+    <url-pattern>/ValidaAnagraficaMassivaServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>ProponiAssegnazioniMassiveServlet</display-name>
+    <servlet-name>ProponiAssegnazioniMassiveServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.ProponiAssegnazioniMassiveServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProponiAssegnazioniMassiveServlet</servlet-name>
+    <url-pattern>/ProponiAssegnazioniMassiveServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AssegnaTessereMassivoServlet</display-name>
+    <servlet-name>AssegnaTessereMassivoServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.AssegnaTessereMassivoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AssegnaTessereMassivoServlet</servlet-name>
+    <url-pattern>/AssegnaTessereMassivoServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
