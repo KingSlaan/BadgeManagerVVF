@@ -16,3 +16,6 @@
 # File temporanei del sistema operativo
 .DS_Store
 Thumbs.db
+
+# File db
+**/db.properties
