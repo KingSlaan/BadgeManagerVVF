@@ -80,10 +80,6 @@ export class StampaDocumentiComponent implements OnInit {
     });
   }
 
-  debug() {
-    console.log("this.form.controls.utenti.value", this.form.controls.utenti.value)
-  }
-
   createBodyForDownload() {
     return {
       descrizioneSede: this.form.controls.sede.value,
