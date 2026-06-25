@@ -1,6 +1,6 @@
 package vvf.ufficioIV.applicativobadge.dao;
 
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     }
 
     @Override
-    public boolean insertAssegnazione(TesseraDipend1 a) throws SQLException {
-        String sql = "INSERT INTO TESSERADIPEND1 (IDTESSERA, CODFISDIP, DATAORAINIZIOASSEGNAZIONE, DATAORAFINEASSEGNAZIONE) " +
+    public boolean insertAssegnazione(TesseraDipend a) throws SQLException {
+        String sql = "INSERT INTO tesseradipend (IDTESSERA, CODFISDIP, DATAORAINIZIOASSEGNAZIONE, DATAORAFINEASSEGNAZIONE) " +
                      "VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, a.getIdTessera());
@@ -40,9 +40,9 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     }
 
     @Override
-    public TesseraDipend1 getAssegnazione(String idTessera, String codFisDip, LocalDateTime dataOraInizio) {
+    public TesseraDipend getAssegnazione(String idTessera, String codFisDip, LocalDateTime dataOraInizio) {
         String sql = "SELECT IDTESSERA, CODFISDIP, DATAORAINIZIOASSEGNAZIONE, DATAORAFINEASSEGNAZIONE " +
-                     "FROM TESSERADIPEND1 WHERE IDTESSERA = ? AND CODFISDIP = ? AND DATAORAINIZIOASSEGNAZIONE = ?";
+                     "FROM tesseradipend WHERE IDTESSERA = ? AND CODFISDIP = ? AND DATAORAINIZIOASSEGNAZIONE = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             ps.setString(2, codFisDip);
@@ -59,9 +59,9 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     }
 
     @Override
-    public List<TesseraDipend1> getAssegnazioniByTessera(String idTessera) {
-        List<TesseraDipend1> list = new ArrayList<>();
-        String sql = "SELECT * FROM TESSERADIPEND1 WHERE IDTESSERA = ? ORDER BY DATAORAINIZIOASSEGNAZIONE DESC";
+    public List<TesseraDipend> getAssegnazioniByTessera(String idTessera) {
+        List<TesseraDipend> list = new ArrayList<>();
+        String sql = "SELECT * FROM tesseradipend WHERE IDTESSERA = ? ORDER BY DATAORAINIZIOASSEGNAZIONE DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             try (ResultSet rs = ps.executeQuery()) {
@@ -74,9 +74,9 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     }
 
     @Override
-    public List<TesseraDipend1> getAssegnazioniByDipendente(String codFisDip) {
-        List<TesseraDipend1> list = new ArrayList<>();
-        String sql = "SELECT * FROM TESSERADIPEND1 WHERE CODFISDIP = ? ORDER BY DATAORAINIZIOASSEGNAZIONE DESC";
+    public List<TesseraDipend> getAssegnazioniByDipendente(String codFisDip) {
+        List<TesseraDipend> list = new ArrayList<>();
+        String sql = "SELECT * FROM tesseradipend WHERE CODFISDIP = ? ORDER BY DATAORAINIZIOASSEGNAZIONE DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codFisDip);
             try (ResultSet rs = ps.executeQuery()) {
@@ -90,7 +90,7 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
 
     @Override
     public boolean deleteAssegnazione(String idTessera, String codFisDip, LocalDateTime dataOraInizio) throws SQLException {
-        String sql = "DELETE FROM TESSERADIPEND1 WHERE IDTESSERA = ? AND CODFISDIP = ? AND DATAORAINIZIOASSEGNAZIONE = ?";
+        String sql = "DELETE FROM tesseradipend WHERE IDTESSERA = ? AND CODFISDIP = ? AND DATAORAINIZIOASSEGNAZIONE = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             ps.setString(2, codFisDip);
@@ -99,8 +99,8 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
         }
     }
 
-    private TesseraDipend1 mapResultSetToEntity(ResultSet rs) throws SQLException {
-        TesseraDipend1 t = new TesseraDipend1();
+    private TesseraDipend mapResultSetToEntity(ResultSet rs) throws SQLException {
+        TesseraDipend t = new TesseraDipend();
         t.setIdTessera(rs.getString("IDTESSERA"));
         t.setCodFisDip(rs.getString("CODFISDIP"));
         t.setDataOraInizioAssegnazione(rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE").toLocalDateTime());
@@ -112,7 +112,7 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
     public boolean revocaAssegnazioneAttiva(String idTessera, LocalDateTime dataOraFine) throws SQLException {
         // La logica è: aggiorno la data di fine per l'assegnazione attualmente attiva...
         // NUOVA REGOLA: ...ma SOLO SE la data di fine attuale è MAGGIORE della nuova data di indisponibilità!
-        String sql = "UPDATE TESSERADIPEND1 " +
+        String sql = "UPDATE tesseradipend " +
                      "SET DATAORAFINEASSEGNAZIONE = ? " +
                      "WHERE IDTESSERA = ? " +
                      "AND DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +

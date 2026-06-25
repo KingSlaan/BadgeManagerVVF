@@ -15,8 +15,8 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -129,14 +129,14 @@ public class InvalidaTessereMassivoServlet extends HttpServlet {
                 }
 
                 // A. LOCK DELLA SINGOLA TESSERA
-                Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
+                Tessera tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
                 if (tessera == null) {
                     throw new IllegalArgumentException("Tessera non trovata nel sistema: " + idTessera);
                 }
 
                 // B. REGOLA A: PROTEZIONE PARADOSSI TEMPORALI
-                List<TesseraDipend1> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
-                for (TesseraDipend1 ass : assegnazioni) {
+                List<TesseraDipend> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+                for (TesseraDipend ass : assegnazioni) {
                     if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
                         if (dataIndisp.isBefore(ass.getDataOraInizioAssegnazione())) {
                             throw new IllegalArgumentException("Paradosso temporale sulla tessera " + idTessera + ": la data di invalidazione è antecedente all'inizio dell'assegnazione corrente.");
@@ -147,7 +147,7 @@ public class InvalidaTessereMassivoServlet extends HttpServlet {
                 // C. INVALIDAZIONE FISICA DELLA TESSERA
                 boolean invalidata = daoTessera.invalidaTessera(idTessera, dataIndisp);
                 if (!invalidata) {
-                    throw new SQLException("Impossibile aggiornare la riga su TESSERA1 per l'ID: " + idTessera);
+                    throw new SQLException("Impossibile aggiornare la riga su tessera per l'ID: " + idTessera);
                 }
                 contatoreInvalidate++;
 

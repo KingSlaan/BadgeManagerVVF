@@ -1,15 +1,15 @@
 package vvf.ufficioIV.applicativobadge.entity;
 
-public class AnagraficaCodFiscale1 {
+public class AnagraficaCodFiscale {
     
     private String codFiscale;
     private String nome;
     private String cognome;
 
-    public AnagraficaCodFiscale1() {
+    public AnagraficaCodFiscale() {
     }
 
-    public AnagraficaCodFiscale1(String codFiscale, String nome, String cognome) {
+    public AnagraficaCodFiscale(String codFiscale, String nome, String cognome) {
         this.codFiscale = codFiscale;
         this.nome = nome;
         this.cognome = cognome;

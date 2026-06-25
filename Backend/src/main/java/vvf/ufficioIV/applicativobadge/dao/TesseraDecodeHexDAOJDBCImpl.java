@@ -28,7 +28,7 @@ public class TesseraDecodeHexDAOJDBCImpl implements TesseraDecodeHexDAO {
 
     @Override
     public boolean insertTesseraDecodeHex(TesseraDecodeHex hexEntity) throws SQLException {
-        String sql = "INSERT INTO TESSERADECODE_HEX1 (IDTESSERA, CODICEINTERNO_PREF, CODICEINTERNO_SUFF, PREFISSO_HEX, SUFFISSO_HEX) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tesseradecode_hex (IDTESSERA, CODICEINTERNO_PREF, CODICEINTERNO_SUFF, PREFISSO_HEX, SUFFISSO_HEX) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hexEntity.getIdTessera());
             ps.setString(2, hexEntity.getCodiceInternoPref());
@@ -41,7 +41,7 @@ public class TesseraDecodeHexDAOJDBCImpl implements TesseraDecodeHexDAO {
 
     @Override
     public TesseraDecodeHex getByIdTessera(String idTessera) {
-        String sql = "SELECT * FROM TESSERADECODE_HEX1 WHERE IDTESSERA = ?";
+        String sql = "SELECT * FROM tesseradecode_hex WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             try (ResultSet rs = ps.executeQuery()) {
@@ -63,7 +63,7 @@ public class TesseraDecodeHexDAOJDBCImpl implements TesseraDecodeHexDAO {
 
     @Override
     public boolean deleteByIdTessera(String idTessera) throws SQLException {
-        String sql = "DELETE FROM TESSERADECODE_HEX1 WHERE IDTESSERA = ?";
+        String sql = "DELETE FROM tesseradecode_hex WHERE IDTESSERA = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
             return ps.executeUpdate() == 1;

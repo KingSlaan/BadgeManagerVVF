@@ -3,7 +3,7 @@
   
   <groupId>ApplicativoBadgeVVF</groupId>
   <artifactId>ApplicativoBadgeVVF</artifactId>
-  <version>3.3.0</version>
+  <version>4.0.0</version>
   <packaging>war</packaging>
   
   <properties>
@@ -11,7 +11,7 @@
 	    <my.build.date>${maven.build.timestamp}</my.build.date> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   		
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      	<app.codename>Apollo</app.codename>
+      	<app.codename>Poseidone</app.codename>
   </properties>
   
   <dependencies>

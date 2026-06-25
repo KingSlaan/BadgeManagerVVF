@@ -15,8 +15,8 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -212,7 +212,7 @@ public class AssegnaTesseraPutServlet extends HttpServlet {
             }
 
             // B. Pessimistic Lock: Recupera tessera bloccando la riga per prevenire race conditions
-            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTesseraUrl);
+            Tessera tessera = daoTessera.getTesseraByIdForUpdate(idTesseraUrl);
             if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente a sistema.");
                 return;
@@ -225,8 +225,8 @@ public class AssegnaTesseraPutServlet extends HttpServlet {
             }
 
             // D. Controllo Overlap Tessera (Qualcun altro sta usando questa tessera in questo periodo?)
-            List<TesseraDipend1> assegnazioniEsistenti = daoAssegnaz.getAssegnazioniByTessera(idTesseraUrl);
-            for (TesseraDipend1 ass : assegnazioniEsistenti) {
+            List<TesseraDipend> assegnazioniEsistenti = daoAssegnaz.getAssegnazioniByTessera(idTesseraUrl);
+            for (TesseraDipend ass : assegnazioniEsistenti) {
                 // Sovrapposizione rigorosa
                 if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "La tessera risulta già assegnata nel periodo temporale selezionato.");
@@ -235,8 +235,8 @@ public class AssegnaTesseraPutServlet extends HttpServlet {
             }
 
             // E. Controllo Overlap Dipendente (Il dipendente ha già un'altra tessera in questo periodo?)
-            List<TesseraDipend1> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
-            for (TesseraDipend1 ass : assegnazioniDipendente) {
+            List<TesseraDipend> assegnazioniDipendente = daoAssegnaz.getAssegnazioniByDipendente(codFiscale);
+            for (TesseraDipend ass : assegnazioniDipendente) {
                 if (dataInizio.isBefore(ass.getDataOraFineAssegnazione()) && dataFine.isAfter(ass.getDataOraInizioAssegnazione())) {
                     ResponseUtil.sendError(response, HttpServletResponse.SC_CONFLICT, "Il dipendente possiede già una tessera attiva nel periodo temporale selezionato.");
                     return;
@@ -245,15 +245,15 @@ public class AssegnaTesseraPutServlet extends HttpServlet {
 
             // ── ESECUZIONE DELLE SCRITTURE ──
 
-            // Aggiorniamo il tipo di tessera su TESSERA1 (allineamento logico)
+            // Aggiorniamo il tipo di tessera su tessera (allineamento logico)
             if (!daoTessera.updateCodTipoTessera(idTesseraUrl, codTipoTessera)) {
-                throw new SQLException("Errore durante l'aggiornamento del tipo tessera (TESSERA1).");
+                throw new SQLException("Errore durante l'aggiornamento del tipo tessera (tessera).");
             }
 
             // Inseriamo la nuova assegnazione
-            TesseraDipend1 nuovaAssegnazione = new TesseraDipend1(idTesseraUrl, codFiscale, dataInizio, dataFine);
+            TesseraDipend nuovaAssegnazione = new TesseraDipend(idTesseraUrl, codFiscale, dataInizio, dataFine);
             if (!daoAssegnaz.insertAssegnazione(nuovaAssegnazione)) {
-                throw new SQLException("Errore durante il salvataggio dell'assegnazione (TESSERADIPEND1).");
+                throw new SQLException("Errore durante il salvataggio dell'assegnazione (tesseradipend).");
             }
 
             // SE ARRIVIAMO QUI, TUTTO È ANDATO A BUON FINE

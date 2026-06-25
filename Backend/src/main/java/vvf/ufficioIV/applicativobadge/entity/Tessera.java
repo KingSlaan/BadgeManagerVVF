@@ -2,7 +2,7 @@ package vvf.ufficioIV.applicativobadge.entity;
 
 import java.time.LocalDateTime;
 
-public class Tessera1 {
+public class Tessera {
     
     private String idTessera; // Primary Key
     private String codTipoTessera;
@@ -10,10 +10,10 @@ public class Tessera1 {
     private LocalDateTime dataOraIndisponibilita;
     private Integer tesseraAte;
 
-    public Tessera1() {
+    public Tessera() {
     }
 
-    public Tessera1(String idTessera, String codTipoTessera, String sede, LocalDateTime dataOraIndisponibilita, Integer tesseraAte) {
+    public Tessera(String idTessera, String codTipoTessera, String sede, LocalDateTime dataOraIndisponibilita, Integer tesseraAte) {
         this.idTessera = idTessera;
         this.codTipoTessera = codTipoTessera;
         this.sede = sede;

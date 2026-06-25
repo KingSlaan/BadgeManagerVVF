@@ -12,8 +12,8 @@ import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAO;
 import vvf.ufficioIV.applicativobadge.dao.TesseraDipend1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
-import vvf.ufficioIV.applicativobadge.entity.TesseraDipend1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
+import vvf.ufficioIV.applicativobadge.entity.TesseraDipend;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -141,7 +141,7 @@ public class InvalidaTesseraServlet extends HttpServlet {
             TesseraDipend1DAO daoAssegnaz = new TesseraDipend1DAOJDBCImpl(conn);
 
             // A. LOCK DELLA TESSERA (Pessimistic Lock per prevenire assegnazioni simultanee)
-            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTesseraUrl);
+            Tessera tessera = daoTessera.getTesseraByIdForUpdate(idTesseraUrl);
             if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera non trovata.");
                 return;
@@ -158,8 +158,8 @@ public class InvalidaTesseraServlet extends HttpServlet {
 
             // C. PROTEZIONE PARADOSSI TEMPORALI SULLE ASSEGNAZIONI
             // Verifichiamo che la data di invalidazione non sia precedente all'inizio dell'assegnazione corrente
-            List<TesseraDipend1> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTesseraUrl);
-            for (TesseraDipend1 ass : assegnazioni) {
+            List<TesseraDipend> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTesseraUrl);
+            for (TesseraDipend ass : assegnazioni) {
                 // Troviamo l'assegnazione attualmente attiva (che finisce nel futuro)
                 if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
                     if (dataIndisp.isBefore(ass.getDataOraInizioAssegnazione())) {
@@ -176,7 +176,7 @@ public class InvalidaTesseraServlet extends HttpServlet {
             // Step 1: Invalida la tessera fisica
             boolean invalidata = daoTessera.invalidaTessera(idTesseraUrl, dataIndisp);
             if (!invalidata) {
-                throw new SQLException("Impossibile aggiornare la riga su TESSERA1.");
+                throw new SQLException("Impossibile aggiornare la riga su tessera.");
             }
 
             // Step 2: Revoca assegnazioni attive

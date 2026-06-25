@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAO;
 import vvf.ufficioIV.applicativobadge.dao.Tessera1DAOJDBCImpl;
-import vvf.ufficioIV.applicativobadge.entity.Tessera1;
+import vvf.ufficioIV.applicativobadge.entity.Tessera;
 import vvf.ufficioIV.applicativobadge.util.ResponseUtil;
 
 import java.io.BufferedReader;
@@ -154,7 +154,7 @@ public class CambiaSedeServlet extends HttpServlet {
 
             // VERIFICA 1: La tessera esiste? Mettiamo in Lock PESSIMISTICO la riga.
             System.out.println("[cambiaSedeServlet] Ricerca e blocco tessera...");
-            Tessera1 tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
+            Tessera tessera = daoTessera.getTesseraByIdForUpdate(idTessera);
             
             if (tessera == null) {
                 ResponseUtil.sendError(response, HttpServletResponse.SC_NOT_FOUND, "Tessera inesistente a sistema.");
