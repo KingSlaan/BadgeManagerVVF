@@ -263,11 +263,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     });
   }
 
-  debug(row: any) {
-    console.log("FINE ASSEGNAZIUONE", this.utilsService.parseItalianDate(row.dataOraFineAssegnazione))
-    console.log("TODAY", this.today)
-  }
-
   ngAfterViewInit() {
     this.columns = createGridColumn(this.actionTemplate, this.statusTemplate);
     this.contextMenuConfig = {

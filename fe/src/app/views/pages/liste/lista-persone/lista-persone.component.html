@@ -1,0 +1,9 @@
+<app-datagrid
+  [columns]="columns"
+  [rows]="persone()"
+  [searchConfig]="searchConfig"
+  [paginationConfig]="paginationConfig"
+  [loading]="datagridLoading()"
+  [initialState]="gridState()"
+  (stateChange)="loadData($event)"
+/>

@@ -27,6 +27,12 @@ export class ListeHomeComponent {
       icon: cilBuilding
     },
     {
+      title: 'Persone',
+      description: 'Gestione persone',
+      route: '/liste/persone',
+      icon: cilUser
+    },
+    {
       title: 'Utenti',
       description: 'Gestione utenti',
       route: '/liste/utenti',

@@ -35,6 +35,15 @@ export const routes: Routes = [
         }
       },
       {
+        path: 'persone',
+        loadComponent: () =>
+          import('./lista-persone/lista-persone.component')
+            .then(m => m.ListaPersoneComponent),
+        data: {
+          title: $localize`Persone`
+        }
+      },
+      {
         path: 'utenti',
         loadComponent: () =>
           import('./lista-utenti/lista-utenti.component')

@@ -7,36 +7,32 @@ export function createSearchConfig(): DataGridSearchConfig {
   return {
     enabled: true,
     fields: [
-      { field: 'codSede', label: 'Codice', type: 'text' },
-      { field: 'descrizione', label: 'Descrizione', type: 'text',size: '4', operator: 'contains' },
+      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains' },
+      { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains' },
+      { field: 'codFiscale', label: 'Codice Fiscale', size: "3", type: 'text', operator: 'contains' },
     ]
   };
 
 }
 
-export const SEDI_SORTING_CONFIG: DataGridSortingConfig = {
-  enabled: false,
-  defaultSorting: {
-    field: 'idTessera',
-    direction: 'desc',
-  },
-}
-
 export function createGridColumn(): DataGridColumn<Sede>[] {
   return [
     {
-      field: 'codSede',
-      header: 'Codice',
+      field: 'nome',
+      header: 'Nome',
     },
     {
-      field: 'descrizione',
-      header: 'Descrizione',
-    }
+      field: 'cognome',
+      header: 'Cognome',
+    },
+    {
+      field: 'codFiscale',
+      header: 'Codice Fiscale',
+    },
   ];
 }
 
-
-export const SEDI_URL_STATE_CONFIG = {
+export const PERSONE_URL_STATE_CONFIG = {
   enabled: true,
 };
 
