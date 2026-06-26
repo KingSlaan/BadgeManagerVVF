@@ -115,7 +115,7 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
         String sql = "UPDATE tesseradipend " +
                      "SET DATAORAFINEASSEGNAZIONE = ? " +
                      "WHERE IDTESSERA = ? " +
-                     "AND DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
+                     "AND DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
                      "AND DATAORAFINEASSEGNAZIONE > ?"; // <-- Il nuovo vincolo SQL
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
