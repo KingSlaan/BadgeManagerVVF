@@ -5,6 +5,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DAO {
 
     private Connection conn;
@@ -82,6 +86,73 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
             ps.setString(1, codFiscale);
             return ps.executeUpdate() == 1;
         }
+    }
+    
+    public List<AnagraficaCodFiscale> getAnagraficheByFilters(JsonArray filters, int limit) {
+        List<AnagraficaCodFiscale> results = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+        
+        // Usiamo 1=1 per concatenare facilmente gli AND
+        StringBuilder where = new StringBuilder(" WHERE 1=1 ");
+
+        if (filters != null) {
+            for (JsonElement el : filters) {
+                JsonObject filter = el.getAsJsonObject();
+                
+                String field = filter.has("field") ? filter.get("field").getAsString() : "";
+                String operator = filter.has("operator") ? filter.get("operator").getAsString() : "";
+                String value = filter.has("value") ? filter.get("value").getAsString() : "";
+
+                // Mappatura campi JSON sulle colonne DB
+                String dbColumn = "";
+                switch (field) {
+                    case "codFiscale": dbColumn = "CODFISCALE"; break;
+                    case "nome": dbColumn = "NOME"; break;
+                    case "cognome": dbColumn = "COGNOME"; break;
+                    default: continue; // ignora filtri non riconosciuti
+                }
+
+                if ("contains".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") LIKE ? ");
+                    params.add("%" + value.toUpperCase() + "%");
+                } else if ("equals".equalsIgnoreCase(operator)) {
+                    where.append(" AND UPPER(").append(dbColumn).append(") = ? ");
+                    params.add(value.toUpperCase());
+                }
+            }
+        }
+
+        // Aggiungiamo il limite dei record (ROWNUM per Oracle DB)
+        where.append(" AND ROWNUM <= ? ");
+        params.add(limit);
+
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM anagrafica_codfiscale" + where.toString() + " ORDER BY COGNOME, NOME";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            int i = 1;
+            for (Object p : params) {
+                if (p instanceof Integer) {
+                    ps.setInt(i++, (Integer) p);
+                } else {
+                    ps.setString(i++, p.toString());
+                }
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AnagraficaCodFiscale anagrafica = new AnagraficaCodFiscale(
+                        rs.getString("CODFISCALE"), 
+                        rs.getString("NOME"), 
+                        rs.getString("COGNOME")
+                    );
+                    results.add(anagrafica);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Errore getAnagraficheByFilters: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return results;
     }
 
     @Override

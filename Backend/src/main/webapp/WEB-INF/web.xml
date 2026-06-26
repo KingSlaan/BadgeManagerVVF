@@ -99,4 +99,14 @@
     <servlet-name>RicercaTessereDaExcelServlet</servlet-name>
     <url-pattern>/RicercaTessereDaExcelServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>GetAnagraficheServlet</display-name>
+    <servlet-name>GetAnagraficheServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.GetAnagraficheServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GetAnagraficheServlet</servlet-name>
+    <url-pattern>/GetAnagraficheServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
