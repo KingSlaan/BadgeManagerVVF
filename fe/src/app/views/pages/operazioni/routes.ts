@@ -11,7 +11,10 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./operazioni-home/operazioni-home.component')
-            .then(m => m.OperazioniHomeComponent)
+            .then(m => m.OperazioniHomeComponent),
+        data: {
+          title: $localize``
+        }
       },
       {
         path: 'assegnazione',

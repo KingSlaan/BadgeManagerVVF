@@ -8,6 +8,7 @@ import { TessereService } from 'src/app/services/tessere.service';
 import { cilX } from '@coreui/icons';
 import { Dipendente } from 'src/interfaces/tessere';
 import { IconDirective } from '@coreui/icons-angular';
+import { DATAGRID_CONSTANTS, DATAGRID_CONSTANTS_NO_SERVER } from 'src/constants/datagrid.constants';
 
 @Component({
   selector: 'app-review-import-rows',
@@ -43,6 +44,8 @@ export class ReviewImportRowsComponent implements OnInit {
   });
 
   columns: DataGridColumn[] = [];
+
+  paginationConfig = DATAGRID_CONSTANTS_NO_SERVER;
 
   ngOnInit() {
     this.columns = [

@@ -1,87 +1,121 @@
 <c-card>
   <c-card-body>
     <form cForm [formGroup]="form" [gutter]="3" cRow>
-      <c-col xs="6" lg="6">
-        <label cLabel class="visually-hidden" for="oggetto"> Oggetto </label>
-        <input
-          cFormControl
-          id="oggetto"
-          formControlName="oggetto"
-          placeholder="Oggetto"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="6" lg="6">
-        <label cLabel class="visually-hidden" for="onumProtocolloggetto">
-          # Protocollo
+      <c-col xs="12">
+        <label cLabel class="visually-hidden" for="tipoStampa">
+          Tipo Stampa
         </label>
-        <input
+
+        <select
+          cSelect
           cFormControl
-          id="numProtocollo"
-          formControlName="numProtocollo"
-          placeholder="# Protocollo"
-          type="text"
-        />
-      </c-col>
-      <c-col xs="4" lg="4">
-        <label cLabel class="visually-hidden" for="dataProtocollo">
-          Data Protocollo
-        </label>
-        <app-datepicker
-          cFormControl
-          id="dataProtocollo"
-          formControlName="dataProtocollo"
-          placeholder="Data Protocollo"
-          min="01/01/1900 00:00:00"
-          max="31/12/9999 00:00:00"
-          [showTodayButton]="true"
-          todayButtonLabel="Oggi"
-          [showTime]="false"
-        />
-      </c-col>
-      <c-col xs="8" lg="8">
-        <label cLabel class="visually-hidden" for="sede"> Sede </label>
-        <app-autocomplete-select
-          formControlName="sede"
-          [options]="sediOptions()"
-          placeholder="Seleziona Sede"
-        />
-      </c-col>
-      <c-col xs="9" lg="9">
-        <label cLabel class="visually-hidden" for="tipoTemplate">
-          Utenti Selezionati
-        </label>
-        <app-autocomplete-select
-          formControlName="utenti"
-          placeholder="Seleziona Utenti"
-          [multiple]="true"
-          [minSearchLength]="0"
-          [debounceMs]="500"
-          [serverSearchFn]="searchTessere"
-          [loadOnOpen]="true"
-          [itemTemplate]="utenteItem"
-          [selectedItemTemplate]="utenteChip"
-          [optionKeyFn]="utenteKey"
-        />
-      </c-col>
-      <c-col xs="3" lg="3">
-        <label
-          cButton
-          color="primary"
-          class="mb-0"
-          variant="ghost"
-          shape="rounded-pill"
+          id="tipoStampa"
+          placeholder="Tipo Stampa"
+          formControlName="tipoStampa"
         >
-          <svg [cIcon]="icons.cilCloudUpload" title="Ricerca"></svg>
-          Seleziona file XLSX
-          <input
-            type="file"
-            accept=".xlsx"
-            hidden
-            (change)="onFileSelected($event)"
-          />
-        </label>
+          <option value="territorio">Territorio</option>
+          <option value="centrale">Centrale</option>
+        </select>
       </c-col>
+
+      @if (form.controls.tipoStampa.value) {
+        <c-col xs="6" lg="6">
+          <label cLabel class="visually-hidden" for="oggetto"> Oggetto </label>
+          <input
+            cFormControl
+            id="oggetto"
+            formControlName="oggetto"
+            placeholder="Oggetto"
+            type="text"
+          />
+        </c-col>
+        <c-col xs="6" lg="6">
+          <label cLabel class="visually-hidden" for="onumProtocolloggetto">
+            # Protocollo
+          </label>
+          <input
+            cFormControl
+            id="numProtocollo"
+            formControlName="numProtocollo"
+            placeholder="# Protocollo"
+            type="text"
+          />
+        </c-col>
+        <c-col xs="4" lg="4">
+          <label cLabel class="visually-hidden" for="dataProtocollo">
+            Data Protocollo
+          </label>
+          <app-datepicker
+            cFormControl
+            id="dataProtocollo"
+            formControlName="dataProtocollo"
+            placeholder="Data Protocollo"
+            min="01/01/1900 00:00:00"
+            max="31/12/9999 00:00:00"
+            [showTodayButton]="true"
+            todayButtonLabel="Oggi"
+            [showTime]="false"
+          />
+        </c-col>
+        <c-col xs="8" lg="8">
+          <label cLabel class="visually-hidden" for="sede"> Sede </label>
+          <app-autocomplete-select
+            formControlName="sede"
+            [options]="sediOptions()"
+            placeholder="Seleziona Sede"
+          />
+        </c-col>
+        @if (form.controls.tipoStampa.value === "centrale") {
+          <c-col xs="9" lg="9">
+            <label cLabel class="visually-hidden" for="tipoTemplate">
+              Utenti Selezionati
+            </label>
+            <app-autocomplete-select
+              formControlName="utenti"
+              placeholder="Seleziona Utenti"
+              [multiple]="true"
+              [minSearchLength]="0"
+              [debounceMs]="500"
+              [serverSearchFn]="searchTessere"
+              [loadOnOpen]="true"
+              [itemTemplate]="utenteItem"
+              [selectedItemTemplate]="utenteChip"
+              [optionKeyFn]="utenteKey"
+            />
+          </c-col>
+          <c-col xs="3" lg="3">
+            <label
+              cButton
+              color="primary"
+              class="mb-0"
+              variant="ghost"
+              shape="rounded-pill"
+            >
+              <svg [cIcon]="icons.cilCloudUpload" title="Ricerca"></svg>
+              Seleziona file XLSX
+              <input
+                type="file"
+                accept=".xlsx"
+                hidden
+                (change)="onFileSelected($event)"
+              />
+            </label>
+          </c-col>
+        }
+        @if (form.controls.tipoStampa.value === "territorio") {
+          <c-col xs="3" lg="3">
+            <input
+              cFormControl
+              formControlName="qntBadge"
+              id="qntBadge"
+              placeholder="QUantità Badge"
+              type="number"
+              min="0"
+              (keydown)="preventNegative($event)"
+            />
+          </c-col>
+        }
+      }
     </form>
   </c-card-body>
   <c-card-footer>
@@ -91,6 +125,7 @@
         color="danger"
         type="submit"
         (click)="creaFileRispostaPDF()"
+        [disabled]="form.invalid"
       >
         Crea Risposta PDF
       </button>
@@ -100,6 +135,7 @@
         type="submit"
         [disabled]="false"
         (click)="creaFileRispostaWord()"
+        [disabled]="form.invalid"
       >
         Crea Risposta Word
       </button>

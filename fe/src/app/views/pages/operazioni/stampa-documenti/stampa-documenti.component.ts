@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, GutterDirective, RowDirective } from '@coreui/angular';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowDirective } from '@coreui/angular';
 import { DatepickerComponent } from '../../../../../components/datepicker/datepicker.component';
 import { SediStateService } from '../../../../../states/sedi-state.service';
 import { AutocompleteOption, AutocompleteSelectComponent } from '../../../../../components/autocomplete-select/autocomplete-select.component';
@@ -29,7 +29,8 @@ import { cilCloudUpload } from '@coreui/icons';
     FormsModule,
     DatepickerComponent,
     AutocompleteSelectComponent,
-    IconDirective
+    IconDirective,
+    FormSelectDirective
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
@@ -46,15 +47,52 @@ export class StampaDocumentiComponent implements OnInit {
   sediOptions = this.sediState.sediOptionsValue;
 
   form = new FormGroup({
-    oggetto: new FormControl(''),
-    numProtocollo: new FormControl(''),
-    dataProtocollo: new FormControl(''),
-    sede: new FormControl(''),
+    tipoStampa: new FormControl('', [Validators.required]),
+    oggetto: new FormControl('', [Validators.required]),
+    numProtocollo: new FormControl('', [Validators.required]),
+    dataProtocollo: new FormControl('', [Validators.required]),
+    sede: new FormControl('', [Validators.required]),
     utenti: new FormControl<AutocompleteOption[]>([]),
+    qntBadge: new FormControl<number | null>(null),
   });
 
   ngOnInit(): void {
     this.sediState.loadSedi();
+
+    this.updateValidatorsByTipoStampa(this.form.controls.tipoStampa.value);
+
+    this.form.controls.tipoStampa.valueChanges.subscribe(tipoStampa => {
+      this.updateValidatorsByTipoStampa(tipoStampa);
+    });
+  }
+
+  private updateValidatorsByTipoStampa(tipoStampa: string | null): void {
+    const utenti = this.form.controls.utenti;
+    const qntBadge = this.form.controls.qntBadge;
+
+    utenti.clearValidators();
+    qntBadge.clearValidators();
+
+    if (tipoStampa === 'centrale') {
+      utenti.setValidators([
+        Validators.required,
+        Validators.minLength(1)
+      ]);
+
+      qntBadge.setValue(0, { emitEvent: false });
+    }
+
+    if (tipoStampa === 'territorio') {
+      qntBadge.setValidators([
+        Validators.required,
+        Validators.min(1)
+      ]);
+
+      utenti.setValue([], { emitEvent: false });
+    }
+
+    utenti.updateValueAndValidity({ emitEvent: false });
+    qntBadge.updateValueAndValidity({ emitEvent: false });
   }
 
   utenteKey = (option: AutocompleteOption): string => {
@@ -78,6 +116,14 @@ export class StampaDocumentiComponent implements OnInit {
         this.toastService.success('File elaborato con successo');
       }
     });
+  }
+
+  preventNegative(event: KeyboardEvent): void {
+    const blocked = ['-', '+', 'e', 'E'];
+
+    if (blocked.includes(event.key)) {
+      event.preventDefault();
+    }
   }
 
   createBodyForDownload() {

@@ -144,5 +144,207 @@
     "type": "quote",
     "title": "Frase del giorno",
     "text": "Ogni miglioramento inizia con un piccolo passo."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Puoi filtrare i risultati utilizzando più criteri contemporaneamente."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Le intestazioni delle colonne permettono di ordinare rapidamente i dati."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Controlla sempre il numero totale dei risultati dopo una ricerca."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "I pulsanti rapidi della dashboard ti portano direttamente alle liste filtrate."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Riduci il menu laterale per avere più spazio durante il lavoro."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Controlla sempre la sede associata prima di confermare un'assegnazione."
+  },
+  {
+    "type": "tip",
+    "title": "Suggerimento del giorno",
+    "text": "Una ricerca più specifica restituisce risultati più velocemente."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "La precisione dei dati è il primo passo per un servizio efficiente."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Verifica sempre il codice interno prima della stampa."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Un controllo in più oggi evita problemi domani."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "Aggiorna tempestivamente le informazioni quando una tessera cambia stato."
+  },
+  {
+    "type": "safety",
+    "title": "Promemoria sicurezza",
+    "text": "La qualità dei dati migliora il lavoro di tutti."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "Professionalità, coraggio e spirito di servizio guidano ogni intervento."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "Ogni intervento richiede preparazione, coordinamento e fiducia reciproca."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "La formazione continua è uno dei pilastri del Corpo Nazionale."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "La sicurezza dei cittadini inizia dalla preparazione degli operatori."
+  },
+  {
+    "type": "firefighter",
+    "title": "Vigili del Fuoco",
+    "text": "Ogni tessera rappresenta una persona al servizio della collettività."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "Il Corpo Nazionale opera su tutto il territorio italiano 24 ore su 24."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "Il soccorso tecnico urgente è una delle principali missioni del Corpo."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "La prevenzione incendi rappresenta una parte fondamentale dell'attività dei Vigili del Fuoco."
+  },
+  {
+    "type": "history",
+    "title": "Curiosità storica",
+    "text": "Le sedi operative collaborano costantemente per garantire il miglior servizio possibile."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "Le tessere sostitutive permettono di garantire continuità operativa."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "Le ricerche possono essere condivise semplicemente copiando l'URL."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "L'applicazione è ottimizzata anche per il tema scuro."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "Puoi ordinare quasi tutte le colonne della tabella."
+  },
+  {
+    "type": "curiosity",
+    "title": "Lo sapevi?",
+    "text": "La dashboard mostra una panoramica aggiornata dello stato delle tessere."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "La disciplina è il ponte tra gli obiettivi e i risultati.",
+    "author": "Jim Rohn"
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Il miglior modo per prevedere il futuro è costruirlo.",
+    "author": "Peter Drucker"
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Chi smette di imparare smette di crescere."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "L'organizzazione trasforma il lavoro in efficienza."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Il dettaglio fa la differenza."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Ogni giorno è un'opportunità per migliorare."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "L'unico limite è quello che scegliamo di avere."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Il lavoro ben fatto è la migliore presentazione."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "La costanza supera il talento quando il talento non è costante."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Le grandi imprese sono fatte di piccoli gesti ripetuti nel tempo."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Ogni squadra è forte quanto la fiducia tra i suoi membri."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "L'esempio è il modo migliore per ispirare gli altri."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "La preparazione riduce l'imprevisto."
+  },
+  {
+    "type": "quote",
+    "title": "Frase del giorno",
+    "text": "Ogni risultato nasce da una buona organizzazione."
   }
 ]

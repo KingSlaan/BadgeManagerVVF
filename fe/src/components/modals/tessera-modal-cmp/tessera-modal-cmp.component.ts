@@ -10,7 +10,9 @@ import {
   ModalHeaderComponent,
   ModalTitleDirective,
 
-  FormControlDirective, FormDirective, FormLabelDirective,
+  FormControlDirective,
+  FormDirective,
+  FormLabelDirective,
   ColComponent,
   GutterDirective,
   RowDirective,

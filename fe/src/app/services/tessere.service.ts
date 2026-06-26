@@ -51,8 +51,8 @@ export class TessereService {
     return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessera/${id}`, tessera);
   }
 
-  invalidaMassivo(body: TessereMassiva): any {
-    return this.http.put<Tessera>(`${this.apiUrl}/invalidaTessereMassivo`, body);
+  modificaMassivo(body: TessereMassiva): any {
+    return this.http.put<Tessera>(`${this.apiUrl}/modificaTessereMassivo`, body);
   }
 
   stampaTessere(dipendentiSelezionati: any[], formato: string): Observable<HttpResponse<Blob>> {
