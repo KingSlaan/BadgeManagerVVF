@@ -73,22 +73,31 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     if (!statiRichiesti.isEmpty()) {
                         List<String> sqlConditions = new ArrayList<>();
                         for (String stato : statiRichiesti) {
-                            switch (stato) {
+                        	switch (stato) {
 	                            case "indisponibile":
-	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP)");
+	                                // 1. Logica isIndisponibile()
+	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP)");
 	                                break;
+	                                
 	                            case "occupata":
-	                                // Aggiunto SYSTIMESTAMP al posto di CURRENT_TIMESTAMP e TRIM sul codice fiscale
-	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA > SYSTIMESTAMP AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP AND TRIM(tp.CODFISDIP) IS NOT NULL)");
+	                                // 2. Logica isOccupata() -> Non deve essere indisponibile, e deve avere un'assegnazione attiva
+	                                sqlConditions.add("((t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
+	                                                  "AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+	                                                  "AND TRIM(tp.CODFISDIP) IS NOT NULL)");
 	                                break;
+	                                
 	                            case "libera":
-	                                // Aggiunto SYSTIMESTAMP al posto di CURRENT_TIMESTAMP e TRIM sul codice fiscale
-	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA > SYSTIMESTAMP AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
+	                                // 3. Logica isLibera() -> Non indisponibile, non occupata, ma con data indisponibilità valorizzata nel futuro
+	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
+	                                                  "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
 	                                break;
+	                                
 	                            case "nd":
-	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL)");
+	                                // 4. Paracadute "nd" -> Indisponibilità NULL e nessuna assegnazione attiva
+	                                sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL " +
+	                                                  "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
 	                                break;
-                            }
+	                        }
                         }
                         
                         // Uniamo tutte le condizioni di stato con un OR, racchiudendole tra parentesi 
@@ -413,13 +422,23 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
          */
         String sql = "SELECT " +
                 "  COUNT(t.IDTESSERA) AS totali, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-                "            AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+                
+                // 1. INDISPONIBILI
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
+                
+                // 2. OCCUPATE
+                "  SUM(CASE WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
+                "            AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
                 "            AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 1 ELSE 0 END) AS occupate, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
+                
+                // 3. LIBERE
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
                 "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL THEN 1 ELSE 0 END) AS nd " +
+                
+                // 4. NON DEFINITE (ND)
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL " +
+                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS nd " +
+                
                 "FROM tessera t " +
                 "LEFT JOIN ( " +
                 "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
