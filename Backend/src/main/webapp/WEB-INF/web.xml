@@ -89,4 +89,14 @@
     <servlet-name>AssegnaTessereMassivoServlet</servlet-name>
     <url-pattern>/AssegnaTessereMassivoServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>RicercaTessereDaExcelServlet</display-name>
+    <servlet-name>RicercaTessereDaExcelServlet</servlet-name>
+    <servlet-class>vvf.ufficioIV.applicativobadge.servlets.RicercaTessereDaExcelServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RicercaTessereDaExcelServlet</servlet-name>
+    <url-pattern>/RicercaTessereDaExcelServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
