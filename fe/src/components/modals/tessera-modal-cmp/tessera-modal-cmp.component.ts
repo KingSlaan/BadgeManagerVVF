@@ -93,10 +93,6 @@ export class TesseraModalCmpComponent {
     this.applyModeRules();
   }
 
-  debug() {
-    console.log("formTessere",this.formTessera)
-  }
-
   private applyModeRules(): void {
     const disabledFieldsByMode: Record<string, string[]> = {
       disabled: [
