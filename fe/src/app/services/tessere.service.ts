@@ -84,6 +84,13 @@ export class TessereService {
     return this.http.post<ApiResponse<Dipendente[]>>(`${this.apiUrl}/validaAnagraficaMassiva`, formData);
   }
 
+  importTessereExcel(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<ApiResponse<Tessera[]>>(`${this.apiUrl}/ricercaTessereDaExcel`, formData);
+  }
+
   proponiAssegnazioni(body: AssegnazioneBody) {
     return this.http.post<ApiResponse<Tessera[]>>(`${this.apiUrl}/proponiAssegnazioniMassive`, body);
   }
