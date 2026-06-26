@@ -74,7 +74,7 @@ public class TesseraDecodeHexDAOJDBCImpl implements TesseraDecodeHexDAO {
     @Override
     public Map<String, String> getMappaValoriHex() {
         Map<String, String> mappa = new HashMap<>();
-        String sql = "SELECT VALORE, VALORE_HEX FROM T_VALORI_HEX_IDTESSERA1";
+        String sql = "SELECT VALORE, VALORE_HEX FROM T_VALORI_HEX_IDTESSERA";
         
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
