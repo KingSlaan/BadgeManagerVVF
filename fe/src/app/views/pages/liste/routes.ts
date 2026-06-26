@@ -11,7 +11,10 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./liste-home/liste-home.component')
-            .then(m => m.ListeHomeComponent)
+            .then(m => m.ListeHomeComponent),
+        data: {
+          title: $localize``
+        }
       },
       {
         path: 'sedi',

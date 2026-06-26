@@ -126,11 +126,7 @@ export class TesseraUpdateMultiploComponent {
       return;
     }
 
-    // CAMBIA SEDE MASSIVO
-
-    // CAMBIA VALIDITA MASSIVO
-
-    this.tessereService.invalidaMassivo(body).subscribe({
+    this.tessereService.modificaMassivo(body).subscribe({
       next: (data: any) => {
         this.toast.success('Update massivo eseguito correttamente')
         this.saved.emit();

@@ -11,6 +11,7 @@ import { ApplicaAssegnazioneBody, Dipendente } from 'src/interfaces/tessere';
 import { finalize } from 'rxjs';
 import { TessereService } from 'src/app/services/tessere.service';
 import { DatepickerComponent } from '@docs-components/datepicker/datepicker.component';
+import { DATAGRID_CONSTANTS_NO_SERVER } from 'src/constants/datagrid.constants';
 
 @Component({
   selector: 'app-review-assegnazione-tessere',
@@ -48,6 +49,8 @@ export class ReviewAssegnazioneTessereComponent {
     { field: 'cognome', header: 'Cognome' },
     { field: 'idTessera', header: 'ID Tessera Proposta' },
   ];
+
+  paginationConfig = DATAGRID_CONSTANTS_NO_SERVER;
 
   confermaReview(): void {
 

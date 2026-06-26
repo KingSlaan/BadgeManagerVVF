@@ -52,6 +52,7 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
   optionKeyFn = input<(option: AutocompleteOption) => any>(
     option => option.value
   );
+  valueMode = input<'value' | 'option'>('option');
 
   search = signal('');
   selectedValue = signal<any>(null);
@@ -100,12 +101,19 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
 
   writeValue(value: any): void {
     if (this.multiple()) {
-      const options = Array.isArray(value) ? value : [];
+      const values = Array.isArray(value) ? value : [];
 
-      this.selectedOptions.set(options);
-      this.selectedValues.set(options.map(option => option.value));
+      const selectedOptions = values.map(item => {
+        if (item && typeof item === 'object' && 'value' in item) {
+          return item;
+        }
+
+        return this.getAllOptions().find(option => option.value === item);
+      }).filter(Boolean) as AutocompleteOption[];
+
+      this.selectedOptions.set(selectedOptions);
+      this.selectedValues.set(selectedOptions.map(option => option.value));
       this.search.set('');
-
       return;
     }
 
@@ -141,7 +149,11 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
       this.selectedOptions.set(nextOptions);
       this.selectedValues.set(nextOptions.map(opt => opt.value));
 
-      this.onChange(nextOptions);
+      this.onChange(
+        this.valueMode() === 'value'
+          ? nextOptions.map(opt => opt.value)
+          : nextOptions
+      );
 
       this.search.set('');
       this.isOpen.set(true);
@@ -166,7 +178,11 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
     const nextValues = nextOptions.map(opt => opt.value);
     this.selectedValues.set(nextValues);
 
-    this.onChange(nextOptions);
+    this.onChange(
+      this.valueMode() === 'value'
+        ? nextOptions.map(opt => opt.value)
+        : nextOptions
+    );
   }
 
   getAllOptions(): AutocompleteOption[] {

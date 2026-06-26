@@ -1,6 +1,8 @@
 .stepper-header {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 1rem;
   width: 100%;
   margin-bottom: 1.5rem;
 }
@@ -17,7 +19,8 @@
 
   cursor: pointer;
 
-  flex-shrink: 0;
+  width: 100%;
+  flex: 1;
 }
 
 .stepper-step.disabled {
@@ -73,9 +76,10 @@
 
 .stepper-line {
   flex: 1;
+  min-width: 24px;
   height: 2px;
   background: var(--cui-border-color);
-  margin: 0 1rem;
+  margin: 0 .75rem;
 }
 
 .stepper-content {
@@ -91,12 +95,13 @@
 }
 
 .stepper-item {
-  flex: 1;
+  flex: 1 1 250px;
+  min-width: 250px;
   display: flex;
   align-items: center;
 
   &:last-child {
-    flex: 0 0 auto;
+    flex: 1 1 250px;
   }
 }
 
@@ -106,4 +111,19 @@
 
 .stepper-footer.finish {
   justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .stepper-header {
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  .stepper-item {
+    min-width: 100%;
+  }
+
+  .stepper-line {
+    display: none;
+  }
 }
