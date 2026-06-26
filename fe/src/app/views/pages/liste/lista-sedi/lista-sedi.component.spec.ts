@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListaSediComponent } from './lista-sedi.component';
+import { provideRouter } from '@angular/router';
 
 describe('ListaSediComponent', () => {
   let component: ListaSediComponent;
@@ -8,9 +9,12 @@ describe('ListaSediComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListaSediComponent]
+      imports: [ListaSediComponent],
+      providers: [
+        provideRouter([])
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ListaSediComponent);
     component = fixture.componentInstance;

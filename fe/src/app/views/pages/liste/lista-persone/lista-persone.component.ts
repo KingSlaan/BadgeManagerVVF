@@ -50,7 +50,7 @@ export class ListaPersoneComponent {
   }
 
   loadData(state: DataGridState) {
-        this.datagridLoading.set(true);
+    this.datagridLoading.set(true);
     this.gridState.set(state);
 
     this.updateUrlFromState(state);
@@ -61,8 +61,13 @@ export class ListaPersoneComponent {
 
         this.paginationConfig = {
           ...this.paginationConfig,
-          ...data.pagination,
+          pageSize: 100,
+          totalItems: data.data.length,
         };
+        // this.paginationConfig = {
+        //   ...this.paginationConfig,
+        //   ...data.pagination,
+        // };
 
         this.datagridLoading.set(false);
       },
