@@ -50,19 +50,24 @@ export class ListaPersoneComponent {
   }
 
   loadData(state: DataGridState) {
-        this.datagridLoading.set(true);
+    this.datagridLoading.set(true);
     this.gridState.set(state);
 
     this.updateUrlFromState(state);
 
-    this.personeService.getSedi(state).subscribe({
+    this.personeService.getAnagrafiche(state).subscribe({
       next: (data: any) => {
         this.persone.set([...(data.data ?? [])]);
 
         this.paginationConfig = {
           ...this.paginationConfig,
-          ...data.pagination,
+          pageSize: 100,
+          totalItems: data.data.length,
         };
+        // this.paginationConfig = {
+        //   ...this.paginationConfig,
+        //   ...data.pagination,
+        // };
 
         this.datagridLoading.set(false);
       },

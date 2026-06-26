@@ -73,7 +73,7 @@ export class StampaDocumentiComponent implements OnInit {
     utenti.clearValidators();
     qntBadge.clearValidators();
 
-    if (tipoStampa === 'centrale') {
+    if (tipoStampa === 'nominativa') {
       utenti.setValidators([
         Validators.required,
         Validators.minLength(1)
@@ -82,7 +82,7 @@ export class StampaDocumentiComponent implements OnInit {
       qntBadge.setValue(0, { emitEvent: false });
     }
 
-    if (tipoStampa === 'territorio') {
+    if (tipoStampa === 'sostitutiva') {
       qntBadge.setValidators([
         Validators.required,
         Validators.min(1)
@@ -206,7 +206,12 @@ export class StampaDocumentiComponent implements OnInit {
           field: 'cognome',
           operator: 'contains',
           value: term || ''
-        }
+        },
+        {
+          field: 'stato',
+          operator: 'in',
+          value: ["occupata"]
+        },
       ],
       pagination: {
         page: 1,

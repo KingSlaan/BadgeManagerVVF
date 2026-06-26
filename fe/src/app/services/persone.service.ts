@@ -18,7 +18,7 @@ export class PersoneService {
   /**
    * GET - Get all tessere
    */
-  getSedi(body: DataGridState): Observable<ApiResponse<Persona[]>> {
-    return this.http.post<ApiResponse<Persona[]>>(`${this.apiUrl}/getDipartimentiServlet`,body);
+  getAnagrafiche(body: DataGridState): Observable<ApiResponse<Persona[]>> {
+    return this.http.post<ApiResponse<Persona[]>>(`${this.apiUrl}/getAnagraficheServlet`,body);
   }
 }
