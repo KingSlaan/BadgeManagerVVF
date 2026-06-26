@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { HomeMenuCard } from './../../../../../interfaces/home-menu-card';
 import { HomeMenuComponent } from './../../../../../components/home-menu/home-menu.component';
-import { cilBuilding, cilCreditCard, cilUser } from '@coreui/icons';
+import { cilBuilding, cilCreditCard, cilPeople, cilUser } from '@coreui/icons';
 
 @Component({
   selector: 'app-liste-home',
@@ -30,7 +30,7 @@ export class ListeHomeComponent {
       title: 'Persone',
       description: 'Gestione persone',
       route: '/liste/persone',
-      icon: cilUser
+      icon: cilPeople
     },
     {
       title: 'Utenti',

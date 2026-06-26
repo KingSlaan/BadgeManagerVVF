@@ -55,7 +55,7 @@ export class ListaPersoneComponent {
 
     this.updateUrlFromState(state);
 
-    this.personeService.getSedi(state).subscribe({
+    this.personeService.getAnagrafiche(state).subscribe({
       next: (data: any) => {
         this.persone.set([...(data.data ?? [])]);
 

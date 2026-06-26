@@ -13,8 +13,8 @@
           placeholder="Tipo Stampa"
           formControlName="tipoStampa"
         >
-          <option value="territorio">Territorio</option>
-          <option value="centrale">Centrale</option>
+          <option value="nominativa">Nominativa</option>
+          <option value="sostitutiva">Sostitutiva</option>
         </select>
       </c-col>
 
@@ -65,7 +65,7 @@
             placeholder="Seleziona Sede"
           />
         </c-col>
-        @if (form.controls.tipoStampa.value === "centrale") {
+        @if (form.controls.tipoStampa.value === "nominativa") {
           <c-col xs="9" lg="9">
             <label cLabel class="visually-hidden" for="tipoTemplate">
               Utenti Selezionati
@@ -102,7 +102,7 @@
             </label>
           </c-col>
         }
-        @if (form.controls.tipoStampa.value === "territorio") {
+        @if (form.controls.tipoStampa.value === "sostitutiva") {
           <c-col xs="3" lg="3">
             <input
               cFormControl
