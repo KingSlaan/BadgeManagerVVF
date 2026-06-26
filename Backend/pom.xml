@@ -3,7 +3,7 @@
   
   <groupId>ApplicativoBadgeVVF</groupId>
   <artifactId>ApplicativoBadgeVVF</artifactId>
-  <version>4.4.1</version>
+  <version>5.0.0</version>
   <packaging>war</packaging>
   
   <properties>
@@ -11,7 +11,7 @@
 	    <my.build.date>${maven.build.timestamp}</my.build.date> <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   		
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      	<app.codename>Nemesis</app.codename>
+      	<app.codename>Zeus</app.codename>
   </properties>
   
   <dependencies>
@@ -24,7 +24,7 @@
     <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
-        <version>4.1.2</version>
+        <version>5.0.0</version>
     </dependency>
 
     <dependency>

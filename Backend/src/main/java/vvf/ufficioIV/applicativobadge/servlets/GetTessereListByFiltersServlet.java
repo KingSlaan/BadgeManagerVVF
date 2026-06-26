@@ -108,6 +108,10 @@ public class GetTessereListByFiltersServlet extends HttpServlet {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Body della richiesta vuoto o mancante.");
             return;
         }
+        
+     // DEBUG: Verifica orario server applicativo in formato TIMESTAMP
+        System.out.println("[DEBUG Servlet] Orario Server App (Timestamp): " + 
+                           new java.sql.Timestamp(System.currentTimeMillis()));
 
         JsonObject requestObj;
         try {
