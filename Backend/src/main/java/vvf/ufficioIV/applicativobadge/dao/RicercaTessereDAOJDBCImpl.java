@@ -61,20 +61,20 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                         for (String stato : statiRichiesti) {
                             switch (stato) {
                                 case "indisponibile":
-                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP)");
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP)");
                                     break;
                                 case "occupata":
-                                    sqlConditions.add("((t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
-                                                      "AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+                                    sqlConditions.add("((t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP) " +
+                                                      "AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
                                                       "AND TRIM(tp.CODFISDIP) IS NOT NULL)");
                                     break;
                                 case "libera":
-                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
+                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
                                     break;
                                 case "nd":
                                     sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL " +
-                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
+                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
                                     break;
                             }
                         }
@@ -147,12 +147,12 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                "a.NOME, a.COGNOME, " +
                "CASE " +
-               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP THEN 'indisponibile' " +
-               "  WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
-               "       AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 'indisponibile' " +
+               "  WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP) " +
+               "       AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
                "       AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 'occupata' " +
-               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-               "       AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
+               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+               "       AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
                "  ELSE 'nd' " +
                "END AS STATO_CALCOLATO " +
                getFromClause();
@@ -239,12 +239,12 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                      "         td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                      "         a.NOME, a.COGNOME, " +
                      "         CASE " +
-                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP THEN 'indisponibile' " +
-                     "           WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
-                     "                AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 'indisponibile' " +
+                     "           WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP) " +
+                     "                AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
                      "                AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 'occupata' " +
-                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-                     "                AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
+                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+                     "                AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
                      "           ELSE 'nd' " +
                      "         END AS STATO_CALCOLATO " +
                      "  FROM tessera t " +
@@ -334,14 +334,14 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
 
         String sql = "SELECT " +
                 "  COUNT(t.IDTESSERA) AS totali, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSTIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
-                "  SUM(CASE WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSTIMESTAMP) " +
-                "            AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSTIMESTAMP " +
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= CURRENT_TIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
+                "  SUM(CASE WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP) " +
+                "            AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > CURRENT_TIMESTAMP " +
                 "            AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 1 ELSE 0 END) AS occupate, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSTIMESTAMP " +
-                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > CURRENT_TIMESTAMP " +
+                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
                 "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL " +
-                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS nd " +
+                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= CURRENT_TIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS nd " +
                 "FROM tessera t " +
                 "LEFT JOIN ( " +
                 "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +
