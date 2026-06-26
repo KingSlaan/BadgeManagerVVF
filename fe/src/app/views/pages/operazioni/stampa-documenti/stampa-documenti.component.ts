@@ -206,7 +206,12 @@ export class StampaDocumentiComponent implements OnInit {
           field: 'cognome',
           operator: 'contains',
           value: term || ''
-        }
+        },
+        {
+          field: 'stato',
+          operator: 'in',
+          value: ["occupata"]
+        },
       ],
       pagination: {
         page: 1,
