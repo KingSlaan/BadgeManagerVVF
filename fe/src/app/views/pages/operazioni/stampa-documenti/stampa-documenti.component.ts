@@ -105,7 +105,7 @@ export class StampaDocumentiComponent implements OnInit {
 
     if (!file) return;
 
-    this.tessereService.importExcel(file).subscribe({
+    this.tessereService.importTessereExcel(file).subscribe({
       next: rows => {
         const options = (rows.data ?? []).map((utente: any) =>
           this.toUtenteOption(utente)
