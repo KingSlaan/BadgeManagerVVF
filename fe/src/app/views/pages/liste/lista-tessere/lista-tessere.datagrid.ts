@@ -8,9 +8,9 @@ import {
   DataGridToolbarConfig,
 } from '../../../../../interfaces/datagrid';
 import { Tessera } from '../../../../../interfaces/tessere';
-import { cilAvTimer, cilBan, cilBuilding, cilCloudDownload, cilCloudUpload, cilPlus, cilPrint } from '@coreui/icons';
+import { cilAvTimer, cilBan, cilBuilding, cilPlus, cilPrint } from '@coreui/icons';
 import { AutocompleteOption } from '../../../../../components/autocomplete-select/autocomplete-select.component';
-import { TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
+import { TESSERE_STATUS_MESSAGES } from '../../../../../constants/tessere-status.constants';
 
 export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataGridSearchConfig {
   return {
@@ -72,7 +72,7 @@ export const TESSERE_SELECTION_SUMMARY_CONFIG = {
 };
 
 export const TESSERE_SORTING_CONFIG: DataGridSortingConfig = {
-  enabled: false,
+  enabled: true,
   defaultSorting: {
     field: 'idTessera',
     direction: 'desc',
@@ -151,6 +151,7 @@ export function createGridColumn(actionTemplate: TemplateRef<any>, statusTemplat
       field: 'idTessera',
       header: 'ID',
       width: '80px',
+      sortable: true,
     },
     {
       field: 'codTipoTessera',
@@ -167,20 +168,13 @@ export function createGridColumn(actionTemplate: TemplateRef<any>, statusTemplat
       render: (row: any) =>
         row.cognome ? `${row.cognome} ${row.nome} <br/> <small> <strong>${row.codiceFiscale} </strong></small>` : '',
     },
-    // {
-    //   field: 'codiceFiscale',
-    //   header: 'CF',
-    // },
     {
       field: 'codiceInterno',
       header: 'Codice Interno',
       render: (row: any) =>
         row.codiceInterno ? `${row.codiceInterno}` : '',
+      sortable: true,
     },
-    // {
-    //   field: 'dataOraIndisponibilita',
-    //   header: 'Data Indisponibilità',
-    // },
     {
       field: 'assegnazione',
       header: 'Assegnazione',

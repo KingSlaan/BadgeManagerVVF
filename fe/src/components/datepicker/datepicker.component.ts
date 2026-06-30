@@ -41,7 +41,7 @@ export class DatepickerComponent implements ControlValueAccessor {
   @Input() placeholder = 'Select a date';
   @Input() showTodayButton = false;
   @Input() showSpecificDateButton = false;
-  @Input() specificDateValue = '31/12/9999 00:00:00';
+  @Input() specificDateValue = '31/12/9999 23:59:59';
   @Input() todayButtonLabel = 'Today';
   @Input() specificDateButtonLabel = 'No end date';
   @Input() showTime = true;

@@ -27,7 +27,7 @@ export class OperazioniHomeComponent {
       icon: cilNoteAdd
     },
     {
-      title: 'Stampa Documenti',
+      title: 'Stampa Risposta',
       description: 'Stampa documenti di risposta',
       route: '/operazioni/stampa-documenti',
       icon: cilPrint

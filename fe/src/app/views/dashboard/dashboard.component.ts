@@ -1,11 +1,11 @@
 import { TESSERE_STATUS_MESSAGES } from '../../../constants/tessere-status.constants';
 import { DashboardService } from './../../services/dashboard.service';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
-import { cilLowVision, cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
+import { cilGroup, cilLowVision, cilTrash, cilUser, cilUserFollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { ChartData } from 'chart.js';
+import { ChartData, ChartOptions } from 'chart.js';
 import { Statistiche } from '../../../interfaces/statistiche';
 import { Router } from '@angular/router';
 
@@ -25,13 +25,71 @@ import { Router } from '@angular/router';
     ChartjsComponent
   ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   private statisticheService = inject(DashboardService);
   private router = inject(Router);
   public tessereStatusMsg = TESSERE_STATUS_MESSAGES;
 
-  icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow, cilLowVision };
+  icons = { cilTrash, cilUser, cilUserFollow, cilLowVision, cilGroup };
+
+  private themeObserver = new MutationObserver(() => {
+    this.updateChartTheme();
+  });
+
+  private cssVar(name: string): string {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+  }
+
+  private updateChartTheme(): void {
+    this.chartBarTessereData.update(chart => ({
+      ...chart,
+      datasets: chart.datasets.map(ds => ({
+        ...ds,
+        backgroundColor: this.cssVar('--app-primary'),
+        borderColor: this.cssVar('--app-primary'),
+        hoverBackgroundColor: this.cssVar('--app-info')
+      }))
+    }));
+
+    this.options = {
+      ...this.options,
+      plugins: {
+        legend: {
+          labels: {
+            color: this.cssVar('--app-text')
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: this.cssVar('--app-text')
+          },
+          grid: {
+            color: this.cssVar('--app-border')
+          }
+        },
+        y: {
+          ticks: {
+            color: this.cssVar('--app-text'),
+            autoSkip: false,
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            color: this.cssVar('--app-border')
+          },
+          afterFit(scale: any) {
+            scale.width = 300;
+          }
+        }
+      }
+    };
+  }
 
   get chartHeight(): number {
     const labels = this.chartBarTessereData().labels ?? [];
@@ -49,7 +107,7 @@ export class DashboardComponent implements OnInit {
       }
     });
 
-  options = {
+  options: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y' as const,
@@ -80,7 +138,8 @@ export class DashboardComponent implements OnInit {
     datasets: [
       {
         label: '# Badge',
-        backgroundColor: '#7C2D12',
+        backgroundColor: this.cssVar('--app-primary'),
+        borderColor: this.cssVar('--app-primary'),
         data: []
       }
     ],
@@ -103,17 +162,28 @@ export class DashboardComponent implements OnInit {
           datasets: [
             {
               label: '# Badge',
-              backgroundColor: '#7C2D12',
+              backgroundColor: this.cssVar('--app-primary'),
+              borderColor: this.cssVar('--app-primary'),
               data: data.data.values
             }
           ]
         });
+        this.updateChartTheme();
       },
       error: (err: any) => {
         console.error('Error loading statistiche sede', err);
       },
     });
 
+    this.themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-coreui-theme']
+    });
+
+  }
+
+  ngOnDestroy(): void {
+    this.themeObserver.disconnect();
   }
 
   calPerc(actual: number, tot: number): number {
