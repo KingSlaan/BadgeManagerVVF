@@ -99,7 +99,7 @@ export class DatepickerComponent implements ControlValueAccessor {
       return `${day}/${month}/${year}`;
     }
 
-    return `${day}/${month}/${year} ${timePart}:00`;
+    return `${day}/${month}/${year} ${timePart}`;
   }
 
   openPicker(input: HTMLInputElement): void {
@@ -151,8 +151,9 @@ export class DatepickerComponent implements ControlValueAccessor {
 
     const hours = this.pad(now.getHours());
     const minutes = this.pad(now.getMinutes());
+    const seconds = this.pad(now.getSeconds());
 
-    const displayValue = this.showTime ? `${day}/${month}/${year} ${hours}:${minutes}:00` : `${day}/${month}/${year}`;
+    const displayValue = this.showTime ? `${day}/${month}/${year} ${hours}:${minutes}:${seconds}` : `${day}/${month}/${year}`;
 
     this.value = this.toNativeDateTime(displayValue);
     this.onChange(displayValue);
@@ -190,7 +191,7 @@ export class DatepickerComponent implements ControlValueAccessor {
     const [datePart, timePart] = value.split('T');
     const [year, month, day] = datePart.split('-');
 
-    return `${day}/${month}/${year} ${timePart}:00`;
+    return `${day}/${month}/${year} ${timePart}`;
   }
 
   get computedPlaceholder(): string {
