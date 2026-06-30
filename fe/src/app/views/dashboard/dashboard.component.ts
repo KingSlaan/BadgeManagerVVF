@@ -3,7 +3,7 @@ import { DashboardService } from './../../services/dashboard.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
-import { cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
+import { cilLowVision, cilTrash, cilUser, cilUserFollow, cilUserUnfollow } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { ChartData } from 'chart.js';
 import { Statistiche } from '../../../interfaces/statistiche';
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   private router = inject(Router);
   public tessereStatusMsg = TESSERE_STATUS_MESSAGES;
 
-  icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow };
+  icons = { cilTrash, cilUser, cilUserFollow, cilUserUnfollow, cilLowVision };
 
   get chartHeight(): number {
     const labels = this.chartBarTessereData().labels ?? [];
