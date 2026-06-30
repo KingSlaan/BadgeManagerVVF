@@ -62,22 +62,22 @@ export class ListaUtentiComponent {
   loadData(request: DataGridState) {
     this.datagridLoading.set(true);
 
-    this.utentiService.getUtenti(request).subscribe({
-      next: (data: any) => {
-        this.utenti.set([...(data.data ?? [])]);
+    // this.utentiService.getUtenti(request).subscribe({
+    //   next: (data: any) => {
+    //     this.utenti.set([...(data.data ?? [])]);
 
-        this.paginationConfig = {
-          ...this.paginationConfig,
-          ...data.pagination,
-        };
+    //     this.paginationConfig = {
+    //       ...this.paginationConfig,
+    //       ...data.pagination,
+    //     };
 
         this.datagridLoading.set(false);
-      },
-      error: (err: any) => {
-        console.error('Error loading tessere', err);
-        this.datagridLoading.set(false);
-      },
-    });
+    //   },
+    //   error: (err: any) => {
+    //     console.error('Error loading tessere', err);
+    //     this.datagridLoading.set(false);
+    //   },
+    // });
 
   }
 

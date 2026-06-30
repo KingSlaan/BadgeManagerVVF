@@ -199,6 +199,8 @@ export class DataGridComponent<T = any> implements OnInit {
       }
     });
 
+    this.currentSorting = null;
+
     this.applyFilters();
   }
 
