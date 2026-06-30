@@ -185,8 +185,8 @@ public class GetTessereListByFiltersServlet extends HttpServlet {
                     String sortDir = sortObj.get("direction").getAsString().toLowerCase();
 
                     // Validazione restrittiva per sicurezza
-                    if (!sortField.equals("codInterno") && !sortField.equals("idTessera")) {
-                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Campo di ordinamento non valido. Valori ammessi: 'codInterno', 'idTessera'.");
+                    if (!sortField.equals("codiceInterno") && !sortField.equals("idTessera")) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Campo di ordinamento non valido. Valori ammessi: 'codiceInterno', 'idTessera'.");
                         return;
                     }
                     if (!sortDir.equals("asc") && !sortDir.equals("desc")) {
