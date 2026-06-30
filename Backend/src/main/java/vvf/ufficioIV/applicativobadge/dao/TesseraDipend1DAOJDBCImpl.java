@@ -113,10 +113,11 @@ public class TesseraDipend1DAOJDBCImpl implements TesseraDipend1DAO {
         // La logica è: aggiorno la data di fine per l'assegnazione attualmente attiva...
         // NUOVA REGOLA: ...ma SOLO SE la data di fine attuale è MAGGIORE della nuova data di indisponibilità!
         String sql = "UPDATE tesseradipend " +
-                     "SET DATAORAFINEASSEGNAZIONE = ? " +
-                     "WHERE IDTESSERA = ? " +
-                     "AND DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
-                     "AND DATAORAFINEASSEGNAZIONE > ?"; // <-- Il nuovo vincolo SQL
+                "SET DATAORAFINEASSEGNAZIONE = ? " +
+                "WHERE IDTESSERA = ? " +
+                "AND DATAORAFINEASSEGNAZIONE > SYSDATE " + // <-- FIX QUI
+                "AND DATAORAFINEASSEGNAZIONE > ?";
+
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(dataOraFine));

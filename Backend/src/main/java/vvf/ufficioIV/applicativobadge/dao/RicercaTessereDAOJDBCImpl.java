@@ -158,8 +158,9 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
                "    FROM tesseradipend" +
                ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-               "LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
-               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
+               //"LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
+               "LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
+
     }
 
     /*OLD
@@ -198,12 +199,33 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
     
 
     @Override
-    public List<TesseraFiltroDTO> getTessereByFilters(JsonArray filters, int page, int pageSize) {
+    public List<TesseraFiltroDTO> getTessereByFilters(JsonArray filters, int page, int pageSize, JsonObject sorting) {
         List<TesseraFiltroDTO> result = new ArrayList<>();
         List<Object> params = new ArrayList<>();
         
         String whereClause = buildWhereClause(filters, params);
-        String baseQuery = getBaseQuery() + whereClause + " ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC NULLS LAST, t.IDTESSERA DESC";
+        
+        // ----------------------------------------------------
+        // COSTRUZIONE DINAMICA DELL'ORDER BY (NUOVO BLOCCO)
+        // ----------------------------------------------------
+        String orderByClause = " ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC NULLS LAST, t.IDTESSERA DESC"; // Ordinamento di default
+        
+        if (sorting != null && sorting.has("field") && sorting.has("direction")) {
+            String field = sorting.get("field").getAsString();
+            String dir = sorting.get("direction").getAsString().toUpperCase(); // "ASC" o "DESC"
+            
+            if ("codInterno".equals(field)) {
+                // NULLS LAST evita che i campi null finiscano in cima
+                // Aggiungiamo t.IDTESSERA per garantire un ordine predicibile a parità di codice interno
+                orderByClause = " ORDER BY td.CODICEINTERNO " + dir + " NULLS LAST, t.IDTESSERA " + dir;
+            } else if ("idTessera".equals(field)) {
+                orderByClause = " ORDER BY t.IDTESSERA " + dir;
+            }
+        }
+        // ----------------------------------------------------
+
+        // MODIFICATO: aggiunto orderByClause dinamico
+        String baseQuery = getBaseQuery() + whereClause + orderByClause;
 
         int minRow = (page - 1) * pageSize + 1;
         int maxRow = page * pageSize;
@@ -247,7 +269,6 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     Timestamp tsInizio = rs.getTimestamp("DATAORAINIZIOASSEGNAZIONE");
                     Timestamp tsFine = rs.getTimestamp("DATAORAFINEASSEGNAZIONE");
                     
-                    // Usiamo java.sql.Timestamp attuale per il log del confronto
                     Timestamp tsAttuale = new Timestamp(System.currentTimeMillis());
 
                     System.out.println("[DEBUG] IDTessera: " + rs.getString("IDTESSERA") + 
@@ -291,25 +312,26 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
     @Override
     public TesseraFiltroDTO getTesseraById(String idTessera) {
         String sql = "SELECT * FROM (" +
-                     "  SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
-                     "         td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
-                     "         a.NOME, a.COGNOME, " +
-                     "         CASE " +
-                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= LOCALTIMESTAMP THEN 'indisponibile' " +
-                     "           WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP) " +
-                     "                AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
-                     "                AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 'occupata' " +
-                     "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP " +
-                     "                AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
-                     "           ELSE 'nd' " +
-                     "         END AS STATO_CALCOLATO " +
-                     "  FROM tessera t " +
-                     "  LEFT JOIN tesseradecode td ON t.IDTESSERA = td.IDTESSERA " +
-                     "  LEFT JOIN tesseradipend tp ON t.IDTESSERA = tp.IDTESSERA " +
-                     "  LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
-                     "  WHERE t.IDTESSERA = ? " +
-                     "  ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC " +
-                     ") WHERE ROWNUM = 1";
+                "  SELECT t.IDTESSERA, t.CODTIPOTESSERA, t.SEDE, t.DATAORAINDISPONIBILITA, " +
+                "         td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
+                "         a.NOME, a.COGNOME, " +
+                "         CASE " +
+                "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSDATE THEN 'indisponibile' " +
+                "           WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSDATE) " +
+                "                AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSDATE " +
+                "                AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 'occupata' " +
+                "           WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSDATE " +
+                "                AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSDATE OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
+                "           ELSE 'nd' " +
+                "         END AS STATO_CALCOLATO " +
+                "  FROM tessera t " +
+                "  LEFT JOIN tesseradecode td ON t.IDTESSERA = td.IDTESSERA " +
+                "  LEFT JOIN tesseradipend tp ON t.IDTESSERA = tp.IDTESSERA " +
+                "  LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
+                "  WHERE t.IDTESSERA = ? " +
+                "  ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC " +
+                ") WHERE ROWNUM = 1";
+
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTessera);
@@ -353,8 +375,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         String sql = "SELECT tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                      "       a.NOME, a.COGNOME " +
                      "FROM tesseradipend tp " +
-                     "LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
-                     "WHERE tp.IDTESSERA = ? " +
+                     //"LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
+                     "LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
                      "ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -388,16 +410,16 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         StatisticheTessereDTO stats = new StatisticheTessereDTO();
         StatisticheTessereDTO.Generale generale = new StatisticheTessereDTO.Generale();
 
-        String sql = "SELECT " +
+        String sql =  "SELECT " +
                 "  COUNT(t.IDTESSERA) AS totali, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= LOCALTIMESTAMP THEN 1 ELSE 0 END) AS indisponibili, " +
-                "  SUM(CASE WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP) " +
-                "            AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSDATE THEN 1 ELSE 0 END) AS indisponibili, " +
+                "  SUM(CASE WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > SYSDATE) " +
+                "            AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > SYSDATE " +
                 "            AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 1 ELSE 0 END) AS occupate, " +
-                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP " +
-                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
+                "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > SYSDATE " +
+                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSDATE OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS libere, " +
                 "  SUM(CASE WHEN t.DATAORAINDISPONIBILITA IS NULL " +
-                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS nd " +
+                "            AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= SYSDATE OR TRIM(tp.CODFISDIP) IS NULL) THEN 1 ELSE 0 END) AS nd " +
                 "FROM tessera t " +
                 "LEFT JOIN ( " +
                 "    SELECT IDTESSERA, CODFISDIP, DATAORAFINEASSEGNAZIONE, " +

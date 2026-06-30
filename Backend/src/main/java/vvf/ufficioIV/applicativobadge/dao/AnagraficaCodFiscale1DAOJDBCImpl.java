@@ -29,6 +29,7 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         this.conn = conn;
     }
 
+    /*disabilitato per passaggio produzione
     @Override
     public boolean insertAnagrafica(AnagraficaCodFiscale a) throws SQLException {
         String sql = "INSERT INTO anagrafica_codfiscale (CODFISCALE, NOME, COGNOME) VALUES (?, ?, ?)";
@@ -39,10 +40,13 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
             return ps.executeUpdate() == 1;
         }
     }
+    */
 
     @Override
     public AnagraficaCodFiscale getByCodFiscale(String codFiscale) {
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM anagrafica_codfiscale WHERE CODFISCALE = ?";
+        // MODIFICATO QUI: Nuova tabella
+        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
+    	String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codFiscale);
             try (ResultSet rs = ps.executeQuery()) {
@@ -63,7 +67,9 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
     @Override
     public List<AnagraficaCodFiscale> getAllAnagrafiche() {
         List<AnagraficaCodFiscale> list = new ArrayList<>();
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM anagrafica_codfiscale ORDER BY COGNOME, NOME";
+        // MODIFICATO QUI: Nuova tabella
+        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -79,6 +85,7 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         return list;
     }
 
+    /* DISABILITATO PER PASSAGGIO PRODUZIONE
     @Override
     public boolean deleteByCodFiscale(String codFiscale) throws SQLException {
         String sql = "DELETE FROM anagrafica_codfiscale WHERE CODFISCALE = ?";
@@ -87,6 +94,7 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
             return ps.executeUpdate() == 1;
         }
     }
+    */
     
     public List<AnagraficaCodFiscale> getAnagraficheByFilters(JsonArray filters, int limit) {
         List<AnagraficaCodFiscale> results = new ArrayList<>();
@@ -126,8 +134,10 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         where.append(" AND ROWNUM <= ? ");
         params.add(limit);
 
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM anagrafica_codfiscale" + where.toString() + " ORDER BY COGNOME, NOME";
+        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
 
+        
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
             for (Object p : params) {

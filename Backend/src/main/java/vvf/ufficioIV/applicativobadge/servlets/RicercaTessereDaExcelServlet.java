@@ -160,7 +160,7 @@ public class RicercaTessereDaExcelServlet extends HttpServlet {
                 filters.add(filter);
 
                 // Disabilito la paginazione passando Integer.MAX_VALUE come dimensione pagina
-                List<TesseraFiltroDTO> risultatiBatch = dao.getTessereByFilters(filters, 1, Integer.MAX_VALUE);
+                List<TesseraFiltroDTO> risultatiBatch = dao.getTessereByFilters(filters, 1, Integer.MAX_VALUE,null);
                 tuttiIRisultati.addAll(risultatiBatch);
             }
 
