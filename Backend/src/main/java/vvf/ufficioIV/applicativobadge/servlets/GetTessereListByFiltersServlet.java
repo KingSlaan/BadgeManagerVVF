@@ -170,6 +170,32 @@ public class GetTessereListByFiltersServlet extends HttpServlet {
                     return;
                 }
             }
+            
+         // 4.5 Estrazione e validazione Sorting (NUOVO)
+            JsonObject sorting = null;
+            if (requestObj.has("sorting") && !requestObj.get("sorting").isJsonNull()) {
+                if (!requestObj.get("sorting").isJsonObject()) {
+                    ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Il parametro 'sorting' deve essere un oggetto.");
+                    return;
+                }
+                
+                JsonObject sortObj = requestObj.getAsJsonObject("sorting");
+                if (sortObj.has("field") && sortObj.has("direction")) {
+                    String sortField = sortObj.get("field").getAsString();
+                    String sortDir = sortObj.get("direction").getAsString().toLowerCase();
+
+                    // Validazione restrittiva per sicurezza
+                    if (!sortField.equals("codInterno") && !sortField.equals("idTessera")) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Campo di ordinamento non valido. Valori ammessi: 'codInterno', 'idTessera'.");
+                        return;
+                    }
+                    if (!sortDir.equals("asc") && !sortDir.equals("desc")) {
+                        ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Direzione di ordinamento non valida. Valori ammessi: 'asc', 'desc'.");
+                        return;
+                    }
+                    sorting = sortObj;
+                }
+            }
 
             // 5. Caricamento credenziali DB
             Properties props = new Properties();
@@ -193,7 +219,8 @@ public class GetTessereListByFiltersServlet extends HttpServlet {
 
             try {
                 totalItems = dao.countTessereByFilters(filters);
-                dataList = dao.getTessereByFilters(filters, page, pageSize);
+                // MODIFICATO: Aggiunto il parametro 'sorting'
+                dataList = dao.getTessereByFilters(filters, page, pageSize, sorting);
             } finally {
                 dao.closeConnection();
             }
