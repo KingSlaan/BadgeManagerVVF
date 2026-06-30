@@ -214,7 +214,7 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
             String field = sorting.get("field").getAsString();
             String dir = sorting.get("direction").getAsString().toUpperCase(); // "ASC" o "DESC"
             
-            if ("codInterno".equals(field)) {
+            if ("codiceInterno".equals(field)) {
                 // NULLS LAST evita che i campi null finiscano in cima
                 // Aggiungiamo t.IDTESSERA per garantire un ordine predicibile a parità di codice interno
                 orderByClause = " ORDER BY td.CODICEINTERNO " + dir + " NULLS LAST, t.IDTESSERA " + dir;
