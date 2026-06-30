@@ -86,6 +86,7 @@ public class ModificaTessereMassivoServlet extends HttpServlet {
 
         // ── 3. Estrazione e Normalizzazione Campi ──────────────────────────────
         String dataIndispStr  = getStringSafe(json, "dataOraIndisponibilita");
+        String dataFineAssStr = getStringSafe(json, "dataOraFineAssegnazione"); // NUOVO
         String sede           = getStringSafe(json, "sede");
         String codTipoTessera = getStringSafe(json, "codTipoTessera");
 
@@ -93,10 +94,11 @@ public class ModificaTessereMassivoServlet extends HttpServlet {
         if (codTipoTessera != null) codTipoTessera = codTipoTessera.toUpperCase();
 
         boolean doInvalida           = !isBlank(dataIndispStr);
+        boolean doModificaFineAss    = !isBlank(dataFineAssStr); // NUOVO
         boolean doModificaAnagrafica = !isBlank(sede) || !isBlank(codTipoTessera);
 
         // Se non è richiesta alcuna operazione
-        if (!doInvalida && !doModificaAnagrafica) {
+        if (!doInvalida && !doModificaAnagrafica && !doModificaFineAss) {
             ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Nessuna operazione richiesta. Inviare dataOraIndisponibilita, sede o codTipoTessera.");
             return;
         }
@@ -111,15 +113,20 @@ public class ModificaTessereMassivoServlet extends HttpServlet {
             return;
         }
 
-        // Validazione Data
+        // Validazione Date
         LocalDateTime dataIndisp = null;
-        if (doInvalida) {
-            try {
+        LocalDateTime dataFineAss = null;
+
+        try {
+            if (doInvalida) {
                 dataIndisp = LocalDateTime.parse(dataIndispStr, formatter);
-            } catch (Exception e) {
-                ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido (atteso dd/MM/yyyy HH:mm:ss).");
-                return;
             }
+            if (doModificaFineAss) {
+                dataFineAss = LocalDateTime.parse(dataFineAssStr, formatter);
+            }
+        } catch (Exception e) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido (atteso dd/MM/yyyy HH:mm:ss).");
+            return;
         }
 
         // ── 4. Caricamento DB Config ───────────────────────────────────────────
@@ -182,27 +189,34 @@ public class ModificaTessereMassivoServlet extends HttpServlet {
                     contatoreModificateAnagrafica++;
                 }
 
-                // C. GESTIONE INVALIDAZIONE
+             // C. GESTIONE INVALIDAZIONE FISICA TESSERA
                 if (doInvalida) {
-                    // Protezione Paradossi Temporali
-                    List<TesseraDipend> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
-                    for (TesseraDipend ass : assegnazioni) {
-                        if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
-                            if (dataIndisp.isBefore(ass.getDataOraInizioAssegnazione())) {
-                                throw new IllegalArgumentException("Paradosso temporale sulla tessera " + idTessera + ": la data di invalidazione è antecedente all'inizio dell'assegnazione corrente.");
-                            }
-                        }
-                    }
-
-                    // Invalidazione fisica della tessera
                     boolean invalidata = daoTessera.invalidaTessera(idTessera, dataIndisp);
                     if (!invalidata) {
                         throw new SQLException("Impossibile aggiornare la data di invalidazione per la tessera: " + idTessera);
                     }
                     contatoreInvalidate++;
+                    
+                    // NOTA: Se la tessera si rompe, potresti voler accorciare automaticamente 
+                    // l'assegnazione anche se non ti passano esplicitamente dataOraFineAssegnazione.
+                    // In tal caso, puoi forzare dataFineAss = dataIndisp qui dentro.
+                }
 
-                    // Revoca/Accorciamento assegnazioni attive
-                    boolean assegnazioneAccorciata = daoAssegnaz.revocaAssegnazioneAttiva(idTessera, dataIndisp);
+                // D. GESTIONE MODIFICA VALIDITA' ASSEGNAZIONE (Quello che chiede il tester)
+                if (doModificaFineAss) {
+                    // Controllo paradossi temporali sull'assegnazione
+                    List<TesseraDipend> assegnazioni = daoAssegnaz.getAssegnazioniByTessera(idTessera);
+                    for (TesseraDipend ass : assegnazioni) {
+                        // Se c'è un'assegnazione in corso
+                        if (ass.getDataOraFineAssegnazione().isAfter(LocalDateTime.now())) {
+                            if (dataFineAss.isBefore(ass.getDataOraInizioAssegnazione())) {
+                                throw new IllegalArgumentException("Paradosso temporale: la nuova data di fine assegnazione (" + dataFineAssStr + ") è antecedente all'inizio dell'assegnazione corrente per la tessera " + idTessera);
+                            }
+                        }
+                    }
+
+                    // Passiamo la data specifica per l'assegnazione, non più quella di indisponibilità!
+                    boolean assegnazioneAccorciata = daoAssegnaz.revocaAssegnazioneAttiva(idTessera, dataFineAss);
                     if (assegnazioneAccorciata) {
                         contatoreAccorciate++;
                     }
