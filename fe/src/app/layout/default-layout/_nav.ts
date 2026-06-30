@@ -54,7 +54,7 @@ export const navItems: INavData[] = [
         iconComponent: { name: 'cil-note-add' },
       },
       {
-        name: 'Stampa Documenti',
+        name: 'Stampa Risposta',
         url: '/operazioni/stampa-documenti',
         iconComponent: { name: 'cil-print' },
       },
