@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgScrollbar } from 'ngx-scrollbar';
 import {
@@ -52,6 +52,14 @@ export class DefaultLayoutComponent {
   readonly colorMode = this.#colorModeService.colorMode;
 
   readonly sidebarNarrow = signal(false);
+
+  constructor() {
+    effect(() => {
+      const theme = this.colorMode() === 'dark' ? 'dark' : 'light';
+
+      document.documentElement.setAttribute('data-coreui-theme', theme);
+    });
+  }
 
   toggleSidebarNarrow(): void {
     this.sidebarNarrow.update(value => !value);
