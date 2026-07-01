@@ -1,12 +1,6 @@
-import {
-  Component,
-  HostListener,
-  Input,
-  signal,
-} from '@angular/core';
-
+import { Component, HostListener, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { cilChevronTop } from '@coreui/icons';
+import { cilChevronTop, cilChevronBottom } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 
 @Component({
@@ -19,21 +13,38 @@ import { IconDirective } from '@coreui/icons-angular';
 export class FabComponent {
   @Input() showAfter = 300;
 
-  visible = signal(false);
+  visibleTop = signal(false);
+  visibleBottom = signal(true);
 
-  icons = { cilChevronTop };
+  icons = { cilChevronTop, cilChevronBottom };
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
-    const scrollTop =
-      window.pageYOffset || document.documentElement.scrollTop || 0;
+    this.updateVisibility();
+  }
 
-    this.visible.set(scrollTop > this.showAfter);
+  ngOnInit(): void {
+    this.updateVisibility();
+  }
+
+  private updateVisibility(): void {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+    const viewportHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    const isAtBottom = scrollTop + viewportHeight >= documentHeight - 20;
+
+    this.visibleTop.set(scrollTop > this.showAfter);
+    this.visibleBottom.set(!isAtBottom);
   }
 
   scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  scrollToBottom(): void {
     window.scrollTo({
-      top: 0,
+      top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
   }

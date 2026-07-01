@@ -30,8 +30,7 @@ import { Sedi } from '../../../../../interfaces/sedi';
 import { SediService } from '../../../../services/sedi.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { buildDataGridState, buildUrlQueryParamsFromState } from '../../../../../components/data-grid/data-grid-utils';
-import { ToastService } from 'src/app/services/toast.service';
-import { TesseraStampaComponent } from '@docs-components/modals/tessera-stampa/tessera-stampa.component';
+import { TesseraStampaComponent } from '../../../../../components/modals/tessera-stampa/tessera-stampa.component';
 
 @Component({
   selector: 'app-lista-tessere',
@@ -282,10 +281,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       page: event.page,
       pageSize: event.pageSize,
     };
-  }
-
-  editUser(row: Tessera) {
-    console.log("AW", row);
   }
 
   refresh() {

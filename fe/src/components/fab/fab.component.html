@@ -1,11 +1,21 @@
-@if (visible()) {
+@if (visibleTop()) {
   <button
     type="button"
-    class="scroll-fab"
+    class="scroll-fab scroll-fab--bottom"
     (click)="scrollToTop()"
     aria-label="Scroll to top"
   >
-    <svg [cIcon]="icons.cilChevronTop" title="Modifica" height="20"></svg>
+    <svg [cIcon]="icons.cilChevronTop" height="20"></svg>
+  </button>
+}
 
+@if (visibleBottom()) {
+  <button
+    type="button"
+    class="scroll-fab scroll-fab--top"
+    (click)="scrollToBottom()"
+    aria-label="Scroll to bottom"
+  >
+    <svg [cIcon]="icons.cilChevronBottom" height="20"></svg>
   </button>
 }

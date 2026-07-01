@@ -2,8 +2,8 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONSTANTS } from '../../constants/api.constants';
-import { Tessera } from 'src/interfaces/tessere';
-import { TESSERE_STATUS_COLORS, TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
+import { Tessera } from '../../interfaces/tessere';
+import { TESSERE_STATUS_COLORS, TESSERE_STATUS_MESSAGES } from '../../constants/tessere-status.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,7 @@ export class UtilsService {
   private http = inject(HttpClient);
 
   private apiUrl = API_CONSTANTS.BASE_URL;
+
 
   getStampaWord(body: any): Observable<HttpResponse<Blob>> {
     return this.http.post(
