@@ -66,11 +66,12 @@
           />
         </c-col>
         @if (form.controls.tipoStampa.value === "nominativa") {
-          <c-col xs="9" lg="9">
+          <c-col xs="7" lg="7">
             <label cLabel class="visually-hidden" for="tipoTemplate">
               Utenti Selezionati
             </label>
             <app-autocomplete-select
+              #utentiAutocomplete
               formControlName="utenti"
               placeholder="Seleziona Utenti"
               [multiple]="true"
@@ -82,6 +83,16 @@
               [selectedItemTemplate]="utenteChip"
               [optionKeyFn]="utenteKey"
             />
+          </c-col>
+          <c-col xs="2" lg="2">
+            <c-form-check [switch]="true">
+              <input
+                cFormCheckInput
+                type="checkbox"
+                formControlName="filtraSede"
+              />
+              <label cFormCheckLabel>Filtra per sede</label>
+            </c-form-check>
           </c-col>
           <c-col xs="3" lg="3">
             <label

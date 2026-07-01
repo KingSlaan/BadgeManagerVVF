@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowDirective } from '@coreui/angular';
+import { ButtonDirective, CardBodyComponent, CardComponent, CardFooterComponent, ColComponent, FormCheckComponent, FormCheckInputDirective, FormCheckLabelDirective, FormControlDirective, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, RowDirective } from '@coreui/angular';
 import { DatepickerComponent } from '../../../../../components/datepicker/datepicker.component';
 import { SediStateService } from '../../../../../states/sedi-state.service';
 import { AutocompleteOption, AutocompleteSelectComponent } from '../../../../../components/autocomplete-select/autocomplete-select.component';
@@ -30,12 +30,18 @@ import { cilCloudUpload } from '@coreui/icons';
     DatepickerComponent,
     AutocompleteSelectComponent,
     IconDirective,
-    FormSelectDirective
+    FormSelectDirective,
+    FormCheckComponent,
+    FormCheckInputDirective,
+    FormCheckLabelDirective
   ],
   templateUrl: './stampa-documenti.component.html',
   styleUrl: './stampa-documenti.component.scss',
 })
 export class StampaDocumentiComponent implements OnInit {
+
+  @ViewChild('utentiAutocomplete')
+  private utentiAutocomplete!: AutocompleteSelectComponent;
 
   icons = { cilCloudUpload };
 
@@ -45,6 +51,7 @@ export class StampaDocumentiComponent implements OnInit {
   public toastService = inject(ToastService);
 
   sediOptions = this.sediState.sediOptionsValue;
+  sediOptionsStd = this.sediState.sediOptions;
 
   form = new FormGroup({
     tipoStampa: new FormControl('', [Validators.required]),
@@ -52,6 +59,7 @@ export class StampaDocumentiComponent implements OnInit {
     numProtocollo: new FormControl('', [Validators.required]),
     dataProtocollo: new FormControl('', [Validators.required]),
     sede: new FormControl('', [Validators.required]),
+    filtraSede: new FormControl(true),
     utenti: new FormControl<AutocompleteOption[]>([]),
     qntBadge: new FormControl<number | null>(null),
   });
@@ -63,6 +71,13 @@ export class StampaDocumentiComponent implements OnInit {
 
     this.form.controls.tipoStampa.valueChanges.subscribe(tipoStampa => {
       this.updateValidatorsByTipoStampa(tipoStampa);
+    });
+
+    this.form.controls.filtraSede.valueChanges.subscribe(() => {
+      this.refreshTessere();
+    });
+    this.form.controls.sede.valueChanges.subscribe(() => {
+      this.refreshTessere();
     });
   }
 
@@ -200,7 +215,7 @@ export class StampaDocumentiComponent implements OnInit {
   }
 
   searchTessere = (term: string): Observable<AutocompleteOption[]> => {
-    const request: DataGridState = {
+    let request: DataGridState = {
       filters: [
         {
           field: 'cognome',
@@ -217,13 +232,29 @@ export class StampaDocumentiComponent implements OnInit {
         page: 1,
         pageSize: 50
       },
-      sorting: null
+      sorting: {
+        direction: "desc",
+        field: "idTessera"
+      }
     };
+
+    if (this.form.controls.filtraSede.value && this.form.controls.sede.value) {
+      let sede = this.sediOptionsStd().filter(item => item.label === this.form.controls.sede.value);
+      request.filters = [...request.filters, {
+        field: 'sede',
+        value: sede[0].value,
+        operator: 'equals',
+      }]
+    }
 
     return this.tessereService.getTessere(request).pipe(
       map(response => response.data.map(tessera => this.toUtenteOption(tessera)))
     );
   };
+
+  refreshTessere() {
+    this.utentiAutocomplete.refresh();
+  }
 
   private toUtenteOption(tessera: any): AutocompleteOption {
     return {

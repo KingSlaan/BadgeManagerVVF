@@ -18,6 +18,7 @@ import {
   computed,
   signal,
   HostListener,
+  effect
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -129,6 +130,22 @@ export class DataGridComponent<T = any> implements OnInit {
   currentValue = '';
 
   currentSorting: DataGridSorting | null = null;
+
+  constructor() {
+    effect(() => {
+      const rows = this.rows();
+
+      if (!this.selectionConfig()?.enabled) {
+        return;
+      }
+
+      if (this.selectedRows().length === 0) {
+        return;
+      }
+
+      this.syncSelectedRowsWithRows(rows);
+    });
+  }
 
   ngOnInit() {
     this.searchConfig()?.fields.forEach((f: any) => {
@@ -585,6 +602,31 @@ export class DataGridComponent<T = any> implements OnInit {
 
   clearSelection(): void {
     this.selectedRows.set([]);
+    this.emitSelection();
+  }
+
+  private syncSelectedRowsWithRows(rows: T[]): void {
+    const refreshedSelectedRows = this.selectedRows()
+      .map(selected => {
+        const selectedKey = this.getRowKey(selected);
+
+        return rows.find(row =>
+          this.getRowKey(row) === selectedKey
+        );
+      })
+      .filter((row): row is T => !!row);
+
+    const changed =
+      refreshedSelectedRows.length !== this.selectedRows().length ||
+      refreshedSelectedRows.some((row, index) =>
+        row !== this.selectedRows()[index]
+      );
+
+    if (!changed) {
+      return;
+    }
+
+    this.selectedRows.set(refreshedSelectedRows);
     this.emitSelection();
   }
 

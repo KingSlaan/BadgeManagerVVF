@@ -239,6 +239,14 @@ export class AutocompleteSelectComponent implements ControlValueAccessor, OnInit
     }
   }
 
+  refresh(): void {
+    if (!this.serverSearchFn()) {
+      return;
+    }
+
+    this.loadServerOptions(this.search());
+  }
+
   private loadServerOptions(term: string): void {
     const fn = this.serverSearchFn();
 

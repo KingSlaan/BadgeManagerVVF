@@ -50,10 +50,10 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
             label: TESSERE_STATUS_MESSAGES.INDISPONIBILE_DESC,
             value: TESSERE_STATUS_MESSAGES.INDISPONIBILE,
           },
-          {
-            label: TESSERE_STATUS_MESSAGES.ND_DESC,
-            value: TESSERE_STATUS_MESSAGES.ND,
-          },
+          // {
+          //   label: TESSERE_STATUS_MESSAGES.ND_DESC,
+          //   value: TESSERE_STATUS_MESSAGES.ND,
+          // },
         ], multiple: true
       },
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '4', operator: 'contains' },

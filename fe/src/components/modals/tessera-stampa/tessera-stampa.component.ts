@@ -3,10 +3,10 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ButtonDirective, ColComponent, FormDirective, FormLabelDirective, FormSelectDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective } from '@coreui/angular';
 import { cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
-import { TessereService } from 'src/app/services/tessere.service';
-import { ToastService } from 'src/app/services/toast.service';
-import { TESSERE_STATUS_MESSAGES } from 'src/constants/tessere-status.constants';
-import { Tessera } from 'src/interfaces/tessere';
+import { TessereService } from '../../../app/services/tessere.service';
+import { ToastService } from '../../../app/services/toast.service';
+import { TESSERE_STATUS_MESSAGES } from '../../../constants/tessere-status.constants';
+import { Tessera } from '../../../interfaces/tessere';
 
 @Component({
   selector: 'app-tessera-stampa',
@@ -84,7 +84,7 @@ export class TesseraStampaComponent {
         // a.download = fileName;
         // a.click();
 
-        window.URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
       }
     });
 
