@@ -3,7 +3,7 @@
   
   <groupId>ApplicativoBadgeVVF</groupId>
   <artifactId>ApplicativoBadgeVVF</artifactId>
-  <version>5.1.1</version>
+  <version>5.1.2</version>
   <packaging>war</packaging>
   
   <properties>
