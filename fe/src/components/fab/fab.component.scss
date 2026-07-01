@@ -37,3 +37,12 @@
     transform: scale(0.96);
   }
 }
+
+.scroll-fab--bottom {
+  bottom: 2rem;
+}
+
+.scroll-fab--top {
+  top: 8rem;
+  bottom: auto;
+}

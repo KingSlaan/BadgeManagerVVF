@@ -303,7 +303,7 @@
               (change)="changePageSize($any($event.target).value)"
             >
               @for (
-                size of paginationConfig()?.pageSizes ?? [5, 10, 25, 50];
+                size of paginationConfig()?.pageSizes ?? [10, 25, 50, 100];
                 track size
               ) {
                 <option [value]="size">
