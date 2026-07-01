@@ -30,8 +30,8 @@
 
         <input
           type="text"
-          class="tag-input"
-          [placeholder]="selectedValues().length === 0 ? placeholder() : ''"
+           class="form-control tag-input"
+          [placeholder]="getSelectedOptions().length === 0 ? placeholder() : ''"
           [ngModel]="search()"
           [disabled]="disabled() || disabledInput()"
           (ngModelChange)="onSearchChange($event)"

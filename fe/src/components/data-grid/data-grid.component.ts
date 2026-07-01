@@ -606,27 +606,29 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
   private syncSelectedRowsWithRows(rows: T[]): void {
-    const refreshedSelectedRows = this.selectedRows()
-      .map(selected => {
-        const selectedKey = this.getRowKey(selected);
+    const currentSelectedRows = this.selectedRows();
 
-        return rows.find(row =>
-          this.getRowKey(row) === selectedKey
-        );
-      })
-      .filter((row): row is T => !!row);
+    const nextSelectedRows = currentSelectedRows.map(selected => {
+      const selectedKey = this.getRowKey(selected);
 
-    const changed =
-      refreshedSelectedRows.length !== this.selectedRows().length ||
-      refreshedSelectedRows.some((row, index) =>
-        row !== this.selectedRows()[index]
+      const refreshedRow = rows.find(row =>
+        this.getRowKey(row) === selectedKey
       );
+
+      // If refreshed row exists, replace only that row.
+      // If not, keep the old selected row.
+      return refreshedRow ?? selected;
+    });
+
+    const changed = nextSelectedRows.some(
+      (row, index) => row !== currentSelectedRows[index]
+    );
 
     if (!changed) {
       return;
     }
 
-    this.selectedRows.set(refreshedSelectedRows);
+    this.selectedRows.set(nextSelectedRows);
     this.emitSelection();
   }
 

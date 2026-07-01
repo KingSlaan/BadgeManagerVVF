@@ -53,14 +53,6 @@ export class DefaultLayoutComponent {
 
   readonly sidebarNarrow = signal(false);
 
-  constructor() {
-    effect(() => {
-      const theme = this.colorMode() === 'dark' ? 'dark' : 'light';
-
-      document.documentElement.setAttribute('data-coreui-theme', theme);
-    });
-  }
-
   toggleSidebarNarrow(): void {
     this.sidebarNarrow.update(value => !value);
   }
