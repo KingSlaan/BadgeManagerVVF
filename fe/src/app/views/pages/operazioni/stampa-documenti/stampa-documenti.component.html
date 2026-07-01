@@ -84,14 +84,18 @@
               [optionKeyFn]="utenteKey"
             />
           </c-col>
-          <c-col xs="2" lg="2">
-            <c-form-check [switch]="true">
+          <c-col
+            xs="2"
+            lg="2"
+            class="d-flex justify-content-center align-items-center"
+          >
+            <c-form-check [switch]="true" class="mb-0">
               <input
                 cFormCheckInput
                 type="checkbox"
                 formControlName="filtraSede"
               />
-              <label cFormCheckLabel>Filtra per sede</label>
+              <label cFormCheckLabel class="mb-0"> Filtra per sede </label>
             </c-form-check>
           </c-col>
           <c-col xs="3" lg="3">

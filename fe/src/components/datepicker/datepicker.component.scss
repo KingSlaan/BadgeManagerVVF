@@ -61,6 +61,11 @@
 
   &::placeholder {
     color: var(--cui-secondary-color);
+    opacity: 1;
+  }
+
+  &:placeholder-shown {
+    color: var(--cui-secondary-color);
   }
 
   &:disabled {

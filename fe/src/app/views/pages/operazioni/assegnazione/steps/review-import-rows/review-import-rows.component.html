@@ -42,13 +42,15 @@
 ></app-datagrid>
 
 <ng-template #actionTemplate let-row>
-  <button
-    cButton
-    color="danger"
-    variant="ghost"
-    shape="rounded-pill"
-    (click)="removeRow(row)"
-  >
-    <svg [cIcon]="icons.cilX" title="Rimuovi"></svg>
-  </button>
+  <div class="d-flex justify-content-end">
+    <button
+      cButton
+      color="danger"
+      variant="ghost"
+      shape="rounded-pill"
+      (click)="removeRow(row)"
+    >
+      <svg [cIcon]="icons.cilX" title="Rimuovi"></svg>
+    </button>
+  </div>
 </ng-template>

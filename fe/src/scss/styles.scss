@@ -877,15 +877,15 @@ body,
 }
 
 .status-dot--success {
-  background-color: var(--cui-success);
+  background-color: var(--cui-success) !important;
 }
 
 .status-dot--warning {
-  background-color: var(--cui-warning);
+  background-color: var(--cui-warning) !important;
 }
 
 .status-dot--danger {
-  background-color: var(--cui-danger);
+  background-color: var(--cui-danger) !important;
 }
 
 .status-cell {

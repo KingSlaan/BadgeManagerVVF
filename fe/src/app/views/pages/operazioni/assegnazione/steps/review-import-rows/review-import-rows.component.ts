@@ -56,6 +56,7 @@ export class ReviewImportRowsComponent implements OnInit {
         field: 'actions',
         header: '',
         template: this.actionTemplate,
+        width:"50px"
       }
     ];
   }
