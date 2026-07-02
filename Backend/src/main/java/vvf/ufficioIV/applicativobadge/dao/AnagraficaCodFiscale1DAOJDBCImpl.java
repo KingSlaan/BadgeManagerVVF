@@ -2,6 +2,7 @@ package vvf.ufficioIV.applicativobadge.dao;
 
 import vvf.ufficioIV.applicativobadge.entity.AnagraficaCodFiscale;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,9 +45,8 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
 
     @Override
     public AnagraficaCodFiscale getByCodFiscale(String codFiscale) {
-        // MODIFICATO QUI: Nuova tabella
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
-    	//String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
+        // Aggiunti DTNASCITA, SESSO, ID alla SELECT
+        String sql = "SELECT CODFISCALE, NOME, COGNOME, DTNASCITA, SESSO, ID FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codFiscale);
             try (ResultSet rs = ps.executeQuery()) {
@@ -54,7 +54,10 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
                     return new AnagraficaCodFiscale(
                         rs.getString("CODFISCALE"), 
                         rs.getString("NOME"), 
-                        rs.getString("COGNOME")
+                        rs.getString("COGNOME"),
+                        formattaData(rs.getDate("DTNASCITA")), // Conversione data
+                        rs.getString("SESSO"),
+                        rs.getString("ID")
                     );
                 }
             }
@@ -67,16 +70,18 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
     @Override
     public List<AnagraficaCodFiscale> getAllAnagrafiche() {
         List<AnagraficaCodFiscale> list = new ArrayList<>();
-        // MODIFICATO QUI: Nuova tabella
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
-        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
+        // Aggiunti DTNASCITA, SESSO, ID alla SELECT
+        String sql = "SELECT CODFISCALE, NOME, COGNOME, DTNASCITA, SESSO, ID FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 list.add(new AnagraficaCodFiscale(
                     rs.getString("CODFISCALE"), 
                     rs.getString("NOME"), 
-                    rs.getString("COGNOME")
+                    rs.getString("COGNOME"),
+                    formattaData(rs.getDate("DTNASCITA")), // Conversione data 
+                    rs.getString("SESSO"),
+                    rs.getString("ID")
                 ));
             }
         } catch (SQLException e) {
@@ -100,7 +105,6 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         List<AnagraficaCodFiscale> results = new ArrayList<>();
         List<Object> params = new ArrayList<>();
         
-        // Usiamo 1=1 per concatenare facilmente gli AND
         StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 
         if (filters != null) {
@@ -111,12 +115,16 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
                 String operator = filter.has("operator") ? filter.get("operator").getAsString() : "";
                 String value = filter.has("value") ? filter.get("value").getAsString() : "";
 
-                // Mappatura campi JSON sulle colonne DB
+             // Mappatura campi JSON sulle colonne DB
                 String dbColumn = "";
                 switch (field) {
                     case "codFiscale": dbColumn = "CODFISCALE"; break;
                     case "nome": dbColumn = "NOME"; break;
                     case "cognome": dbColumn = "COGNOME"; break;
+                    
+                    // AGGIUNTO FILTRO PER IS SEDE
+                    case "idSede": dbColumn = "ID"; break;
+                    
                     default: continue; // ignora filtri non riconosciuti
                 }
 
@@ -130,13 +138,11 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
             }
         }
 
-        // Aggiungiamo il limite dei record (ROWNUM per Oracle DB)
         where.append(" AND ROWNUM <= ? ");
         params.add(limit);
 
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
-        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
-
+        // Aggiunti DTNASCITA, SESSO, ID alla SELECT
+        String sql = "SELECT CODFISCALE, NOME, COGNOME, DTNASCITA, SESSO, ID FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -153,7 +159,10 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
                     AnagraficaCodFiscale anagrafica = new AnagraficaCodFiscale(
                         rs.getString("CODFISCALE"), 
                         rs.getString("NOME"), 
-                        rs.getString("COGNOME")
+                        rs.getString("COGNOME"),
+                        formattaData(rs.getDate("DTNASCITA")), // Conversione data
+                        rs.getString("SESSO"),
+                        rs.getString("ID")
                     );
                     results.add(anagrafica);
                 }
@@ -165,6 +174,12 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         return results;
     }
 
+    // Metodo di utilità interno per formattare la data senza ripetere codice
+    private String formattaData(java.sql.Date dataDb) {
+        if (dataDb == null) return null;
+        return new SimpleDateFormat("dd/MM/yyyy").format(dataDb);
+    }
+    
     @Override
     public void closeConnection() {
         try {

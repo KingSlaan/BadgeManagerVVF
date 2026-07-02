@@ -59,25 +59,6 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                     if (!statiRichiesti.isEmpty()) {
                         List<String> sqlConditions = new ArrayList<>();
                         for (String stato : statiRichiesti) {
-                            /*OLD switch (stato) {
-                                case "indisponibile":
-                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= LOCALTIMESTAMP)");
-                                    break;
-                                case "occupata":
-                                    sqlConditions.add("((t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP) " +
-                                                      "AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
-                                                      "AND TRIM(tp.CODFISDIP) IS NOT NULL)");
-                                    break;
-                                case "libera":
-                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP " +
-                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
-                                    break;
-                                case "nd":
-                                    sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NULL " +
-                                                      "AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL))");
-                                    break;
-                            }
-                            */
                         	switch (stato) {
                             case "indisponibile":
                                 sqlConditions.add("(t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= SYSDATE)");
@@ -163,24 +144,6 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
 
     }
 
-    /*OLD
-    // IL MOTORE SQL ORA CALCOLA LO STATO (Fonte di verità unica)
-    private String getBaseQuery() {
-        return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, d.DESCRIZIONE AS SEDE, t.DATAORAINDISPONIBILITA, " +
-               "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
-               "a.NOME, a.COGNOME, " +
-               "CASE " +
-               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA <= LOCALTIMESTAMP THEN 'indisponibile' " +
-               "  WHEN (t.DATAORAINDISPONIBILITA IS NULL OR t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP) " +
-               "       AND tp.DATAORAFINEASSEGNAZIONE IS NOT NULL AND tp.DATAORAFINEASSEGNAZIONE > LOCALTIMESTAMP " +
-               "       AND TRIM(tp.CODFISDIP) IS NOT NULL THEN 'occupata' " +
-               "  WHEN t.DATAORAINDISPONIBILITA IS NOT NULL AND t.DATAORAINDISPONIBILITA > LOCALTIMESTAMP " +
-               "       AND (tp.DATAORAFINEASSEGNAZIONE IS NULL OR tp.DATAORAFINEASSEGNAZIONE <= LOCALTIMESTAMP OR TRIM(tp.CODFISDIP) IS NULL) THEN 'libera' " +
-               "  ELSE 'nd' " +
-               "END AS STATO_CALCOLATO " +
-               getFromClause();
-    }
-    */
     private String getBaseQuery() {
         return "SELECT t.IDTESSERA, t.CODTIPOTESSERA, d.DESCRIZIONE AS SEDE, t.DATAORAINDISPONIBILITA, " +
                "td.CODICEINTERNO, tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
