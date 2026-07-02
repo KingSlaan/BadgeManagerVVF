@@ -59,7 +59,8 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
             }
         }
 
-        String sql = "SELECT CODSEDE, DESCRIZIONE FROM dipartimento" + where.toString();
+        // AGGIUNTE LE 3 NUOVE COLONNE ALLA SELECT
+        String sql = "SELECT CODSEDE, DESCRIZIONE, INDIRIZZO_SEDE, EMAIL, NUM_TEL1_SEDE FROM dipartimento" + where.toString();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int i = 1;
@@ -69,9 +70,13 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
             
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    // USO DEL NUOVO COSTRUTTORE CON I 5 PARAMETRI
                     DipartimentoDTO dto = new DipartimentoDTO(
                         rs.getString("CODSEDE"),
-                        rs.getString("DESCRIZIONE")
+                        rs.getString("DESCRIZIONE"),
+                        rs.getString("INDIRIZZO_SEDE"),
+                        rs.getString("EMAIL"),
+                        rs.getString("NUM_TEL1_SEDE")
                     );
                     results.add(dto);
                 }
@@ -88,11 +93,11 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
     public List<DipartimentoDTO> getDipartimentiConConteggioTessere() {
         List<DipartimentoDTO> results = new ArrayList<>();
         
-        // La LEFT JOIN assicura che se una sede non ha tessere, esce comunque con COUNT = 0
-        String sql = "SELECT d.CODSEDE, d.DESCRIZIONE, COUNT(t.IDTESSERA) AS CONTEGGIO " +
+        // AGGIUNTE LE COLONNE ALLA SELECT E, FONDAMENTALE, AL GROUP BY
+        String sql = "SELECT d.CODSEDE, d.DESCRIZIONE, d.INDIRIZZO_SEDE, d.EMAIL, d.NUM_TEL1_SEDE, COUNT(t.IDTESSERA) AS CONTEGGIO " +
                      "FROM dipartimento d " +
                      "LEFT JOIN tessera t ON d.CODSEDE = t.SEDE " +
-                     "GROUP BY d.CODSEDE, d.DESCRIZIONE " +
+                     "GROUP BY d.CODSEDE, d.DESCRIZIONE, d.INDIRIZZO_SEDE, d.EMAIL, d.NUM_TEL1_SEDE " +
                      "ORDER BY d.DESCRIZIONE";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
@@ -101,7 +106,10 @@ public class DipartimentoDAOJDBCImpl implements DipartimentoDAO {
             while (rs.next()) {
                 DipartimentoDTO dto = new DipartimentoDTO(
                     rs.getString("CODSEDE"),
-                    rs.getString("DESCRIZIONE")
+                    rs.getString("DESCRIZIONE"),
+                    rs.getString("INDIRIZZO_SEDE"),
+                    rs.getString("EMAIL"),
+                    rs.getString("NUM_TEL1_SEDE")
                 );
                 // Impostiamo il conteggio appena calcolato dal DB
                 dto.setConteggioTessere(rs.getInt("CONTEGGIO"));

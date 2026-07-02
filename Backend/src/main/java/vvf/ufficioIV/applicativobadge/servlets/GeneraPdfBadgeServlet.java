@@ -142,17 +142,17 @@ public class GeneraPdfBadgeServlet extends HttpServlet {
         }
         
 
-        // ── 6. Generazione e Stream del Documento ─────────────────────────────
+     // ── 6. Generazione e Stream del PDF ─────────────────────────────
         String fileName = isSostitutiva ? "Richiesta_Badge_Sostitutiva" : (nominativi.size() > 1 ? "Richiesta_Badge_Multipla" : "Richiesta_Badge_Singola");
-        fileName += ".docx"; // ".pdf" in GeneraPdfBadgeServlet
+        fileName += ".pdf"; // Estensione corretta
         
         try {
-            // Impostiamo l'header PRIMA di scrivere sull'output stream
-            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            // 1. HEADER CORRETTO PER IL PDF!
+            response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
-            // Chiamata all'utility per la generazione con Apache POI
-            DocumentoRispostaBadgeUtil.generaEdEsportaDocumento( // o generaEdEsportaPdf
+            // 2. METODO CORRETTO PER IL PDF!
+            DocumentoRispostaBadgeUtil.generaEdEsportaPdf(
                     dto, 
                     alAlla, 
                     codesto, 
@@ -163,7 +163,7 @@ public class GeneraPdfBadgeServlet extends HttpServlet {
 
         } catch (Exception e) {
             System.err.println("[generaPdfBadgeServlet] Eccezione: " + e.getMessage());
-            e.printStackTrace();
+            e.printStackTrace(); // Questo è il tuo miglior alleato per il debug!
             if (!response.isCommitted()) {
                 response.reset();
                 ResponseUtil.sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore interno durante la generazione del PDF.");
