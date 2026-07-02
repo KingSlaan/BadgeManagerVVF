@@ -57,8 +57,8 @@ export function createTesseraSearchConfig(sediList: AutocompleteOption[]): DataG
         ], multiple: true
       },
       { field: 'codiceFiscale', label: 'Codice Fiscale', type: 'text', size: '4', operator: 'contains' },
-      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains', size: '3' },
+      { field: 'nome', label: 'Nome', type: 'text', operator: 'contains', size: '3' },
     ]
   }
 };

@@ -13,7 +13,8 @@
           placeholder="Tipo Stampa"
           formControlName="tipoStampa"
         >
-          <option value="nominativa">Nominativa</option>
+          <option value="nominativa">Nominativa (Territorio)</option>
+          <option value="nominativa_assegnata">Nominativa Assegnata (Centrale)</option>
           <option value="sostitutiva">Sostitutiva</option>
         </select>
       </c-col>
@@ -65,7 +66,7 @@
             placeholder="Seleziona Sede"
           />
         </c-col>
-        @if (form.controls.tipoStampa.value === "nominativa") {
+        @if (form.controls.tipoStampa.value === "nominativa_assegnata") {
           <c-col xs="7" lg="7">
             <label cLabel class="visually-hidden" for="tipoTemplate">
               Utenti Selezionati
@@ -117,6 +118,40 @@
             </label>
           </c-col>
         }
+        @if (form.controls.tipoStampa.value === "nominativa") {
+          <c-col xs="7" lg="7">
+            <label cLabel class="visually-hidden" for="tipoTemplate">
+              Persone Selezionati
+            </label>
+            <app-autocomplete-select
+              #personeAutocomplete
+              formControlName="persone"
+              placeholder="Seleziona Persone"
+              [multiple]="true"
+              [minSearchLength]="0"
+              [debounceMs]="500"
+              [serverSearchFn]="searchPersone"
+              [loadOnOpen]="true"
+              [itemTemplate]="personeItem"
+              [selectedItemTemplate]="personeChip"
+              [optionKeyFn]="personeKey"
+            />
+          </c-col>
+          <c-col
+            xs="2"
+            lg="2"
+            class="d-flex justify-content-center align-items-center"
+          >
+            <c-form-check [switch]="true" class="mb-0">
+              <input
+                cFormCheckInput
+                type="checkbox"
+                formControlName="filtraSede"
+              />
+              <label cFormCheckLabel class="mb-0"> Filtra per sede </label>
+            </c-form-check>
+          </c-col>
+        }
         @if (form.controls.tipoStampa.value === "sostitutiva") {
           <c-col xs="3" lg="3">
             <input
@@ -148,7 +183,6 @@
         cButton
         color="info"
         type="submit"
-        [disabled]="false"
         (click)="creaFileRispostaWord()"
         [disabled]="form.invalid"
       >
@@ -185,11 +219,42 @@
   </div>
 </ng-template>
 
+<ng-template #personeItem let-option let-selected="selected">
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <div>
+      <div class="fw-semibold">
+        <span
+          [class]="
+            'status-dot status-dot--' +
+            this.utilsService.getStatusColor(option.data)
+          "
+        ></span>
+
+        {{ option.data.cognome }} {{ option.data.nome }} |
+        {{ option.data.codFiscale }}
+      </div>
+
+    </div>
+
+    @if (selected) {
+      <span class="badge bg-success">Selected</span>
+    }
+  </div>
+</ng-template>
+
 <ng-template #utenteChip let-option>
   <span class="d-inline-flex align-items-center gap-1">
     <small>
       {{ option.data.cognome }} {{ option.data.nome }}
       <i>({{ option.data.idTessera }})</i>
+    </small>
+  </span>
+</ng-template>
+
+<ng-template #personeChip let-option>
+  <span class="d-inline-flex align-items-center gap-1">
+    <small>
+      {{ option.data.cognome }} {{ option.data.nome }}
     </small>
   </span>
 </ng-template>

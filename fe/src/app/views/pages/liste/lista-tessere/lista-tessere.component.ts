@@ -206,16 +206,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       visibility: () => true
     },
     {
-      name: "cronologia",
-      do: (row: any) => {
-        this.openHistoryModal(row.idTessera)
-      },
-      color: "text-secondary",
-      icon: this.icons.cilHistory,
-      title: "Cronologia",
-      visibility: () => true
-    },
-    {
       name: "stampa-tessera",
       do: (row: any) => {
         this.openModalStampaUpdate([row], 'single')
@@ -224,6 +214,16 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
       icon: this.icons.cilPrint,
       title: "Stampa Tessera",
       visibility: (row: any) => row.stato == TESSERE_STATUS_MESSAGES.OCCUPATA
+    },
+    {
+      name: "cronologia",
+      do: (row: any) => {
+        this.openHistoryModal(row.idTessera)
+      },
+      color: "text-secondary",
+      icon: this.icons.cilHistory,
+      title: "Cronologia",
+      visibility: () => true
     },
   ];
 

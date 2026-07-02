@@ -11,6 +11,7 @@ import { UtilsService } from '../../../../services/utils.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { IconDirective } from '@coreui/icons-angular';
 import { cilCloudUpload } from '@coreui/icons';
+import { PersoneService } from 'src/app/services/persone.service';
 
 @Component({
   selector: 'app-stampa-documenti',
@@ -43,10 +44,14 @@ export class StampaDocumentiComponent implements OnInit {
   @ViewChild('utentiAutocomplete')
   private utentiAutocomplete!: AutocompleteSelectComponent;
 
+  @ViewChild('personeAutocomplete')
+  private personeAutocomplete!: AutocompleteSelectComponent;
+
   icons = { cilCloudUpload };
 
   private sediState = inject(SediStateService);
   private tessereService = inject(TessereService);
+  private personeService = inject(PersoneService);
   public utilsService = inject(UtilsService);
   public toastService = inject(ToastService);
 
@@ -61,6 +66,7 @@ export class StampaDocumentiComponent implements OnInit {
     sede: new FormControl('', [Validators.required]),
     filtraSede: new FormControl(true),
     utenti: new FormControl<AutocompleteOption[]>([]),
+    persone: new FormControl<AutocompleteOption[]>([]),
     qntBadge: new FormControl<number | null>(null),
   });
 
@@ -75,26 +81,41 @@ export class StampaDocumentiComponent implements OnInit {
 
     this.form.controls.filtraSede.valueChanges.subscribe(() => {
       this.refreshTessere();
+      this.refreshPersone();
     });
     this.form.controls.sede.valueChanges.subscribe(() => {
       this.refreshTessere();
+      this.refreshPersone();
     });
   }
 
   private updateValidatorsByTipoStampa(tipoStampa: string | null): void {
     const utenti = this.form.controls.utenti;
+    const persone = this.form.controls.persone;
     const qntBadge = this.form.controls.qntBadge;
 
     utenti.clearValidators();
+    persone.clearValidators();
     qntBadge.clearValidators();
 
     if (tipoStampa === 'nominativa') {
+      persone.setValidators([
+        Validators.required,
+        Validators.minLength(1)
+      ]);
+
+      utenti.setValue([], { emitEvent: false });
+      qntBadge.setValue(null, { emitEvent: false });
+    }
+
+    if (tipoStampa === 'nominativa_assegnata') {
       utenti.setValidators([
         Validators.required,
         Validators.minLength(1)
       ]);
 
-      qntBadge.setValue(0, { emitEvent: false });
+      persone.setValue([], { emitEvent: false });
+      qntBadge.setValue(null, { emitEvent: false });
     }
 
     if (tipoStampa === 'sostitutiva') {
@@ -104,15 +125,25 @@ export class StampaDocumentiComponent implements OnInit {
       ]);
 
       utenti.setValue([], { emitEvent: false });
+      persone.setValue([], { emitEvent: false });
     }
 
     utenti.updateValueAndValidity({ emitEvent: false });
+    persone.updateValueAndValidity({ emitEvent: false });
     qntBadge.updateValueAndValidity({ emitEvent: false });
   }
 
   utenteKey = (option: AutocompleteOption): string => {
     return option.data.idTessera;
   };
+
+  personeKey = (option: AutocompleteOption): string => {
+    return option.data.codFiscale;
+  };
+
+  debug() {
+    console.log(this.form.invalid)
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -142,17 +173,42 @@ export class StampaDocumentiComponent implements OnInit {
   }
 
   createBodyForDownload() {
-    return {
+    const tipoStampa = this.form.controls.tipoStampa.value;
+    let nominativi: any[] = [];
+
+    let request: any = {
       descrizioneSede: this.form.controls.sede.value,
       oggettoMail: this.form.controls.oggetto.value,
       nrProtocollo: this.form.controls.numProtocollo.value,
       data: this.form.controls.dataProtocollo.value,
-      nominativi: this.form.controls.utenti.value?.map(option => ({
+      isSostitutiva: tipoStampa === 'sostitutiva',
+    };
+
+    if (tipoStampa === 'nominativa') {
+      nominativi = (this.form.controls.persone.value ?? []).map(option => ({
         cognome: option.data.cognome,
         nome: option.data.nome,
-        codFis: option.data.codiceFiscale
-      }))
-    };
+        codFis: option.data.codFiscale,
+      }));
+      request = { ...request, nominativi }
+
+    }
+
+    if (tipoStampa === 'nominativa_assegnata') {
+      nominativi = (this.form.controls.utenti.value ?? []).map(option => ({
+        cognome: option.data.cognome,
+        nome: option.data.nome,
+        codFis: option.data.codiceFiscale,
+      }));
+      request = { ...request, nominativi }
+
+    }
+
+    if (tipoStampa === 'sostitutiva') {
+      request = { ...request, numeroBadge: this.form.controls.qntBadge.value }
+    }
+
+    return request;
   }
 
   creaFileRispostaWord() {
@@ -252,8 +308,67 @@ export class StampaDocumentiComponent implements OnInit {
     );
   };
 
-  refreshTessere() {
+  searchPersone = (term: string): Observable<AutocompleteOption[]> => {
+    let request: DataGridState = {
+      filters: [
+        {
+          field: 'cognome',
+          operator: 'contains',
+          value: term || ''
+        },
+      ],
+      pagination: {
+        page: 1,
+        pageSize: 50
+      },
+      sorting: {
+        direction: "desc",
+        field: "idTessera"
+      }
+    };
+
+    if (this.form.controls.filtraSede.value && this.form.controls.sede.value) {
+      let sede = this.sediOptionsStd().filter(item => item.label === this.form.controls.sede.value);
+      request.filters = [...request.filters, {
+        field: 'idSede',
+        value: sede[0].value,
+        operator: 'equals',
+      }]
+    }
+
+    return this.personeService.getAnagrafiche(request).pipe(
+      map(response => response.data.map(tessera => this.toUtenteOption(tessera)))
+    );
+  };
+
+  refreshTessere(): void {
+    if (
+      !this.form.controls.filtraSede.value ||
+      !this.form.controls.sede.value
+    ) {
+      return;
+    }
+
+    if (this.form.controls.tipoStampa.value !== 'nominativa_assegnata') {
+      return
+    }
+
     this.utentiAutocomplete.refresh();
+  }
+
+  refreshPersone(): void {
+    if (
+      !this.form.controls.filtraSede.value ||
+      !this.form.controls.sede.value
+    ) {
+      return;
+    }
+
+    if (this.form.controls.tipoStampa.value !== 'nominativa') {
+      return
+    }
+
+    this.personeAutocomplete.refresh();
   }
 
   private toUtenteOption(tessera: any): AutocompleteOption {

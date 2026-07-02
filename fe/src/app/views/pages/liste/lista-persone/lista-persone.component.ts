@@ -7,6 +7,8 @@ import { createGridColumn, createSearchConfig, PERSONE_URL_STATE_CONFIG } from '
 import { PersoneService } from 'src/app/services/persone.service';
 import { buildDataGridState, buildUrlQueryParamsFromState } from '@docs-components/data-grid/data-grid-utils';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SediService } from 'src/app/services/sedi.service';
+import { Sedi } from 'src/interfaces/sedi';
 
 @Component({
   selector: 'app-lista-persone',
@@ -19,14 +21,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ListaPersoneComponent {
 
   private personeService = inject(PersoneService);
+  private sediService = inject(SediService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  searchReady = signal(false);
+
   datagridLoading = signal(false);
 
-  searchConfig: DataGridSearchConfig = createSearchConfig();
+  searchConfig: DataGridSearchConfig = {
+    enabled: true,
+    fields: [],
+  };
+
   paginationConfig = DATAGRID_CONSTANTS;
   persone = signal<Persone>([]);
+  sedi = signal<Sedi>([]);
 
   initialGridState: DataGridState | null = null;
 
@@ -44,10 +54,35 @@ export class ListaPersoneComponent {
   urlStateConfig = PERSONE_URL_STATE_CONFIG;
 
   ngOnInit(): void {
-    this.loadData(this.gridState());
-    const initialState = this.getInitialState();
-    this.initialGridState = initialState;
+    // this.loadData(this.gridState());
+    this.getSedi();
+    // const initialState = this.getInitialState();
+    // this.initialGridState = initialState;
   }
+
+  getSedi() {
+      this.sediService.getSediList().subscribe({
+        next: (data: any) => {
+          const options = data.data.map((sede: any) => ({
+            label: sede.descrizione,
+            value: sede.codSede
+          }));
+
+          this.sedi.set([...(options ?? [])]);
+          this.searchConfig = createSearchConfig(options);
+          const initialState = this.getInitialState();
+
+          this.initialGridState = initialState;
+          this.gridState.set(initialState);
+          this.searchReady.set(true);
+
+          this.loadData(initialState);
+        },
+        error: (err: any) => {
+          console.error('Error loading sedi', err);
+        },
+      });
+    }
 
   loadData(state: DataGridState) {
     this.datagridLoading.set(true);
