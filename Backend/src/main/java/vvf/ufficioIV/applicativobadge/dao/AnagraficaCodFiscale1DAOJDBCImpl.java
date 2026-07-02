@@ -45,8 +45,8 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
     @Override
     public AnagraficaCodFiscale getByCodFiscale(String codFiscale) {
         // MODIFICATO QUI: Nuova tabella
-        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
-    	String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
+    	//String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW WHERE CODFISCALE = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codFiscale);
             try (ResultSet rs = ps.executeQuery()) {
@@ -68,8 +68,8 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
     public List<AnagraficaCodFiscale> getAllAnagrafiche() {
         List<AnagraficaCodFiscale> list = new ArrayList<>();
         // MODIFICATO QUI: Nuova tabella
-        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
+        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW ORDER BY COGNOME, NOME";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -134,8 +134,8 @@ public class AnagraficaCodFiscale1DAOJDBCImpl implements AnagraficaCodFiscale1DA
         where.append(" AND ROWNUM <= ? ");
         params.add(limit);
 
-        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
-        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
+        String sql = "SELECT CODFISCALE, NOME, COGNOME FROM SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
+        //String sql = "SELECT CODFISCALE, NOME, COGNOME FROM ANAGRAFICA_CNVVF_ULTSEDE_MW" + where.toString() + " ORDER BY COGNOME, NOME";
 
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
