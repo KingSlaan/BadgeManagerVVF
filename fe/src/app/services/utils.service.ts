@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { API_CONSTANTS } from '../../constants/api.constants';
 import { Tessera } from '../../interfaces/tessere';
 import { TESSERE_STATUS_COLORS, TESSERE_STATUS_MESSAGES } from '../../constants/tessere-status.constants';
+import { SelectOption } from 'src/states/sedi-state.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,14 @@ export class UtilsService {
   private http = inject(HttpClient);
 
   private apiUrl = API_CONSTANTS.BASE_URL;
+
+  getCodiceFromSedeDesc(sediList: any, sedeDesc: string) {
+    let found = sediList.filter((item:any) => item.label === sedeDesc);
+    if(found.length > 0) {
+      return found[0].value
+    }
+    return null;
+  }
 
   getStampaWord(body: any): Observable<HttpResponse<Blob>> {
     return this.http.post(

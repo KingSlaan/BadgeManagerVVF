@@ -22,7 +22,7 @@ import { FabComponent } from '../components/fab/fab.component';
   imports: [RouterOutlet, ToastContainerComponent, LoadingSpinnerComponent, FabComponent]
 })
 export class AppComponent implements OnInit {
-  title = 'CoreUI Angular Admin Template';
+  title = 'TesserAct';
 
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #activatedRoute: ActivatedRoute = inject(ActivatedRoute);
