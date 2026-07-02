@@ -1,8 +1,10 @@
 import { Sedi, Sede } from '../../../../../interfaces/sedi';
 import { TemplateRef } from '@angular/core';
-import { DataGridColumn} from '../../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridToolbarConfig} from '../../../../../interfaces/datagrid';
 import { DataGridSearchConfig } from '../../../../../interfaces/datagrid';
 import { AutocompleteOption } from '@docs-components/autocomplete-select/autocomplete-select.component';
+import { cilPrint } from '@coreui/icons';
+import { Persona } from 'src/interfaces/persone';
 
 export function createSearchConfig(sediList: AutocompleteOption[]): DataGridSearchConfig {
   return {
@@ -17,7 +19,7 @@ export function createSearchConfig(sediList: AutocompleteOption[]): DataGridSear
 
 }
 
-export function createGridColumn(): DataGridColumn<Sede>[] {
+export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColumn<Sede>[] {
   return [
     {
       field: 'cognome',
@@ -43,10 +45,42 @@ export function createGridColumn(): DataGridColumn<Sede>[] {
       field: 'idSede',
       header: 'Codice Sede',
     },
+    {
+      field: 'actions',
+      header: '',
+      template: actionTemplate,
+    }
   ];
+}
+
+export function createGridToolbar(
+  openStampa: (rows: Persona[]) => void,
+): DataGridToolbarConfig {
+  return {
+    enabled: true,
+    actions: [
+      {
+        label: 'Stampa Tessere',
+        icon: cilPrint,
+        color: 'secondary',
+        visible: (ctx) => ctx.selectedRows.length !== 0,
+        action: (ctx) => {
+          openStampa(ctx.selectedRows);
+        },
+      }
+    ],
+  };
 }
 
 export const PERSONE_URL_STATE_CONFIG = {
   enabled: true,
+};
+
+export const PERSONE_SELECTION_SUMMARY_CONFIG = {
+  enabled: true,
+  label: 'Persone selezionate',
+  displayField: 'codFiscale',
+  maxHeight: '90px',
+  clearButton: true,
 };
 

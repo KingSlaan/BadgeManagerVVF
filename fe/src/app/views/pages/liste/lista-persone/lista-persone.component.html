@@ -1,9 +1,88 @@
 <app-datagrid
   [columns]="columns"
   [rows]="persone()"
+  [toolbarConfig]="toolbarConfig"
   [searchConfig]="searchConfig"
   [paginationConfig]="paginationConfig"
   [loading]="datagridLoading()"
   [initialState]="gridState()"
   (stateChange)="loadData($event)"
+  [contextMenuConfig]="contextMenuConfig"
+  [selectionConfig]="selectionConfig"
+  (selectionChange)="onSelectionChange($event)"
+  [selectionSummaryConfig]="selectionSummaryConfig"
 />
+
+<app-tessera-stampa
+  [(visible)]="isModalStampaOpen"
+  [mode]="mode"
+  [tessereToPrint]="personeToPrint()"
+></app-tessera-stampa>
+
+<ng-template #actionTemplate let-row let-selectedRows="selectedRows">
+  <c-dropdown>
+    <button
+      cButton
+      color="secondary"
+      variant="ghost"
+      shape="rounded-pill"
+      cDropdownToggle
+      direction="dropend"
+    >
+      <svg [cIcon]="icons.cilOptions" title="Opzioni"></svg>
+    </button>
+
+    <ul cDropdownMenu>
+      @for (action of actionsArray; track action.name) {
+        @if (action.visibility(row)) {
+          <li cDropdownItem (click)="action.do(row)">
+            <span [class]="action.color">
+              <svg [cIcon]="action.icon" [title]="action.title"></svg>
+              {{ action.title }}
+            </span>
+          </li>
+        }
+      }
+    </ul>
+  </c-dropdown>
+</ng-template>
+
+<ng-template #contextActionTemplate let-row let-selectedRows="selectedRows">
+  <ul cListGroup class="context-menu-list">
+    @for (action of actionsArray; track action.name) {
+      @if (action.visibility(row)) {
+        <li
+          cListGroupItem
+          action
+          (click)="action.do(row)"
+          class="context-menu-item"
+        >
+          <span [class]="action.color">
+            <svg [cIcon]="action.icon" [title]="action.title"></svg>
+            {{ action.title }}
+          </span>
+        </li>
+      }
+    }
+  </ul>
+</ng-template>
+
+<ng-template #selectedBadge let-row let-remove="remove">
+  <c-badge
+    color="secondary"
+    shape="rounded-pill"
+    [class]="`d-inline-flex align-items-center`"
+  >
+    <div class="d-flex flex-column align-items-center text-center px-1">
+      <strong>{{ row.codFiscale }}</strong>
+
+      <small> {{ row.cognome }} {{ row.nome }} </small>
+    </div>
+
+    <button
+      type="button"
+      class="btn-close btn-close-white ms-2"
+      (click)="remove(row)"
+    ></button>
+  </c-badge>
+</ng-template>

@@ -349,7 +349,7 @@ export class StampaDocumentiComponent implements OnInit {
     }
 
     return this.personeService.getAnagrafiche(request).pipe(
-      map(response => response.data.map(tessera => this.toUtenteOption(tessera)))
+      map(response => response.data.map(tessera => this.toPersoneOption(tessera)))
     );
   };
 
