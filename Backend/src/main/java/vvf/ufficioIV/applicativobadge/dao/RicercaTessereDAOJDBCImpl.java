@@ -158,8 +158,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                "           ROW_NUMBER() OVER(PARTITION BY IDTESSERA ORDER BY DATAORAINIZIOASSEGNAZIONE DESC) as rn " +
                "    FROM tesseradipend" +
                ") tp ON t.IDTESSERA = tp.IDTESSERA AND tp.rn = 1 " +
-               //"LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
-               "LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
+               "LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
+               //"LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +               "LEFT JOIN dipartimento d ON t.SEDE = d.CODSEDE ";
 
     }
 
@@ -327,7 +327,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
                 "  FROM tessera t " +
                 "  LEFT JOIN tesseradecode td ON t.IDTESSERA = td.IDTESSERA " +
                 "  LEFT JOIN tesseradipend tp ON t.IDTESSERA = tp.IDTESSERA " +
-                "  LEFT JOIN anagrafica_codfiscale a ON tp.CODFISDIP = a.CODFISCALE " +
+                //"  LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +
+                "  LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +
                 "  WHERE t.IDTESSERA = ? " +
                 "  ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC " +
                 ") WHERE ROWNUM = 1";
@@ -375,8 +376,8 @@ public class RicercaTessereDAOJDBCImpl implements RicercaTessereDAO {
         String sql = "SELECT tp.CODFISDIP, tp.DATAORAINIZIOASSEGNAZIONE, tp.DATAORAFINEASSEGNAZIONE, " +
                      "       a.NOME, a.COGNOME " +
                      "FROM tesseradipend tp " +
-                     //"LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
-                     "LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
+                     "LEFT JOIN SIPRECTRASF.ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
+                     //"LEFT JOIN ANAGRAFICA_CNVVF_ULTSEDE_MW a ON tp.CODFISDIP = a.CODFISCALE " +                     "WHERE tp.IDTESSERA = ? " +
                      "ORDER BY tp.DATAORAINIZIOASSEGNAZIONE DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
