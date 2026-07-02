@@ -9,6 +9,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        title: 'LISTE',
         loadComponent: () =>
           import('./liste-home/liste-home.component')
             .then(m => m.ListeHomeComponent),
@@ -18,6 +19,7 @@ export const routes: Routes = [
       },
       {
         path: 'sedi',
+        title: 'Sedi',
         loadComponent: () =>
           import('./lista-sedi/lista-sedi.component')
             .then(m => m.ListaSediComponent),
@@ -27,6 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'tessere',
+        title: 'Tessere',
         loadComponent: () =>
           import('./lista-tessere/lista-tessere.component')
             .then(m => m.ListaTessereComponent),
@@ -36,6 +39,7 @@ export const routes: Routes = [
       },
       {
         path: 'persone',
+        title: 'Persone',
         loadComponent: () =>
           import('./lista-persone/lista-persone.component')
             .then(m => m.ListaPersoneComponent),
@@ -45,6 +49,7 @@ export const routes: Routes = [
       },
       {
         path: 'utenti',
+        title: 'Utenti',
         loadComponent: () =>
           import('./lista-utenti/lista-utenti.component')
             .then(m => m.ListaUtentiComponent),

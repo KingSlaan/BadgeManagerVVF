@@ -13,9 +13,15 @@ import { routes } from './app.routes';
 import { loadingInterceptor } from '../interceptors/loading.interceptors';
 import { errorInterceptor } from '../interceptors/error.interceptors';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { TitleStrategy } from '@angular/router';
+import { AppTitleStrategy } from '../strategies/app-title.strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: TitleStrategy,
+      useClass: AppTitleStrategy
+    },
     provideRouter(routes,
       withRouterConfig({
         onSameUrlNavigation: 'reload'
