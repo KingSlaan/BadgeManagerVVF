@@ -14,35 +14,29 @@ import java.util.List;
 
 public class DocumentoRispostaBadgeUtil {
 
-    // ── METODI PUBBLICI ───────────────────────────────────────────────────────
-
-    /**
-     * Genera il documento e lo esporta in formato Word (.docx)
-     */
-    public static void generaEdEsportaDocumento(RichiestaBadgeDTO dto, String alAlla, String codesto, boolean isMultiplo, OutputStream out) throws Exception {
-        try (XWPFDocument document = compilaDocumentoWord(dto, alAlla, codesto, isMultiplo)) {
+	// ── METODI PUBBLICI ───────────────────────────────────────────────────────
+    public static void generaEdEsportaDocumento(RichiestaBadgeDTO dto, String alAlla, String codesto, OutputStream out) throws Exception {
+        try (XWPFDocument document = compilaDocumentoWord(dto, alAlla, codesto)) {
             document.write(out);
         }
     }
 
-    /**
-     * Genera il documento in memoria, lo converte e lo esporta in formato PDF (.pdf)
-     */
-    public static void generaEdEsportaPdf(RichiestaBadgeDTO dto, String alAlla, String codesto, boolean isMultiplo, OutputStream out) throws Exception {
-        try (XWPFDocument document = compilaDocumentoWord(dto, alAlla, codesto, isMultiplo)) {
-            // Usa Opensagres per la conversione al volo in PDF
+    public static void generaEdEsportaPdf(RichiestaBadgeDTO dto, String alAlla, String codesto, OutputStream out) throws Exception {
+        try (XWPFDocument document = compilaDocumentoWord(dto, alAlla, codesto)) {
             PdfOptions options = PdfOptions.create();
             PdfConverter.getInstance().convert(document, out, options);
         }
     }
 
-    // ── METODO PRIVATO CONDIVISO (IL MOTORE) ──────────────────────────────────
+    // ── IL MOTORE PRIVATO AGGIORNATO ──────────────────────────────────────────
+    private static XWPFDocument compilaDocumentoWord(RichiestaBadgeDTO dto, String alAlla, String codesto) throws Exception {
+        
+        // 1. Capiamo in che scenario ci troviamo
+        boolean isSostitutiva = dto.isSostitutiva();
+        boolean isMultiplo = !isSostitutiva && dto.getNominativi() != null && dto.getNominativi().size() > 1;
 
-    /**
-     * Logica core per leggere il template e compilare il Word in memoria.
-     */
-    private static XWPFDocument compilaDocumentoWord(RichiestaBadgeDTO dto, String alAlla, String codesto, boolean isMultiplo) throws Exception {
-        String templateName = isMultiplo ? "/MULTIPLO.docx" : "/SINGOLO.docx"; 
+        // 2. Scelta dinamica del template
+        String templateName = isSostitutiva ? "/SOSTITUTIVO.docx" : (isMultiplo ? "/MULTIPLO.docx" : "/SINGOLO.docx"); 
         
         InputStream is = DocumentoRispostaBadgeUtil.class.getResourceAsStream(templateName);
         if (is == null) {
@@ -51,7 +45,9 @@ public class DocumentoRispostaBadgeUtil {
 
         XWPFDocument document = new XWPFDocument(is);
 
-        // 1. Sostituzione dei campi fissi nei paragrafi
+        // 3. Calcolo del numero dei badge e sostituzione nei paragrafi
+        int conteggioBadge = isSostitutiva ? dto.getNumeroBadge() : (dto.getNominativi() != null ? dto.getNominativi().size() : 0);
+
         for (XWPFParagraph p : document.getParagraphs()) {
             sostituisciTestoNelParagrafo(p, "$AL_ALLA$", alAlla);
             sostituisciTestoNelParagrafo(p, "$NOME_SEDE$", dto.getDescrizioneSede());
@@ -60,14 +56,12 @@ public class DocumentoRispostaBadgeUtil {
             sostituisciTestoNelParagrafo(p, "$NR_PROTOCOLLO$", dto.getNrProtocollo());
             sostituisciTestoNelParagrafo(p, "$DATA_PROTOCOLLO$", dto.getData());
             
-            if (isMultiplo) {
-                int numBadge = dto.getNominativi().size();
-                sostituisciTestoNelParagrafo(p, "$NUM_BADGE$", String.valueOf(numBadge));
-                sostituisciTestoNelParagrafo(p, "$NUM_BADGE_LETTERE$", convertiNumeroInLettere(numBadge));
-            }
+            // Sostituiamo i tag numerici se esistono (su SOSTITUTIVO o MULTIPLO)
+            sostituisciTestoNelParagrafo(p, "$NUM_BADGE$", String.valueOf(conteggioBadge));
+            sostituisciTestoNelParagrafo(p, "$NUM_BADGE_LETTERE$", convertiNumeroInLettere(conteggioBadge));
         }
 
-        // 2. Sostituzione dei campi fissi nelle tabelle
+        // 4. Sostituzione dei campi fissi nelle tabelle (Header)
         for (XWPFTable tbl : document.getTables()) {
             for (XWPFTableRow row : tbl.getRows()) {
                 for (XWPFTableCell cell : row.getTableCells()) {
@@ -79,8 +73,10 @@ public class DocumentoRispostaBadgeUtil {
             }
         }
 
-        // 3. Inserimento dei nominativi (gestione degli "a capo")
-        inserisciBloccoNominativi(document, "$BLOCCO_NOMINATIVI$", dto.getNominativi(), isMultiplo);
+        // 5. Inserimento blocco nominativi (SOLO SE NON È SOSTITUTIVA)
+        if (!isSostitutiva && dto.getNominativi() != null && !dto.getNominativi().isEmpty()) {
+            inserisciBloccoNominativi(document, "$BLOCCO_NOMINATIVI$", dto.getNominativi(), isMultiplo);
+        }
 
         return document;
     }
