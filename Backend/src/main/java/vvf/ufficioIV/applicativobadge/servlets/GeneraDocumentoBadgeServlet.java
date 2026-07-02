@@ -67,9 +67,21 @@ public class GeneraDocumentoBadgeServlet extends HttpServlet {
         String nrProtocollo    = getStringSafe(json, "nrProtocollo");
         String data            = getStringSafe(json, "data");
         
-        // Nuovi campi per le sostitutive
-        boolean isSostitutiva = json.has("isSostitutiva") && !json.get("isSostitutiva").isJsonNull() && json.get("isSostitutiva").getAsBoolean();
-        int numeroBadge = json.has("numeroBadge") && !json.get("numeroBadge").isJsonNull() ? json.get("numeroBadge").getAsInt() : 0;
+    	// NUOVO MODO (Legge sia stringhe che booleani/numeri in sicurezza)
+        boolean isSostitutiva = false;
+        if (json.has("isSostitutiva") && !json.get("isSostitutiva").isJsonNull()) {
+            String val = json.get("isSostitutiva").getAsString(); // Legge come stringa per sicurezza
+            isSostitutiva = "true".equalsIgnoreCase(val) || "1".equals(val);
+        }
+
+        int numeroBadge = 0;
+        if (json.has("numeroBadge") && !json.get("numeroBadge").isJsonNull()) {
+            try {
+                numeroBadge = Integer.parseInt(json.get("numeroBadge").getAsString());
+            } catch (NumberFormatException e) {
+                numeroBadge = 0;
+            }
+        }
         
         List<NominativoDTO> nominativi = new ArrayList<>();
         if (json.has("nominativi") && json.get("nominativi").isJsonArray()) {
