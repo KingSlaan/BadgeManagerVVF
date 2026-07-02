@@ -18,7 +18,10 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-    <p>Le seguenti tessere saranno mandate in stampa: {{tessereSelected.map(item => item.idTessera).join(' , ')}}</p>
+    <p>
+      Le seguenti tessere saranno mandate in stampa:
+      {{tessereSelected.map(item => item.idTessera).join(' , ')}}
+    </p>
     <form [formGroup]="form" [gutter]="3" cForm cRow>
       @if (mode == "cambia-sede") {
         <c-col xs="12">
@@ -28,6 +31,22 @@
             [options]="sediList"
             placeholder="Select sede"
           />
+        </c-col>
+        <c-col xs="12">
+          <label cLabel class="visually-hidden" for="codTipoTessera">
+            Tipo Tessera
+          </label>
+          <select
+            cSelect
+            cFormControl
+            id="codTipoTessera"
+            placeholder="Tipo Tessera"
+            formControlName="codTipoTessera"
+          >
+            <option value="">-</option>
+            <option value="S">Sostitutiva</option>
+            <option value="D">Dipendente</option>
+          </select>
         </c-col>
       }
       @if (mode == "cambia-validita") {
@@ -73,7 +92,12 @@
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button cButton color="success" (click)="confirm()" [disabled]="!form.valid">
+    <button
+      cButton
+      color="success"
+      (click)="confirm()"
+      [disabled]="!form.valid"
+    >
       Aggiorna Massivo
     </button>
   </c-modal-footer>
