@@ -67,6 +67,22 @@ public class GeneraDocumentoBadgeServlet extends HttpServlet {
         String nrProtocollo    = getStringSafe(json, "nrProtocollo");
         String data            = getStringSafe(json, "data");
         
+    	// NUOVO MODO (Legge sia stringhe che booleani/numeri in sicurezza)
+        boolean isSostitutiva = false;
+        if (json.has("isSostitutiva") && !json.get("isSostitutiva").isJsonNull()) {
+            String val = json.get("isSostitutiva").getAsString(); // Legge come stringa per sicurezza
+            isSostitutiva = "true".equalsIgnoreCase(val) || "1".equals(val);
+        }
+
+        int numeroBadge = 0;
+        if (json.has("numeroBadge") && !json.get("numeroBadge").isJsonNull()) {
+            try {
+                numeroBadge = Integer.parseInt(json.get("numeroBadge").getAsString());
+            } catch (NumberFormatException e) {
+                numeroBadge = 0;
+            }
+        }
+        
         List<NominativoDTO> nominativi = new ArrayList<>();
         if (json.has("nominativi") && json.get("nominativi").isJsonArray()) {
             JsonArray array = json.get("nominativi").getAsJsonArray();
@@ -75,7 +91,7 @@ public class GeneraDocumentoBadgeServlet extends HttpServlet {
                 NominativoDTO nomDTO = new NominativoDTO();
                 nomDTO.setCognome(getStringSafe(nomJson, "cognome"));
                 nomDTO.setNome(getStringSafe(nomJson, "nome"));
-                nomDTO.setCodFis(getStringSafe(nomJson, "codFis")); // Può essere null/vuoto essendo opzionale
+                nomDTO.setCodFis(getStringSafe(nomJson, "codFis"));
                 nominativi.add(nomDTO);
             }
         }
@@ -87,21 +103,34 @@ public class GeneraDocumentoBadgeServlet extends HttpServlet {
         System.out.println("  data            = " + data);
         System.out.println("  nominativi size = " + nominativi.size());
 
-        // ── 4. Validazione obbligatori ────────────────────────────────────────
-        if (isBlank(descrizioneSede) || isBlank(oggettoMail) || isBlank(nrProtocollo) || isBlank(data) || nominativi.isEmpty()) {
-            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametri obbligatori mancanti o lista nominativi vuota.");
+        
+        // ── 4. Validazione intelligente ───────────────────────────────────────
+        if (isBlank(descrizioneSede) || isBlank(oggettoMail) || isBlank(nrProtocollo) || isBlank(data)) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Parametri obbligatori mancanti.");
+            return;
+        }
+        
+        // Controllo differenziato tra standard e sostitutiva
+        if (!isSostitutiva && nominativi.isEmpty()) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Lista nominativi vuota per una richiesta standard.");
+            return;
+        }
+        if (isSostitutiva && numeroBadge <= 0) {
+            ResponseUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST, "Numero badge non valido per una richiesta sostitutiva.");
             return;
         }
 
-        // Popoliamo il DTO per passarlo comodamente all'Utility
         RichiestaBadgeDTO dto = new RichiestaBadgeDTO();
         dto.setDescrizioneSede(descrizioneSede);
         dto.setOggettoMail(oggettoMail);
         dto.setNrProtocollo(nrProtocollo);
         dto.setData(data);
         dto.setNominativi(nominativi);
-
-        // ── 5. Logica di Business Sede (Comando vs Direzione) ─────────────────
+        dto.setSostitutiva(isSostitutiva);
+        dto.setNumeroBadge(numeroBadge);
+        
+        
+        // ── 5. Logica di Business Sede ────────────────────────────────────────
         String descSedeUpper = descrizioneSede.toUpperCase();
         String alAlla = "Al/Alla"; 
         String codesto = "codesto/a";
@@ -113,24 +142,24 @@ public class GeneraDocumentoBadgeServlet extends HttpServlet {
             alAlla = "Alla";
             codesto = "codesta Direzione";
         }
+        
 
         // ── 6. Generazione e Stream del Documento ─────────────────────────────
-        boolean isMultiplo = nominativi.size() > 1;
-        String fileName = isMultiplo ? "Richiesta_Badge_Multipla.docx" : "Richiesta_Badge_Singola.docx";
-
+        String fileName = isSostitutiva ? "Richiesta_Badge_Sostitutiva" : (nominativi.size() > 1 ? "Richiesta_Badge_Multipla" : "Richiesta_Badge_Singola");
+        fileName += ".docx"; // ".pdf" in GeneraPdfBadgeServlet
+        
         try {
             // Impostiamo l'header PRIMA di scrivere sull'output stream
             response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
             response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 
             // Chiamata all'utility per la generazione con Apache POI
-            DocumentoRispostaBadgeUtil.generaEdEsportaDocumento(
-                dto, 
-                alAlla, 
-                codesto, 
-                isMultiplo, 
-                response.getOutputStream() // Flusso diretto al browser
-            );
+            DocumentoRispostaBadgeUtil.generaEdEsportaDocumento( // o generaEdEsportaPdf
+                    dto, 
+                    alAlla, 
+                    codesto, 
+                    response.getOutputStream()
+                );
 
             System.out.println("[generaDocumentoBadgeServlet] >>> Fine doPost con successo (File scaricato).");
 
