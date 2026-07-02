@@ -27,7 +27,7 @@ import {
 import versionInfo from '../../../../assets/version.json';
 import { IconDirective } from '@coreui/icons-angular';
 import { AuthService } from '../../../services/auth.service';
-import { cilClock } from '@coreui/icons';
+import { cilClock, cilCursorMove } from '@coreui/icons';
 
 @Component({
   selector: 'app-default-header',
@@ -52,7 +52,7 @@ import { cilClock } from '@coreui/icons';
 })
 export class DefaultHeaderComponent extends HeaderComponent implements OnInit, OnDestroy {
 
-  iconsStatic = { cilClock };
+  iconsStatic = { cilClock, cilCursorMove };
 
   private authService = inject(AuthService);
 
@@ -76,8 +76,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
 
   private timer?: ReturnType<typeof setInterval>;
 
-  setSimpleColorMode(colorMode:any) {
-    if(colorMode == 'light') {
+  setSimpleColorMode(colorMode: any) {
+    if (colorMode == 'light') {
       this.colorMode.set('dark')
     } else {
       this.colorMode.set('light')
@@ -134,6 +134,10 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit, O
 
   logout(): void {
     this.authService.logout();
+  }
+
+  resetFabPositions(): void {
+    window.dispatchEvent(new CustomEvent('reset-fab-positions'));
   }
 
 }

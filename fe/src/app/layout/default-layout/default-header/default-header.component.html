@@ -26,6 +26,17 @@
         {{ formattedDateTime }}
       </span>
 
+      <button
+        cButton
+        variant="ghost"
+        shape="rounded-pill"
+        title="Reset posizione pulsanti scroll"
+        aria-label="Reset posizione pulsanti scroll"
+        (click)="resetFabPositions()"
+      >
+        <svg [cIcon]="iconsStatic.cilCursorMove" size="lg"></svg>
+      </button>
+
       <ng-container *ngTemplateOutlet="themeDropdown" />
       <ng-container *ngTemplateOutlet="userDropdown" />
     </c-header-nav>

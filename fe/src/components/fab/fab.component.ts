@@ -30,6 +30,15 @@ export class FabComponent {
     this.updateVisibility();
   }
 
+  @HostListener('window:reset-fab-positions')
+  onResetFabPositions(): void {
+    this.topFabPosition = { x: 0, y: 0 };
+    this.bottomFabPosition = { x: 0, y: 0 };
+
+    localStorage.removeItem(this.TOP_FAB_KEY);
+    localStorage.removeItem(this.BOTTOM_FAB_KEY);
+  }
+
   ngOnInit(): void {
     this.restorePositions();
     this.updateVisibility();
