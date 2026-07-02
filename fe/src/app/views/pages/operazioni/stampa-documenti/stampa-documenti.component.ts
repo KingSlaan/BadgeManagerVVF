@@ -153,11 +153,23 @@ export class StampaDocumentiComponent implements OnInit {
 
     this.tessereService.importTessereExcel(file).subscribe({
       next: rows => {
+        let funcOption: any;
+
+        if (this.form.controls.tipoStampa.value === 'nominativa') {
+          funcOption = this.toPersoneOption;
+        } else if (this.form.controls.tipoStampa.value === 'nominativa_assegnata') {
+          funcOption = this.toUtenteOption
+        }
+
         const options = (rows.data ?? []).map((utente: any) =>
-          this.toUtenteOption(utente)
+          funcOption(utente)
         );
 
-        this.form.controls.utenti.setValue(options);
+        if (this.form.controls.tipoStampa.value === 'nominativa') {
+          this.form.controls.persone.setValue(options);
+        } else if (this.form.controls.tipoStampa.value === 'nominativa_assegnata') {
+          this.form.controls.utenti.setValue(options);
+        }
 
         this.toastService.success('File elaborato con successo');
       }
@@ -376,6 +388,13 @@ export class StampaDocumentiComponent implements OnInit {
       label: `${tessera.cognome} ${tessera.nome}`,
       value: tessera.idTessera,
       data: tessera
+    };
+  }
+  private toPersoneOption(persona: any): AutocompleteOption {
+    return {
+      label: `${persona.cognome} ${persona.nome}`,
+      value: persona.codFiscale,
+      data: persona
     };
   }
 

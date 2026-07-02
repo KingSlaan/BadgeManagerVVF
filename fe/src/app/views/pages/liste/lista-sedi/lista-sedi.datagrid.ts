@@ -31,7 +31,20 @@ export function createGridColumn(): DataGridColumn<Sede>[] {
     {
       field: 'descrizione',
       header: 'Descrizione',
-    }
+    },
+    {
+      field: 'email',
+      header: 'Email',
+    },
+    {
+      field: 'numTel1Sede',
+      header: 'Telefono',
+    },
+    {
+      field: 'indirizzoSede',
+      header: 'Indirizzo',
+      width:"450px"
+    },
   ];
 }
 

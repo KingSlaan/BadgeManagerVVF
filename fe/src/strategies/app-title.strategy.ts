@@ -1,0 +1,21 @@
+import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import {
+  RouterStateSnapshot,
+  TitleStrategy
+} from '@angular/router';
+
+@Injectable()
+export class AppTitleStrategy extends TitleStrategy {
+  constructor(private title: Title) {
+    super();
+  }
+
+  override updateTitle(snapshot: RouterStateSnapshot): void {
+    const routeTitle = this.buildTitle(snapshot);
+
+    this.title.setTitle(
+      routeTitle ? `TesserAct | ${routeTitle}` : 'TesserAct'
+    );
+  }
+}

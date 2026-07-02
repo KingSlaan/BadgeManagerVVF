@@ -14,7 +14,9 @@
           formControlName="tipoStampa"
         >
           <option value="nominativa">Nominativa (Territorio)</option>
-          <option value="nominativa_assegnata">Nominativa Assegnata (Centrale)</option>
+          <option value="nominativa_assegnata">
+            Nominativa Assegnata (Centrale)
+          </option>
           <option value="sostitutiva">Sostitutiva</option>
         </select>
       </c-col>
@@ -85,6 +87,28 @@
               [optionKeyFn]="utenteKey"
             />
           </c-col>
+        }
+        @if (form.controls.tipoStampa.value === "nominativa") {
+          <c-col xs="7" lg="7">
+            <label cLabel class="visually-hidden" for="tipoTemplate">
+              Persone Selezionati
+            </label>
+            <app-autocomplete-select
+              #personeAutocomplete
+              formControlName="persone"
+              placeholder="Seleziona Persone"
+              [multiple]="true"
+              [minSearchLength]="0"
+              [debounceMs]="500"
+              [serverSearchFn]="searchPersone"
+              [loadOnOpen]="true"
+              [itemTemplate]="personeItem"
+              [selectedItemTemplate]="personeChip"
+              [optionKeyFn]="personeKey"
+            />
+          </c-col>
+        }
+        @if (form.controls.tipoStampa.value === "nominativa" || form.controls.tipoStampa.value === "nominativa_assegnata") {
           <c-col
             xs="2"
             lg="2"
@@ -116,40 +140,6 @@
                 (change)="onFileSelected($event)"
               />
             </label>
-          </c-col>
-        }
-        @if (form.controls.tipoStampa.value === "nominativa") {
-          <c-col xs="7" lg="7">
-            <label cLabel class="visually-hidden" for="tipoTemplate">
-              Persone Selezionati
-            </label>
-            <app-autocomplete-select
-              #personeAutocomplete
-              formControlName="persone"
-              placeholder="Seleziona Persone"
-              [multiple]="true"
-              [minSearchLength]="0"
-              [debounceMs]="500"
-              [serverSearchFn]="searchPersone"
-              [loadOnOpen]="true"
-              [itemTemplate]="personeItem"
-              [selectedItemTemplate]="personeChip"
-              [optionKeyFn]="personeKey"
-            />
-          </c-col>
-          <c-col
-            xs="2"
-            lg="2"
-            class="d-flex justify-content-center align-items-center"
-          >
-            <c-form-check [switch]="true" class="mb-0">
-              <input
-                cFormCheckInput
-                type="checkbox"
-                formControlName="filtraSede"
-              />
-              <label cFormCheckLabel class="mb-0"> Filtra per sede </label>
-            </c-form-check>
           </c-col>
         }
         @if (form.controls.tipoStampa.value === "sostitutiva") {
@@ -233,7 +223,6 @@
         {{ option.data.cognome }} {{ option.data.nome }} |
         {{ option.data.codFiscale }}
       </div>
-
     </div>
 
     @if (selected) {
@@ -253,8 +242,6 @@
 
 <ng-template #personeChip let-option>
   <span class="d-inline-flex align-items-center gap-1">
-    <small>
-      {{ option.data.cognome }} {{ option.data.nome }}
-    </small>
+    <small> {{ option.data.cognome }} {{ option.data.nome }} </small>
   </span>
 </ng-template>

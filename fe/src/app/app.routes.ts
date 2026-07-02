@@ -8,12 +8,14 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./layout').then(m => m.DefaultLayoutComponent),
     canActivate: [authGuard],
+    title: 'Home',
     data: {
       title: 'Home'
     },
     children: [
       {
         path: '',
+        title: 'Dashboard',
         loadComponent: () =>
           import('./views/dashboard/dashboard.component')
             .then(m => m.DashboardComponent),
@@ -23,6 +25,7 @@ export const routes: Routes = [
       },
       {
         path: 'liste',
+        title: 'Liste',
         data: {
           title: 'Liste'
         },
@@ -31,6 +34,7 @@ export const routes: Routes = [
       },
       {
         path: 'operazioni',
+        title: 'Operazioni',
         data: {
           title: 'Operazioni'
         },
@@ -39,6 +43,7 @@ export const routes: Routes = [
       },
       {
         path: 'user-settings',
+        title: 'User Settings',
         data: {
           title: 'User Settings'
         },
@@ -47,6 +52,7 @@ export const routes: Routes = [
       },
       {
         path: 'logs',
+        title: 'Logs',
         data: {
           title: 'Logs'
         },
@@ -57,6 +63,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    title: 'Login',
     canActivate: [loginGuard],
     loadComponent: () => import('./views/pages/login/login.component').then(m => m.LoginComponent)
   },
