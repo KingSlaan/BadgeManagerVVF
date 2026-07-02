@@ -14,7 +14,6 @@ export class UtilsService {
 
   private apiUrl = API_CONSTANTS.BASE_URL;
 
-
   getStampaWord(body: any): Observable<HttpResponse<Blob>> {
     return this.http.post(
       `${this.apiUrl}/generaDocumentoBadgeServlet`,
