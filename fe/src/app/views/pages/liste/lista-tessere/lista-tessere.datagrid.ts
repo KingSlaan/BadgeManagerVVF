@@ -73,10 +73,6 @@ export const TESSERE_SELECTION_SUMMARY_CONFIG = {
 
 export const TESSERE_SORTING_CONFIG: DataGridSortingConfig = {
   enabled: true,
-  defaultSorting: {
-    field: 'idTessera',
-    direction: 'desc',
-  },
 };
 
 export const TESSERE_EMPTY_STATE_CONFIG: DataGridEmptyStateConfig = {
