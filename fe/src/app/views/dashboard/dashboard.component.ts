@@ -1,3 +1,5 @@
+import { SediStateService } from 'src/states/sedi-state.service';
+import { UtilsService } from 'src/app/services/utils.service';
 import { TESSERE_STATUS_MESSAGES } from '../../../constants/tessere-status.constants';
 import { DashboardService } from './../../services/dashboard.service';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -28,8 +30,12 @@ import { Router } from '@angular/router';
 export class DashboardComponent implements OnInit, OnDestroy {
 
   private statisticheService = inject(DashboardService);
+  private utilsService = inject(UtilsService);
+  private sediState = inject(SediStateService);
   private router = inject(Router);
   public tessereStatusMsg = TESSERE_STATUS_MESSAGES;
+
+  sediOptions = this.sediState.sediOptions;
 
   icons = { cilTrash, cilUser, cilUserFollow, cilLowVision, cilGroup };
 
@@ -111,6 +117,35 @@ export class DashboardComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false,
     indexAxis: 'y' as const,
+    onClick: (_event, elements) => {
+      if (!elements.length) {
+        return;
+      }
+
+      const sediOptions = this.sediOptions();
+
+      if (!sediOptions.length) {
+        return;
+      }
+
+      const index = elements[0].index;
+      const sede = this.chartBarTessereData().labels?.[index];
+
+      if (!sede) {
+        return;
+      }
+
+      const codSede = this.utilsService.getCodiceFromSedeDesc(
+        sediOptions,
+        sede
+      );
+
+      if (!codSede) {
+        return;
+      }
+
+      this.goTo('/liste/tessere', { sede: codSede });
+    },
 
     layout: {
       padding: {
@@ -133,7 +168,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
-  chartBarTessereData = signal<ChartData>({
+  chartBarTessereData = signal<ChartData<'bar', number[], string>>({
     labels: [],
     datasets: [
       {
@@ -146,6 +181,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this.sediState.loadSedi();
+
     this.statisticheService.getStatistiche().subscribe({
       next: (data: any) => {
         this.statistiche.set(data.data ?? {});
