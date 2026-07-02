@@ -18,7 +18,12 @@
     </button>
   </c-modal-header>
   <c-modal-body>
-    <p>Le seguenti tessere saranno mandate in stampa: {{tessereToPrint.map(item => item.idTessera).join(' , ')}}</p>
+    @if(type == 'cf') {
+      <p>I seguenti codici fiscali saranno mandati in stampa: {{tessereToPrint.map(item => item.codFiscale).join(' , ')}}</p>
+    }
+    @if(type == 'tessere') {
+      <p>Le seguenti tessere saranno mandate in stampa: {{tessereToPrint.map(item => item.idTessera).join(' , ')}}</p>
+    }
     <form [formGroup]="form" [gutter]="3" cForm cRow>
       <c-col xs="12">
         <label cLabel class="visually-hidden" for="tipoStampa">

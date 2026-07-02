@@ -39,6 +39,7 @@ export class TesseraStampaComponent {
   @Output() visibleChange = new EventEmitter<boolean>();
   @Input() tessereToPrint: any = [];
   @Input() mode: any = [];
+  @Input() type: string = 'tessere';
 
   icons = { cilX };
 
@@ -47,19 +48,22 @@ export class TesseraStampaComponent {
   });
 
   bulkPrint(rows: Tessera[]): void {
-    let indispArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.INDISPONIBILE);
-    let indispArrId = indispArr.map(item => item.idTessera);
+    if (this.type === 'tessere') {
 
-    let libereArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.LIBERA);
-    let libereArrId = libereArr.map(item => item.idTessera);
+      let indispArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.INDISPONIBILE);
+      let indispArrId = indispArr.map(item => item.idTessera);
 
-    if (indispArr.length > 0 || libereArr.length > 0) {
+      let libereArr = rows.filter(item => item.stato == TESSERE_STATUS_MESSAGES.LIBERA);
+      let libereArrId = libereArr.map(item => item.idTessera);
 
-      let tessereIndStr = indispArr.length > 0 ? '<br/><strong> Tessere indisponibili: ' + indispArrId.join(" , ") + '</strong>' : '';
-      let tessereLibStr = libereArr.length > 0 ? '<br/><strong> Tessere libere: ' + libereArrId.join(" , ") + '</strong>' : '';
+      if (indispArr.length > 0 || libereArr.length > 0) {
 
-      this.toast.error(`Nella lista sono presenti tessere indisponibili o libere. ${tessereIndStr} ${tessereLibStr}`);
-      return;
+        let tessereIndStr = indispArr.length > 0 ? '<br/><strong> Tessere indisponibili: ' + indispArrId.join(" , ") + '</strong>' : '';
+        let tessereLibStr = libereArr.length > 0 ? '<br/><strong> Tessere libere: ' + libereArrId.join(" , ") + '</strong>' : '';
+
+        this.toast.error(`Nella lista sono presenti tessere indisponibili o libere. ${tessereIndStr} ${tessereLibStr}`);
+        return;
+      }
     }
 
     this.tessereService.stampaTessere(rows, this.form.controls.tipoStampa.value || 'pdf').subscribe({
