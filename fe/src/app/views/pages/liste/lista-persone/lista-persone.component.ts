@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { DataGridColumn, DataGridLoadingConfig, DataGridPageEvent, DataGridState, DataGridSearchConfig, DataGridSortingConfig } from '../../../../../interfaces/datagrid';
 import { DataGridComponent } from '../../../../../components/data-grid/data-grid.component';
 import { Persona, Persone } from 'src/interfaces/persone';
-import { DATAGRID_CONSTANTS } from 'src/constants/datagrid.constants';
+import { DATAGRID_CONSTANTS, DATAGRID_CONSTANTS_NO_PAGINATION } from 'src/constants/datagrid.constants';
 import { createGridColumn, createSearchConfig, PERSONE_URL_STATE_CONFIG } from '../lista-persone/lista-persone.datagrid';
 import { PersoneService } from 'src/app/services/persone.service';
 import { buildDataGridState, buildUrlQueryParamsFromState } from '@docs-components/data-grid/data-grid-utils';
@@ -34,7 +34,7 @@ export class ListaPersoneComponent {
     fields: [],
   };
 
-  paginationConfig = DATAGRID_CONSTANTS;
+  paginationConfig = DATAGRID_CONSTANTS_NO_PAGINATION;
   persone = signal<Persone>([]);
   sedi = signal<Sedi>([]);
 
@@ -99,10 +99,7 @@ export class ListaPersoneComponent {
           pageSize: 100,
           totalItems: data.data.length,
         };
-        // this.paginationConfig = {
-        //   ...this.paginationConfig,
-        //   ...data.pagination,
-        // };
+
 
         this.datagridLoading.set(false);
       },

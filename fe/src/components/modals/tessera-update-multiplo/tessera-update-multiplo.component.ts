@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonDirective, ColComponent, FormControlDirective, FormDirective, FormSelectDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective } from '@coreui/angular';
+import { ButtonDirective, ColComponent, FormDirective, FormSelectDirective, GutterDirective, ModalBodyComponent, ModalComponent, ModalFooterComponent, ModalHeaderComponent, ModalTitleDirective, RowDirective, TableDirective } from '@coreui/angular';
 import { cilX } from '@coreui/icons';
 import { IconDirective } from '@coreui/icons-angular';
 import { AutocompleteSelectComponent } from '@docs-components/autocomplete-select/autocomplete-select.component';
@@ -28,6 +28,7 @@ import { Tessera, TessereMassiva } from 'src/interfaces/tessere';
     DatepickerComponent,
     ColComponent,
     FormDirective,
+    FormSelectDirective,
   ],
   templateUrl: './tessera-update-multiplo.component.html',
   styleUrl: './tessera-update-multiplo.component.scss',
@@ -102,6 +103,9 @@ export class TesseraUpdateMultiploComponent {
     switch (this.mode) {
       case 'cambia-sede':
         body = { ...body, sede: this.form.controls.sede.value || '' };
+        if (this.form.controls.codTipoTessera.value) {
+          body = { ...body, codTipoTessera: this.form.controls.codTipoTessera.value || '' };
+        }
         if (indispArr.length > 0) {
           indispStr = indispArr.length > 0 ? '<br/><strong> Tessere indisponibili: ' + indispArrId.join(" , ") + '</strong>' : '';
         }

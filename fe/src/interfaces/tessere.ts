@@ -31,6 +31,7 @@ export const tesseraEmpty: Tessera = {
 export interface TessereMassiva {
   idTessere: string[];
   sede?: string;
+  codTipoTessera?: string;
   dataOraIndisponibilita?: string;
   dataOraInizioAssegnazione?: string;
   dataOraFineAssegnazione?: string;
