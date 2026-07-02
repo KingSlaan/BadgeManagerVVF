@@ -227,13 +227,6 @@ export class ListaTessereComponent implements OnInit, AfterViewInit {
     },
   ];
 
-  exportCsv() {
-    return console.log("exportCsv")
-  }
-  importCsv() {
-    return console.log("importCsv")
-  }
-
   ngOnInit(): void {
     this.getSedi();
   }

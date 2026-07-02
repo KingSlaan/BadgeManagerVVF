@@ -8,8 +8,8 @@ import { TessereService } from 'src/app/services/tessere.service';
 import { cilX } from '@coreui/icons';
 import { Dipendente } from 'src/interfaces/tessere';
 import { IconDirective } from '@coreui/icons-angular';
-import { DATAGRID_CONSTANTS, DATAGRID_CONSTANTS_NO_SERVER } from 'src/constants/datagrid.constants';
-
+import { DATAGRID_CONSTANTS_NO_SERVER } from 'src/constants/datagrid.constants';
+import { createReviewSearchConfig } from './review-import-rows.datagrid';
 @Component({
   selector: 'app-review-import-rows',
   standalone: true,
@@ -22,72 +22,84 @@ import { DATAGRID_CONSTANTS, DATAGRID_CONSTANTS_NO_SERVER } from 'src/constants/
   ],
   templateUrl: './review-import-rows.component.html',
 })
-export class ReviewImportRowsComponent implements OnInit {
-  private fb = inject(NonNullableFormBuilder);
-  private tessereService = inject(TessereService);
+  export class ReviewImportRowsComponent implements OnInit {
+    private fb = inject(NonNullableFormBuilder);
+    private tessereService = inject(TessereService);
 
-  icons = { cilX };
+    icons = { cilX };
 
-  @Input({ required: true }) rows: any[] = [];
+    @Input({ required: true }) rows: any[] = [];
 
-  @Output() proposalCompleted = new EventEmitter<any[]>();
+    @Output() proposalCompleted = new EventEmitter<any[]>();
 
-  @ViewChild('actionTemplate', {
-    static: true,
-  })
-  actionTemplate!: TemplateRef<any>;
+    @ViewChild('actionTemplate', {
+      static: true,
+    })
+    actionTemplate!: TemplateRef<any>;
 
-  loading = false;
+    loading = false;
 
-  form = this.fb.group({
-    numeroPartenzaTopDown: ['', Validators.required],
-  });
+    form = this.fb.group({
+      numeroPartenzaTopDown: ['', Validators.required],
+    });
 
-  columns: DataGridColumn[] = [];
+    columns: DataGridColumn[] = [];
 
-  paginationConfig = DATAGRID_CONSTANTS_NO_SERVER;
+    paginationConfig = DATAGRID_CONSTANTS_NO_SERVER;
 
-  ngOnInit() {
-    this.columns = [
-      { field: 'codFiscale', header: 'Codice Fiscale' },
-      { field: 'nome', header: 'Nome' },
-      { field: 'cognome', header: 'Cognome' },
-      {
-        field: 'actions',
-        header: '',
-        template: this.actionTemplate,
-        width:"50px"
+    searchConfig = createReviewSearchConfig();
+
+    ngOnInit() {
+      this.columns = [
+        { field: 'codFiscale', header: 'Codice Fiscale' },
+        { field: 'nome', header: 'Nome' },
+        { field: 'cognome', header: 'Cognome' },
+        {
+          field: 'actions',
+          header: '',
+          template: this.actionTemplate,
+          width: "50px"
+        }
+      ];
+
+      this.paginationConfig = {
+        ...this.paginationConfig,
+        totalItems: this.rows.length
       }
-    ];
-  }
-
-  removeRow(row: Dipendente): void {
-    this.rows = this.rows.filter(r => r.codFiscale !== row.codFiscale);
-  }
-
-  proponiAssegnazioni(): void {
-    if (this.form.invalid || this.rows.length === 0) {
-      this.form.markAllAsTouched();
-      return;
     }
 
-    const numeroPartenzaTopDown = this.form.controls.numeroPartenzaTopDown.value;
+    removeRow(row: Dipendente): void {
+      this.rows = this.rows.filter(r => r.codFiscale !== row.codFiscale);
 
-    this.loading = true;
+      this.paginationConfig = {
+        ...this.paginationConfig,
+        totalItems: this.rows.length
+      }
+    }
 
-    this.tessereService.proponiAssegnazioni({
-      numeroPartenzaTopDown,
-      dipendenti: this.rows,
-    })
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: response => {
-          const data = response?.data ?? [];
-          this.proposalCompleted.emit(data);
-        },
-        error: error => {
-          console.error('Errore proposta assegnazioni', error);
-        },
-      });
+    proponiAssegnazioni(): void {
+      if (this.form.invalid || this.rows.length === 0) {
+        this.form.markAllAsTouched();
+        return;
+      }
+
+      const numeroPartenzaTopDown = this.form.controls.numeroPartenzaTopDown.value;
+
+      this.loading = true;
+
+      this.tessereService.proponiAssegnazioni({
+        numeroPartenzaTopDown,
+        dipendenti: this.rows,
+      })
+        .pipe(finalize(() => this.loading = false))
+        .subscribe({
+          next: response => {
+            const data = response?.data ?? [];
+            this.proposalCompleted.emit(data);
+          },
+          error: error => {
+            console.error('Errore proposta assegnazioni', error);
+          },
+        });
+    }
   }
-}

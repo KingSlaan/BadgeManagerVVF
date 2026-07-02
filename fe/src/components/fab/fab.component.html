@@ -2,8 +2,13 @@
   <button
     type="button"
     class="scroll-fab scroll-fab--bottom"
-    (click)="scrollToTop()"
+    (click)="handleTopClick()"
     aria-label="Scroll to top"
+    cdkDrag
+    cdkDragBoundary="body"
+    (cdkDragStarted)="dragging = true"
+    [cdkDragFreeDragPosition]="topFabPosition"
+    (cdkDragEnded)="onDragEnded($event, 'top')"
   >
     <svg [cIcon]="icons.cilChevronTop" height="20"></svg>
   </button>
@@ -13,8 +18,13 @@
   <button
     type="button"
     class="scroll-fab scroll-fab--top"
-    (click)="scrollToBottom()"
+    (click)="handleBottomClick()"
     aria-label="Scroll to bottom"
+    cdkDrag
+    cdkDragBoundary="body"
+    (cdkDragStarted)="dragging = true"
+    [cdkDragFreeDragPosition]="bottomFabPosition"
+    (cdkDragEnded)="onDragEnded($event, 'bottom')"
   >
     <svg [cIcon]="icons.cilChevronBottom" height="20"></svg>
   </button>

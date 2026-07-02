@@ -89,6 +89,9 @@ export class DataGridComponent<T = any> implements OnInit {
   toolbarConfig = input<DataGridToolbarConfig<T>>();
   initialState = input<DataGridState | null>(null);
 
+  localPage = signal(1);
+  localPageSize = signal<number | null>(null);
+
   selectionSummaryConfig = input<DataGridSelectionSummaryConfig<T>>();
 
   // CONTEXT MENU
@@ -119,15 +122,9 @@ export class DataGridComponent<T = any> implements OnInit {
 
   icons = { cilSearch, cilFilterX, cilFrown };
 
-  selectedField = '';
-  searchValue = '';
-
   filterValues: Record<string, any> = {};
 
-  // form row (temporary UI state)
-  currentField = '';
-  currentOperator: 'contains' | 'equals' = 'contains';
-  currentValue = '';
+  private filterVersion = signal(0);
 
   currentSorting: DataGridSorting | null = null;
 
@@ -148,22 +145,43 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
   ngOnInit() {
-    this.searchConfig()?.fields.forEach((f: any) => {
-      if (f.type === 'checkbox') {
-        this.filterValues[f.field] ??= false;
-      } else if (f.type === 'autocomplete' && f.multiple) {
-        this.filterValues[f.field] ??= [];
+    this.initializeFilterValues();
+    this.applyInitialState();
+    this.initializeSorting();
+  }
+
+  private markFiltersChanged(): void {
+    this.filterVersion.update(value => value + 1);
+  }
+
+  private initializeFilterValues(): void {
+    this.searchConfig()?.fields.forEach((field: any) => {
+      if (field.type === 'checkbox') {
+        this.filterValues[field.field] ??= false;
+      } else if (field.type === 'autocomplete' && field.multiple) {
+        this.filterValues[field.field] ??= [];
       } else {
-        this.filterValues[f.field] ??= '';
+        this.filterValues[field.field] ??= '';
       }
     });
+  }
 
-
-    this.applyInitialState();
-
+  private initializeSorting(): void {
     if (this.sortingConfig()?.defaultSorting && !this.currentSorting) {
       this.currentSorting = this.sortingConfig()?.defaultSorting ?? null;
     }
+  }
+
+  private getDefaultFilterValue(field: any): any {
+    if (field.type === 'checkbox') {
+      return false;
+    }
+
+    if (field.type === 'autocomplete' && field.multiple) {
+      return [];
+    }
+
+    return '';
   }
 
   private applyInitialState(): void {
@@ -186,38 +204,40 @@ export class DataGridComponent<T = any> implements OnInit {
   ): DataGridState {
     const pagination = this.paginationConfig();
 
-    const request: DataGridState = {
+    const state: DataGridState = {
       filters: this.buildFilters(),
       sorting: this.currentSorting,
     };
 
     if (pagination?.enabled && pagination.serverSide) {
-      request.pagination = {
+      state.pagination = {
         page: page ?? 1,
         pageSize: pageSize ?? pagination.pageSize,
       };
     }
 
-    return request;
+    return state;
   }
 
   applyFilters(): void {
+    this.localPage.set(1);
+    this.markFiltersChanged();
+
+    const pagination = this.paginationConfig();
+
+    if (!pagination?.serverSide) {
+      return;
+    }
+
     this.stateChange.emit(this.buildGridState(1));
   }
 
   clearFilters(): void {
-    this.searchConfig()?.fields.forEach((f: any) => {
-      if (f.type === 'checkbox') {
-        this.filterValues[f.field] = false;
-      } else if (f.type === 'autocomplete' && f.multiple) {
-        this.filterValues[f.field] = [];
-      } else {
-        this.filterValues[f.field] = '';
-      }
+    this.searchConfig()?.fields.forEach((field: any) => {
+      this.filterValues[field.field] = this.getDefaultFilterValue(field);
     });
 
     this.currentSorting = null;
-
     this.applyFilters();
   }
 
@@ -233,25 +253,32 @@ export class DataGridComponent<T = any> implements OnInit {
   }
 
   get totalPages(): number {
-    if (!this.paginationConfig()) {
+    const pageSize = this.currentPageSize();
+
+    if (!pageSize) {
       return 0;
     }
 
-    return Math.ceil(
-      (this.paginationConfig()?.totalItems || 0) /
-      (this.paginationConfig()?.pageSize || 0)
-    );
+    return Math.ceil(this.totalItems() / pageSize);
   }
 
-  get pages(): number[] {
-    return Array.from(
-      { length: this.totalPages },
-      (_, i) => i + 1
+  filteredRows = computed(() => {
+    this.filterVersion();
+
+    const rows = this.rows();
+    const pagination = this.paginationConfig();
+
+    if (pagination?.serverSide) {
+      return rows;
+    }
+
+    return this.applyLocalSorting(
+      this.applyLocalFilters(rows)
     );
-  }
+  });
 
   displayedRows = computed(() => {
-    const rows = this.rows();
+    const rows = this.filteredRows();
     const pagination = this.paginationConfig();
 
     if (!pagination?.enabled) {
@@ -262,11 +289,68 @@ export class DataGridComponent<T = any> implements OnInit {
       return rows;
     }
 
-    const start = (pagination.page - 1) * pagination.pageSize;
-    const end = start + pagination.pageSize;
+    const start = (this.currentPage() - 1) * this.currentPageSize();
+    const end = start + this.currentPageSize();
 
     return rows.slice(start, end);
   });
+
+  private applyLocalFilters(rows: T[]): T[] {
+    const filters = this.buildFilters();
+
+    if (filters.length === 0) {
+      return rows;
+    }
+
+    return rows.filter(row =>
+      filters.every(filter => {
+        const rowValue = String((row as any)[filter.field] ?? '').toLowerCase();
+
+        if (Array.isArray(filter.value)) {
+          return filter.value.some(value =>
+            rowValue === String(value).toLowerCase()
+          );
+        }
+
+        const filterValue = String(filter.value ?? '').toLowerCase();
+
+        if (filter.operator === 'contains') {
+          return rowValue.includes(filterValue);
+        }
+
+        if (filter.operator === 'starts') {
+          return rowValue.startsWith(filterValue);
+        }
+
+        return rowValue === filterValue;
+      })
+    );
+  }
+
+  private applyLocalSorting(rows: T[]): T[] {
+    if (!this.currentSorting) {
+      return rows;
+    }
+
+    const { field, direction } = this.currentSorting;
+
+    return [...rows].sort((a, b) => {
+      const aValue = (a as any)[field];
+      const bValue = (b as any)[field];
+
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      const result = String(aValue).localeCompare(
+        String(bValue),
+        undefined,
+        { numeric: true, sensitivity: 'base' }
+      );
+
+      return direction === 'asc' ? result : -result;
+    });
+  }
 
   private buildFilters() {
     return this.searchConfig()?.fields.filter((f: any) => {
@@ -295,20 +379,31 @@ export class DataGridComponent<T = any> implements OnInit {
       return;
     }
 
+    if (!pagination.serverSide) {
+      this.localPage.set(page);
+      return;
+    }
+
     this.stateChange.emit(
-      this.buildGridState(
-        page,
-        pagination.pageSize
-      )
+      this.buildGridState(page, pagination.pageSize)
     );
   }
 
   changePageSize(size: number): void {
+    const pagination = this.paginationConfig();
+
+    if (!pagination) {
+      return;
+    }
+
+    if (!pagination.serverSide) {
+      this.localPageSize.set(Number(size));
+      this.localPage.set(1);
+      return;
+    }
+
     this.stateChange.emit(
-      this.buildGridState(
-        1,
-        Number(size)
-      )
+      this.buildGridState(1, Number(size))
     );
   }
 
@@ -318,34 +413,33 @@ export class DataGridComponent<T = any> implements OnInit {
     () => this.displayedRows().length
   );
 
-  totalItems = computed(
-    () => this.paginationConfig()?.totalItems ?? this.rows().length
-  );
+  totalItems = computed(() => {
+    const pagination = this.paginationConfig();
+
+    return pagination?.serverSide
+      ? pagination.totalItems ?? this.rows().length
+      : this.filteredRows().length;
+  });
 
   pageStart = computed(() => {
+    const pagination = this.paginationConfig();
 
-    const pagination =
-      this.paginationConfig();
-
-    if (!pagination?.enabled) {
+    if (!pagination?.enabled || this.totalItems() === 0) {
       return 0;
     }
 
-    return (
-      (pagination.page - 1)
-      * pagination.pageSize
-    ) + 1;
+    return ((this.currentPage() - 1) * this.currentPageSize()) + 1;
   });
 
   pageEnd = computed(() => {
-
     const pagination = this.paginationConfig();
 
     if (!pagination?.enabled) {
       return this.displayedRows().length;
     }
 
-    return Math.min(this.pageStart() + this.displayedRows().length - 1,
+    return Math.min(
+      this.pageStart() + this.displayedRows().length - 1,
       this.totalItems()
     );
   });
@@ -357,7 +451,7 @@ export class DataGridComponent<T = any> implements OnInit {
       return [];
     }
 
-    const current = pagination.page;
+    const current = this.currentPage();
     const total = this.totalPages;
 
     const pages: Array<number | 'ellipsis'> = [];
@@ -386,6 +480,24 @@ export class DataGridComponent<T = any> implements OnInit {
     }
 
     return pages;
+  });
+
+  currentPage = computed(() => {
+    const pagination = this.paginationConfig();
+
+    if (!pagination) {
+      return 1;
+    }
+
+    return pagination.serverSide
+      ? pagination.page
+      : this.localPage();
+  });
+
+  currentPageSize = computed(() => {
+    const pagination = this.paginationConfig();
+
+    return this.localPageSize() ?? pagination?.pageSize ?? 10;
   });
 
   sortingEnabled = computed(

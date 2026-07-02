@@ -116,7 +116,7 @@
     }
 
     @if (selectionSummaryConfig()?.enabled && selectedRows().length > 0) {
-      <hr/>
+      <hr />
       <div
         class="datagrid-selection-summary mb-3"
         [style.max-height]="selectionSummaryConfig()?.maxHeight || '90px'"
@@ -291,7 +291,6 @@
 
   <!-- FOOTER -->
   <c-card-footer>
-
     @if (paginationConfig()?.enabled) {
       <div
         class="d-flex align-items-center justify-content-between gap-3 flex-wrap"
@@ -303,7 +302,7 @@
             <select
               cSelect
               style="width: 120px"
-              [value]="paginationConfig()?.pageSize"
+              [value]="currentPageSize()"
               (change)="changePageSize($any($event.target).value)"
             >
               @for (
@@ -334,8 +333,8 @@
             color="secondary"
             size="sm"
             variant="ghost"
-            [disabled]="paginationConfig()!.page === 1"
-            (click)="changePage(paginationConfig()!.page - 1)"
+            [disabled]="currentPage() === 1"
+            (click)="changePage(currentPage() - 1)"
           >
             Indietro
           </button>
@@ -348,9 +347,7 @@
                 cButton
                 size="sm"
                 variant="ghost"
-                [color]="
-                  p === paginationConfig()!.page ? 'primary' : 'secondary'
-                "
+                [color]="p === currentPage() ? 'primary' : 'secondary'"
                 (click)="changePage(p)"
               >
                 {{ p }}
@@ -363,8 +360,8 @@
             color="secondary"
             size="sm"
             variant="ghost"
-            [disabled]="paginationConfig()!.page === totalPages"
-            (click)="changePage(paginationConfig()!.page + 1)"
+            [disabled]="currentPage() === totalPages"
+            (click)="changePage(currentPage() + 1)"
           >
             Avanti
           </button>
