@@ -51,7 +51,6 @@ export class ListaPersoneComponent implements OnInit, AfterViewInit {
   selectedBadge!: TemplateRef<any>;
 
   private personeService = inject(PersoneService);
-  private tessereService = inject(TessereService);
   private sediService = inject(SediService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -83,9 +82,9 @@ export class ListaPersoneComponent implements OnInit, AfterViewInit {
 
   contextMenuConfig!: DataGridContextMenuConfig<any>;
 
-    toolbarConfig: DataGridToolbarConfig = createGridToolbar(
-      (rows) => this.openModalStampaUpdate(rows, 'multi'),
-    )
+  toolbarConfig: DataGridToolbarConfig = createGridToolbar(
+    (rows) => this.openModalStampaUpdate(rows, 'multi'),
+  )
 
   initialGridState: DataGridState | null = null;
 
@@ -129,7 +128,6 @@ export class ListaPersoneComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.columns = createGridColumn(this.actionTemplate);
 
     this.contextMenuConfig = {
       enabled: true,
@@ -152,6 +150,8 @@ export class ListaPersoneComponent implements OnInit, AfterViewInit {
 
         this.sedi.set([...(options ?? [])]);
         this.searchConfig = createSearchConfig(options);
+        this.columns = createGridColumn(this.actionTemplate, options);
+
         const initialState = this.getInitialState();
 
         this.initialGridState = initialState;

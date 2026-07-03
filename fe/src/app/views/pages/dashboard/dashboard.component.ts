@@ -1,14 +1,13 @@
 import { SediStateService } from 'src/states/sedi-state.service';
 import { UtilsService } from 'src/app/services/utils.service';
-import { TESSERE_STATUS_MESSAGES } from '../../../constants/tessere-status.constants';
-import { DashboardService } from './../../services/dashboard.service';
+import { TESSERE_STATUS_MESSAGES } from '../../../../constants/tessere-status.constants';
+import { DashboardService } from '../../../services/dashboard.service';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, ProgressComponent, RowComponent, TemplateIdDirective, WidgetStatCComponent } from '@coreui/angular';
+import { CardBodyComponent, CardComponent, CardHeaderComponent, ColComponent, RowComponent } from '@coreui/angular';
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { cilGroup, cilLowVision, cilTrash, cilUser, cilUserFollow } from '@coreui/icons';
-import { IconDirective } from '@coreui/icons-angular';
 import { ChartData, ChartOptions } from 'chart.js';
-import { Statistiche } from '../../../interfaces/statistiche';
+import { Statistiche } from '../../../../interfaces/statistiche';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,10 +16,6 @@ import { Router } from '@angular/router';
   imports: [
     RowComponent,
     ColComponent,
-    WidgetStatCComponent,
-    TemplateIdDirective,
-    IconDirective,
-    ProgressComponent,
     CardComponent,
     CardHeaderComponent,
     CardBodyComponent,
@@ -38,6 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   sediOptions = this.sediState.sediOptions;
 
   icons = { cilTrash, cilUser, cilUserFollow, cilLowVision, cilGroup };
+
 
   private themeObserver = new MutationObserver(() => {
     this.updateChartTheme();
@@ -182,15 +178,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sediState.loadSedi();
-
-    this.statisticheService.getStatistiche().subscribe({
-      next: (data: any) => {
-        this.statistiche.set(data.data ?? {});
-      },
-      error: (err: any) => {
-        console.error('Error loading statistiche generali', err);
-      },
-    });
 
     this.statisticheService.getStatisticheSede().subscribe({
       next: (data: any) => {

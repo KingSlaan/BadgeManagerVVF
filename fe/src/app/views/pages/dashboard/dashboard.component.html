@@ -1,0 +1,23 @@
+<!-- <c-container> -->
+<h3>Statistiche Tessere</h3>
+
+<c-row>
+  <c-col xs="12" lg="12">
+    <c-card class="mb-4">
+      <c-card-header> Per Sedi </c-card-header>
+      <c-card-body>
+        <div class="chart-container" [style.height.px]="chartHeight">
+          <c-chart
+            class="chart-full"
+            type="bar"
+            [data]="chartBarTessereData()"
+            [options]="options"
+          >
+          </c-chart>
+        </div>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+
+<!-- </c-container> -->

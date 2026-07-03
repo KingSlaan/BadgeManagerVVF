@@ -1,3 +1,4 @@
+import { HomeComponent } from './views/pages/home/home.component';
 import { LogsViewerComponent } from './views/pages/logs-viewer/logs-viewer.component';
 import { loginGuard } from './../guards/login.guard';
 import { Routes } from '@angular/router';
@@ -15,12 +16,12 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: 'Dashboard',
+        title: '',
         loadComponent: () =>
-          import('./views/dashboard/dashboard.component')
-            .then(m => m.DashboardComponent),
+          import('./views/pages/home/home.component')
+            .then(m => m.HomeComponent),
         data: {
-          title: 'Dashboard'
+          title: ''
         },
       },
       {
@@ -40,6 +41,15 @@ export const routes: Routes = [
         },
         loadChildren: () =>
           import('./views/pages/operazioni/routes').then(m => m.routes)
+      },
+      {
+        path: 'statistiche',
+        title: 'Statistiche',
+        data: {
+          title: 'Statistiche'
+        },
+        canActivate: [authGuard],
+        loadComponent: () => import('./views/pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'user-settings',

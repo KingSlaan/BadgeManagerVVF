@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.stats-widget-row {
+  width: 100%;
+  margin: 0 !important;
+  --cui-gutter-x: 1.25rem;
+}
+
+.stats-widget-row c-col {
+  display: flex;
+}
+
+.shadow-card {
+  width: 100%;
+  min-height: 165px;
+}

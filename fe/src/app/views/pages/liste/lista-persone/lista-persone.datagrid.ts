@@ -1,6 +1,6 @@
 import { Sedi, Sede } from '../../../../../interfaces/sedi';
 import { TemplateRef } from '@angular/core';
-import { DataGridColumn, DataGridToolbarConfig} from '../../../../../interfaces/datagrid';
+import { DataGridColumn, DataGridToolbarConfig } from '../../../../../interfaces/datagrid';
 import { DataGridSearchConfig } from '../../../../../interfaces/datagrid';
 import { AutocompleteOption } from '@docs-components/autocomplete-select/autocomplete-select.component';
 import { cilPrint } from '@coreui/icons';
@@ -13,13 +13,13 @@ export function createSearchConfig(sediList: AutocompleteOption[]): DataGridSear
       { field: 'cognome', label: 'Cognome', type: 'text', operator: 'contains' },
       { field: 'nome', label: 'Nome', type: 'text', operator: 'contains' },
       { field: 'codFiscale', label: 'Codice Fiscale', size: "3", type: 'text', operator: 'contains' },
-      { field: 'idSede', label: 'Codice Sede', type: 'autocomplete', operator: 'contains', size:'3', options: sediList },
+      { field: 'idSede', label: 'Codice Sede', type: 'autocomplete', operator: 'contains', size: '3', options: sediList },
     ]
   };
 
 }
 
-export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColumn<Sede>[] {
+export function createGridColumn(actionTemplate: TemplateRef<any>, sedi: AutocompleteOption[]): DataGridColumn<Sede>[] {
   return [
     {
       field: 'cognome',
@@ -44,6 +44,10 @@ export function createGridColumn(actionTemplate: TemplateRef<any>): DataGridColu
     {
       field: 'idSede',
       header: 'Codice Sede',
+      render: (row: any) => {
+        let sede = sedi.find(item => item.value === row.idSede);
+        return sede ? sede.label : row.idSede
+      }
     },
     {
       field: 'actions',

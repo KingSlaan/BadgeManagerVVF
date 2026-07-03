@@ -1,12 +1,55 @@
-<div class="cards-grid">
-  @for (card of cards(); track card.route) {
-    <div class="menu-card" [routerLink]="card.route">
-      <div class="menu-icon-container">
-        <svg [cIcon]="card.icon" class="menu-icon"></svg>
-      </div>
+@if (sections().length > 0) {
+  <div class="home-menu-sections">
+    @for (section of sections(); track section.title) {
+      <div class="home-menu-row">
+        <div
+          class="main-card"
+          [class.clickable]="section.route"
+          [routerLink]="section.route || null"
+        >
+          <svg [cIcon]="section.icon" class="main-icon"></svg>
 
-      <h4>{{ card.title }}</h4>
-      <p>{{ card.description }}</p>
-    </div>
-  }
-</div>
+          <h4>{{ section.title }}</h4>
+
+          @if (section.description) {
+            <p>{{ section.description }}</p>
+          }
+        </div>
+
+        <div class="children-card">
+          @if (section.contentTemplate) {
+            <ng-container *ngTemplateOutlet="section.contentTemplate">
+            </ng-container>
+          } @else {
+            @for (child of section.children ?? []; track child.route) {
+              <div class="child-card" [routerLink]="child.route">
+                <div class="child-icon-wrapper">
+                  <svg [cIcon]="child.icon" class="child-icon"></svg>
+                </div>
+
+                <strong>{{ child.title }}</strong>
+
+                @if (child.description) {
+                  <small>{{ child.description }}</small>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="cards-grid">
+    @for (card of cards(); track card.route) {
+      <div class="menu-card" [routerLink]="card.route">
+        <div class="menu-icon-container">
+          <svg [cIcon]="card.icon" class="menu-icon"></svg>
+        </div>
+
+        <h4>{{ card.title }}</h4>
+        <p>{{ card.description }}</p>
+      </div>
+    }
+  </div>
+}
